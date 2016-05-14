@@ -1,0 +1,22 @@
+{
+  "name": "votereg",
+  "version": "0.0.1",
+  "description": "Votereg's API",
+  "main": "server.js",
+  "private": true,
+  "author": "FFTF",
+  "license": "No License",
+  "dependencies": {
+    "bluebird": "^3.3.5",
+    "body-parser": "^1.15.1",
+    "cookie-parser": "^1.4.1",
+    "express": "^4.13.4",
+    "form-data": "^1.0.0-rc4",
+    "method-override": "^2.3.5",
+    "morgan": "^1.7.0",
+    "pg": "^4.5.5",
+    "phone": "^1.0.6",
+    "twilio": "^2.9.1",
+    "winston": "^2.2.0"
+  }
+}
