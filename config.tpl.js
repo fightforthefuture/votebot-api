@@ -24,7 +24,11 @@ var config = {
 		account_sid: '<SID>',
 		auth_token: '<TOKEN>',
 		from_number: '+183155512345'
-	}
+	},
+
+	// send all outgoing SMSs to this number instead of the actual user's number
+	// (good for debugging)
+	sms_override: null
 };
 
 module.exports = config;
