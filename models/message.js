@@ -65,9 +65,10 @@ exports.broadcast = function(conversation_id, message)
 
 			log.info('messages: broadcast to: ', JSON.stringify(users.map(function(u) { return u.id; })));
 			return Promise.all(users.map(function(user) {
-				log.info('sending sms to '+ user.username);
+				var to = config.sms_override || user.username;
+				log.info('sending sms to '+ to);
 				return twilio.messages.createAsync({
-					to: config.sms_override || user.username,
+					to: to,
 					from: config.twilio.from_number,
 					body: message.body
 				});

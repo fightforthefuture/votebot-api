@@ -46,6 +46,7 @@ var new_message = function(req, res)
 var incoming = function(req, res)
 {
 	var data = req.body;
+	log.info('incoming: ', JSON.stringify(data));
 	message_model.incoming_sms(data)
 		.then(function() {
 			resutil.send(res, {thanks: true});
