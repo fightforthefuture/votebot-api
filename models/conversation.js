@@ -52,7 +52,7 @@ exports.create = function(user_id, data)
 					// each recipient as well
 					if(conversation.type != 'p2p') return;
 					return Promise.all(users.map(function(user) {
-						return bot_model.start('vote', user.id);
+						return bot_model.start('vote_1', user.id, {start: 'intro_refer'});
 					}));
 				});
 		});
