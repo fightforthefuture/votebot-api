@@ -59,7 +59,7 @@ var chains = {
 			msg: 'Would you like to vote by mail-in ballot?',
 			process: simple_store('user.settings.mail_in', 'done', '', {validate: validate_boolean})
 		},
-		done: {msg: 'Thanks! We\'ll begin processing your registration!', final: true}
+		done: {msg: 'Thanks! We\'ll begin processing your registration! Share this bot to get your friends registered too: https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(config.app.url), final: true}
 	}
 };
 
