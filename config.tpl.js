@@ -2,6 +2,11 @@ var config = {
 	// app-wide logging
 	loglevel: 'info',
 
+	// the app website for votebot
+	app: {
+		url: 'http://voteymcbotface.com'
+	},
+
 	// sends detailed error information back with failed requests
 	//
 	// true when developing, false in prod
