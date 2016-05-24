@@ -6,7 +6,7 @@ exports.find = function(zip)
 	return new Promise(function(resolve, reject) {
 		request('http://api.zippopotam.us/us/'+zip, function(err, res, body) {
 			if(err) return reject(err);
-			if(res.statusCode >= 400) return reject(data_error('That zipcode wasn\'t found'));
+			if(res.statusCode >= 400) return reject(new Error('not_found'));
 			try
 			{
 				var obj = JSON.parse(body) || {};
