@@ -46,7 +46,8 @@ app.get('/', function(req, res) {
 	resutil.send(res, {message: 'Good day, fellow explorer.'});
 });
 
-app.listen(3000);
-log.info('API: listening on 3000');
+var port = config.port ? config.port : 3000
+app.listen(port);
+log.info('API: listening on '+port);
 
 
