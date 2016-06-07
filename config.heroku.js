@@ -14,11 +14,7 @@ var config = {
 
 	database: {
 		ssl: true,
-		server: process.env.DATABASE_URL,
-		port: 5432,
-		database: 'votebot',
-		user: 'postgres',
-		password: '',
+		connstr: process.env.DATABASE_URL,
 		max_connections: 8
 	},
 
