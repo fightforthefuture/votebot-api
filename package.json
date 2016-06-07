@@ -2,6 +2,7 @@
   "name": "votereg",
   "version": "0.0.1",
   "description": "Votereg's API",
+  "prestart": "bash scripts/prestart.sh",
   "main": "server.js",
   "private": true,
   "author": "FFTF",
