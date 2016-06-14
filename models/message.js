@@ -57,8 +57,6 @@ exports.get_recipients = function(conversation_id)
 exports.broadcast = function(conversation_id, message)
 {
 	log.info('broadcast: '+conversation_id+': ', message.body);
-	// DEBUG: removeme
-	return Promise.resolve();
 	return exports.get_recipients(conversation_id)
 		.then(function(users) {
 			users = users.filter(function(u) {

@@ -1,8 +1,10 @@
 var resutil = require('../lib/resutil');
 var model = require('../models/conversation');
+var user_model = require('../models/user');
 var message_model = require('../models/message');
 var log = require('../lib/logger');
 var error = require('../lib/error');
+var config = require('../config');
 
 exports.hook = function(app)
 {
@@ -10,6 +12,8 @@ exports.hook = function(app)
 	app.post('/conversations/:id/messages', new_message);
 	app.post('/conversations/incoming', incoming);
 	app.get('/conversations/:id/new', poll);
+	// TODO: move to users controller
+	app.delete('/users/:username', wipe);
 };
 
 var create = function(req, res)
@@ -70,6 +74,24 @@ var poll = function(req, res)
 		})
 		.catch(function(err) {
 			resutil.error(res, 'Problem grabbing messages', err);
+		});
+};
+
+var wipe = function(req, res)
+{
+	var username = req.params.username;
+	var password = req.query.admin_password;
+	if(!config.app.admin_password || password != config.app.admin_password)
+	{
+		return resutil.error(res, 'Access denied', new Error('Access denied'), {status: 401});
+	}
+	console.log('user: ', username);
+	user_model.wipe(username)
+		.then(function(messages) {
+			resutil.send(res, true);
+		})
+		.catch(function(err) {
+			resutil.error(res, 'Problem wiping that user\'s data', err);
 		});
 };
 
