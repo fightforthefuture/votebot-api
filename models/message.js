@@ -51,10 +51,14 @@ exports.get_recipients = function(conversation_id)
 /**
  * given a conversation id and a message, blast an SMS to every person in the
  * conversation (who isn't the message creator)
+ *
+ * TODO: queue me for each recipient
  */
 exports.broadcast = function(conversation_id, message)
 {
-	// TODO: queue me for each recipient
+	log.info('broadcast: '+conversation_id+': ', message.body);
+	// DEBUG: removeme
+	return Promise.resolve();
 	return exports.get_recipients(conversation_id)
 		.then(function(users) {
 			users = users.filter(function(u) {
@@ -66,7 +70,7 @@ exports.broadcast = function(conversation_id, message)
 			log.info('messages: broadcast to: ', JSON.stringify(users.map(function(u) { return u.id; })));
 			return Promise.all(users.map(function(user) {
 				var to = config.sms_override || user.username;
-				log.info('sending sms to '+ to);
+				log.info('sending sms to '+to);
 				return twilio.messages.createAsync({
 					to: to,
 					from: config.twilio.from_number,

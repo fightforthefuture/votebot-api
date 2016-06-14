@@ -14,16 +14,25 @@ var log = require('../lib/logger');
 // part of the conversation (generally a question) and how to process the answer.
 // this processing step can store data in various places as well as determine
 // the next step in the conversationt to run.
+//
+// note that the `msg` string can template in variables of user data. for
+// instance, we do things like:
+//
+//   msg: 'hello {{fullname}}! how is the weather in {{settings.city}}?'
 var chains = {
 	vote_1: {
 		_start: 'intro_direct',
 		intro_direct: {
-			msg: 'Hi! Let\'s get you registered to vote. What\'s your full name?',
-			process: simple_store('user.fullname', 'zip', 'Please enter your name')
+			msg: 'Hi! Let\'s get you registered to vote. What\'s your first name?',
+			process: simple_store('user.firstname', 'last_name', 'Please enter your first name')
 		},
 		intro_refer: {
-			msg: 'Hi! One of your friends has asked me to help you get registered to vote. What\'s your full name?',
-			process: simple_store('user.fullname', 'zip', 'Please enter your name')
+			msg: 'Hi! One of your friends has asked me to help you get registered to vote. What\'s your first name?',
+			process: simple_store('user.firstname', 'last_name', 'Please enter your first name')
+		},
+		last_name: {
+			msg: 'What\'s your last name?',
+			process: simple_store('user.lastname', 'zip', 'Please enter your last name')
 		},
 		zip: {
 			msg: 'What\'s your zip code?',
@@ -49,7 +58,40 @@ var chains = {
 		},
 		dob: {
 			msg: 'When were you born? (MM/DD/YYYY)',
-			process: simple_store('user.settings.dob', 'party', 'Please enter your birthday', {validate: validate_date})
+			process: simple_store('user.settings.dob', 'per_state', 'Please enter your birthday', {validate: validate_date})
+		},
+		// this is a MAGICAL step. it never actually runs, but instead just
+		// points to other steps until it runs out of per-state questions to
+		// ask. then it parties.
+		per_state: {
+			pre_process: function(action, conversation, user) {
+				var state = util.object.get(user, 'settings.state').trim().toLowerCase();
+				var state_questions = vote_per_state[state];
+
+				// who likes to party?
+				var next_default = {next: 'party'};
+
+				// no per-state questions? skip!!l
+				if(!state_questions) return next_default;
+
+				// loop over the per-state questions, skipping any we have
+				// already processed. if we get to the end of the list, we
+				// load our next step.
+				var next = null;
+				for(var i = 0; i < state_questions.length; i++)
+				{
+					var key = state_questions[i];
+					var exists = util.object.get(user, 'settings.'+key);
+					// if we already have this answer, skip
+					if(exists !== undefined) continue;
+					next = key;
+					break;
+				}
+				if(next) return {next: next};
+
+				// nothing left, let's party
+				return next_default;
+			}
 		},
 		party: {
 			msg: 'What\'s your party preference? (democrat/republican/etc)',
@@ -59,8 +101,111 @@ var chains = {
 			msg: 'Would you like to vote by mail-in ballot?',
 			process: simple_store('user.settings.mail_in', 'done', '', {validate: validate_boolean})
 		},
-		done: {msg: 'Thanks! We\'ll begin processing your registration! Share this bot to get your friends registered too: https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(config.app.url), final: true}
+		done: {
+			msg: 'Thanks! We\'ll begin processing your registration! Share this bot to get your friends registered too: https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(config.app.url),
+			final: true
+		},
+
+		// per-state questions
+		// !!!!!!!!
+		// !!NOTE!! these *HAVE* to store their value in settings.{{name}} where
+		// {{name}} is the same as the key name in the conversation object.
+		// in other words, the `us_citizen` conversation step needs to store its
+		// value in `user.settings.us_citizen` or the bot will infinite loop
+		// !!!!!!!!
+		us_citizen: {
+			msg: 'Are you a US citizen?',
+			process: simple_store('user.settings.us_citizen', 'per_state', '', {validate: validate_boolean_yes})
+		},
+		state_resident: {
+			msg: 'Are you a current resident of {{settings.state}}?',
+			process: simple_store('user.settings.state_resident', 'per_state', '', {validate: validate_boolean_yes})
+		},
+		18: { 
+			msg: 'Are you 18 or older?',
+			process: simple_store('user.settings.18', 'per_state', '', {validate: validate_boolean_yes})
+		},
+		disenfranchised: {
+			msg: 'Are you currently disenfranchised from voting (for instance due to a felony conviction)?',
+			process: simple_store('user.settings.disenfranchised', 'per_state', '', {validate: validate_boolean_no})
+		},
+		incompetent: {
+			msg: 'Have you been found legally incompetent in your state?',
+			process: simple_store('user.settings.incompetent', 'per_state', '', {validate: validate_boolean_no})
+		},
+		state_id: {
+			msg: 'What\'s your {{settings.state}} driver\'s license (or state ID) number?',
+			process: simple_store('user.settings.state_id', 'per_state', 'Please enter your state ID number')
+		},
+		state_id_issue_date: {
+			msg: 'What date was your state id/driver\'s license issued? (mm/dd/yyyy)',
+			process: simple_store('user.settings.state_id_issue_date', 'per_state', '', {validate: validate_date})
+		},
+		ssn: {
+			msg: 'What\'s your SSN?',
+			process: simple_store('user.settings.ssn', 'per_state', '', {validate: validate_ssn})
+		},
+		ssn_last4: {
+			msg: 'What are the last 4 digits of your SSN?',
+			process: simple_store('user.settings.ssn_last4', 'per_state', 'Please enter the last 4 digits of your SSN')
+		},
+		state_id_or_ssn_last4: {
+			msg: 'What\'s your {{settings.state}} driver\'s license (or state ID) number? If you don\'t one, enter the last 4 digits of your SSN.',
+			process: simple_store('user.settings.state_id_or_ssn_last4', 'per_state', 'Please enter your state ID number or last 4 of your SSN')
+		},
+		gender: {
+			msg: 'What\'s your gender?',
+			process: simple_store('user.settings.gender', 'per_state', '', {validate: validate_gender})
+		},
+		county: {
+			msg: 'What county do you reside in?',
+			process: simple_store('user.settings.county', 'per_state', 'Please enter the name of the county you reside in')
+		}
 	}
+};
+
+// state-specific questions we need to ask after the main flow is completed.
+// these are in order of how the questions will be asked, and each item is a
+// key in the `chains.vote_1` flow object that loads that question.
+var vote_per_state = {
+	al: ['us_citizen', '18', 'state_id'],
+	ak: ['us_citizen', '18', 'ssn_last4', 'state_id'],
+	// TODO: AZ (https://servicearizona.com/unavailable/saz.html currently is broken) THANKS, OBAMA
+	//az: [],
+	ca: ['us_citizen', 'state_resident', '18', 'ssn_last4', 'state_id'],
+	co: ['state_id'],
+	ct: ['us_citizen', 'state_resident', '18', 'state_id', 'disenfranchised'],
+	de: ['us_citizen', 'state_resident', 'state_id', 'disenfranchised'],
+	ga: ['us_citizen', 'state_resident', '18', 'disenfranchised', 'incompetent', 'state_id'],
+	hi: ['state_id', 'ssn', 'gender'],
+	// TODO IA (stuck behind a login-wall)
+	//ia: [],
+	il: ['us_citizen', '18', 'state_id', 'state_id_issue_date'],
+	in: ['us_citizen', '18', 'state_resident', 'disenfranchised', 'state_id'],
+	ks: ['us_citizen', '18', 'state_resident', 'disenfranchised', 'state_id'],
+	ky: ['us_citizen', 'state_resident', '18', 'disenfranchised', 'incompetent', 'ssn'],
+	la: ['us_citizen', '18', 'disenfranchised', 'incompetent', 'state_id'],
+	ma: ['us_citizen', 'state_resident', '18', 'state_id'],
+	md: ['us_citizen', 'ssn_last4', 'state_id'],
+	mn: ['us_citizen', '18', 'disenfranchised', 'state_id_or_ssn_last4'],
+	// TODO: MO got rid of OVR apparently
+	//mo: [],
+	ne: ['us_citizen', '18', 'state_id'],
+	nm: ['us_citizen', 'state_resident', '18', 'disenfranchised', 'state_id', 'ssn'],
+	nv: ['us_citizen', 'state_resident', '18', 'state_id', 'ssn_last4'],
+	// TODO: NY (stuck behind login-wall)
+	//ny: [],
+	or: ['us_citizen', '18', 'state_id_or_ssn_last4'],
+	// NOTE: requires county field (select box)
+	pa: ['us_citizen', '18', 'county', 'state_id_or_ssn_last4', 'disenfranchised'],
+	sc: ['state_id', 'ssn', 'gender'],
+	// TODO: rest of reg is behind id-wall
+	//ut: ['state_id'],
+	// NOTE: requires county field (select box)
+	va: ['ssn_last4', 'county'],
+	wa: ['us_citizen', '18', 'state_id', 'state_id_issue_date'],
+	wv: ['us_citizen', 'state_resident', '18', 'disenfranchised', 'incompetent', 'state_id', 'ssn_last4'],
+	vt: ['us_citizen', 'state_resident', '18', 'state_id']
 };
 
 // a helper for very simple ask-and-store type questions. can perform data
@@ -98,7 +243,17 @@ function data_error(msg, options)
 	var err = new Error(msg);
 	err.data_error = true;
 	if(options.promise) err = Promise.reject(err);
+	// this conversation.......is over
+	if(options.end) err.end_conversation = true;
 	return err;
+}
+
+function template(str, data)
+{
+	return str.replace(/{{(.*?)}}/, function(all, key) {
+		var val = util.object.get(data, key);
+		return val || '';
+	});
 }
 
 function validate_date(body)
@@ -117,7 +272,27 @@ function validate_date(body)
 function validate_boolean(body)
 {
 	return Promise.resolve([!!language.is_yes(body)]);
-};
+}
+
+function validate_boolean_yes(body)
+{
+	return Promise.resolve([language.is_yes(body), language.is_no(body)])
+		.spread(function(is_yes, is_no) {
+			if(!is_yes && !is_no) throw data_error('Please answer yes or no');
+			if(!is_yes) throw data_error('Sorry, you are not eligible to vote in your state', {end: true});
+			return [true];
+		})
+}
+
+function validate_boolean_no(body)
+{
+	return Promise.resolve([language.is_yes(body), language.is_no(body)])
+		.spread(function(is_yes, is_no) {
+			if(!is_yes && !is_no) throw data_error('Please answer yes or no');
+			if(!is_no) throw data_error('Sorry, you are not eligible to vote in your state', {end: true});
+			return [false];
+		})
+}
 
 function validate_zip(body)
 {
@@ -145,7 +320,22 @@ function validate_zip(body)
 		.catch(function(err) { return err && err.message == 'not_found'; }, function(err) {
 			throw data_error('We couldn\'t find that zip code');
 		});
-};
+}
+
+function validate_gender(body)
+{
+	return Promise.resolve([language.get_gender(body)])
+		.tap(function(gender) {
+			if(!gender) throw data_error('Please enter your gender as male or female');
+		});
+}
+
+function validate_ssn(body)
+{
+	var ssn = body.match(/[0-9]{3}-?[0-9]{2}-?[0-9]{4}/);
+	if(ssn[0]) return Promise.resolve([ssn]);
+	return data_error('Please enter your SSN', {promise: true});
+}
 
 var parse_step = function(step, body)
 {
@@ -293,7 +483,7 @@ exports.next = function(user_id, conversation, message)
 							state.step = found.name;
 
 							// create/send the message from the next step in the convo chain
-							return message_model.create(config.bot.user_id, conversation.id, {body: nextstep.msg});
+							return message_model.create(config.bot.user_id, conversation.id, {body: template(nextstep.msg, user)});
 						})
 						.then(function() {
 							// save our current state into the conversation so's
@@ -310,7 +500,15 @@ exports.next = function(user_id, conversation, message)
 					if(err.data_error)
 					{
 						log.notice('bot: next: data error: ', err);
-						var message = err.message+'. Please try again!';
+						if(err.end_conversation)
+						{
+							// TODO: actually end the conversation here
+							var message = err.message+'.';
+						}
+						else
+						{
+							var message = err.message+'. Please try again!';
+						}
 					}
 					else
 					{
