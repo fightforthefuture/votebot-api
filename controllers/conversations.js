@@ -85,7 +85,6 @@ var wipe = function(req, res)
 	{
 		return resutil.error(res, 'Access denied', new Error('Access denied'), {status: 401});
 	}
-	console.log('user: ', username);
 	user_model.wipe(username)
 		.then(function(messages) {
 			resutil.send(res, true);
