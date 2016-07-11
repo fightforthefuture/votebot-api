@@ -70,12 +70,12 @@ var chains = {
 		per_state: {
 			pre_process: function(action, conversation, user) {
 				var state = util.object.get(user, 'settings.state').trim().toLowerCase();
-				var state_questions = vote_per_state[state];
+				var state_questions = vote_per_state[state] || vote_per_state_default;
 
 				// who likes to party?
 				var next_default = {next: 'party'};
 
-				// no per-state questions? skip!!l
+				// no per-state questions? skip!!
 				if(!state_questions) return next_default;
 
 				// loop over the per-state questions, skipping any we have
@@ -181,45 +181,16 @@ var chains = {
 // these are in order of how the questions will be asked, and each item is a
 // key in the `chains.vote_1` flow object that loads that question.
 var vote_per_state = {
-	al: ['us_citizen', '18', 'state_id'],
-	ak: ['us_citizen', '18', 'ssn_last4', 'state_id'],
-	// TODO: AZ (https://servicearizona.com/unavailable/saz.html currently is broken) THANKS, OBAMA
-	//az: [],
-	ca: ['us_citizen', 'state_resident', '18', 'ssn_last4', 'state_id'],
-	co: ['state_id'],
-	ct: ['us_citizen', 'state_resident', '18', 'state_id', 'disenfranchised'],
-	de: ['us_citizen', 'state_resident', 'state_id', 'disenfranchised'],
-	ga: ['us_citizen', 'state_resident', '18', 'disenfranchised', 'incompetent', 'state_id'],
-	hi: ['state_id', 'ssn', 'gender'],
-	// TODO IA (stuck behind a login-wall)
-	//ia: [],
-	il: ['us_citizen', '18', 'state_id', 'state_id_issue_date'],
-	in: ['us_citizen', '18', 'state_resident', 'disenfranchised', 'state_id'],
-	ks: ['us_citizen', '18', 'state_resident', 'disenfranchised', 'state_id'],
-	ky: ['us_citizen', 'state_resident', '18', 'disenfranchised', 'incompetent', 'ssn'],
-	la: ['us_citizen', '18', 'disenfranchised', 'incompetent', 'state_id'],
-	ma: ['us_citizen', 'state_resident', '18', 'state_id'],
-	md: ['us_citizen', 'ssn_last4', 'state_id'],
-	mn: ['us_citizen', '18', 'disenfranchised', 'state_id_or_ssn_last4'],
-	// TODO: MO got rid of OVR apparently
-	//mo: [],
-	ne: ['us_citizen', '18', 'state_id'],
-	nm: ['us_citizen', 'state_resident', '18', 'disenfranchised', 'state_id', 'ssn'],
-	nv: ['us_citizen', 'state_resident', '18', 'state_id', 'ssn_last4'],
-	// TODO: NY (stuck behind login-wall)
-	//ny: [],
-	or: ['us_citizen', '18', 'state_id_or_ssn_last4'],
-	// NOTE: requires county field (select box)
-	pa: ['us_citizen', '18', 'county', 'state_id_or_ssn_last4', 'disenfranchised'],
-	sc: ['state_id', 'ssn', 'gender'],
-	// TODO: rest of reg is behind id-wall
-	//ut: ['state_id'],
-	// NOTE: requires county field (select box)
-	va: ['ssn_last4', 'county'],
-	wa: ['us_citizen', '18', 'state_id', 'state_id_issue_date'],
-	wv: ['us_citizen', 'state_resident', '18', 'disenfranchised', 'incompetent', 'state_id', 'ssn_last4'],
-	vt: ['us_citizen', 'state_resident', '18', 'state_id']
+	az: ['us_citizen', 'legal_resident', 'will_be_18', 'incompetent', 'ssn_last4'],
+	ca: ['us_citizen', 'legal_resident', 'will_be_18', 'ssn_last4', 'state_id', 'consent_use_signature'],
+	co: ['us_citizen', 'state_id'],
+	ga: ['us_citizen', 'legal_resident', 'will_be_18', 'disenfranchised', 'incompetent', 'state_id'],
+	il: ['us_citizen', 'will_be_18', 'state_id', 'state_id_issue_date'],
+	ma: ['us_citizen', 'legal_resident', 'will_be_18', 'state_id', 'consent_use_signature'],
+	nm: ['us_citizen', 'legal_resident', 'will_be_18', 'disenfranchised', 'state_id', 'ssn'],
 };
+// defaults for national voter registration form via vote.org
+var vote_per_state_default = ['us_citizen', 'will_be_18', 'state_id'];
 
 // a helper for very simple ask-and-store type questions. can perform data
 // validation as well.
