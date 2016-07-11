@@ -24,15 +24,15 @@ var chains = {
 		_start: 'intro_direct',
 		intro_direct: {
 			msg: 'Hi! Let\'s get you registered to vote. What\'s your first name?',
-			process: simple_store('user.firstname', 'last_name', 'Please enter your first name')
+			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
 		},
 		intro_refer: {
 			msg: 'Hi! One of your friends has asked me to help you get registered to vote. What\'s your first name?',
-			process: simple_store('user.firstname', 'last_name', 'Please enter your first name')
+			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
 		},
 		last_name: {
 			msg: 'What\'s your last name?',
-			process: simple_store('user.lastname', 'zip', 'Please enter your last name')
+			process: simple_store('user.last_name', 'zip', 'Please enter your last name')
 		},
 		zip: {
 			msg: 'What\'s your zip code?',
@@ -40,7 +40,7 @@ var chains = {
 		},
 		address: {
 			msg: 'What\'s your street address? (including apartment #, if any)',
-			process: simple_store('user.settings.address', 'city', 'Please enter your address')
+			process: simple_store('user.settings.address', 'city', 'Please enter your street address')
 		},
 		city: {
 			pre_process: function(action, conversation, user) {
@@ -53,12 +53,16 @@ var chains = {
 			pre_process: function(action, conversation, user) {
 				if(util.object.get(user, 'settings.state')) return {next: 'dob'};
 			},
-			msg: 'What state do you live in? (eg MN)',
+			msg: 'What state do you live in? (eg CA)',
 			process: simple_store('user.settings.state', 'dob', 'Please enter your state')
 		},
-		dob: {
+		date_of_birth: {
 			msg: 'When were you born? (MM/DD/YYYY)',
-			process: simple_store('user.settings.dob', 'per_state', 'Please enter your birthday', {validate: validate_date})
+			process: simple_store('user.settings.date_of_birth', 'email', 'Please enter your date of birth', {validate: validate_date})
+		},
+		email: {
+			msg: 'What\'s your email address?',
+			process: simple_store('user.settings.email', 'per_state', 'Please enter your email address', {validate: validate_email})
 		},
 		// this is a MAGICAL step. it never actually runs, but instead just
 		// points to other steps until it runs out of per-state questions to
@@ -94,8 +98,8 @@ var chains = {
 			}
 		},
 		party: {
-			msg: 'What\'s your party preference? (democrat/republican/etc)',
-			process: simple_store('user.settings.party_preference', 'mail', 'Please let us know your party preference')
+			msg: 'What\'s your party preference? (democrat/republican/libertarian/green/other/none)',
+			process: simple_store('user.settings.political_party', 'mail', 'Please let us know your party preference')
 		},
 		mail: {
 			msg: 'Would you like to vote by mail-in ballot?',
@@ -117,13 +121,18 @@ var chains = {
 			msg: 'Are you a US citizen?',
 			process: simple_store('user.settings.us_citizen', 'per_state', '', {validate: validate_boolean_yes})
 		},
-		state_resident: {
-			msg: 'Are you a current resident of {{settings.state}}?',
-			process: simple_store('user.settings.state_resident', 'per_state', '', {validate: validate_boolean_yes})
+		legal_resident: {
+			msg: 'Are you a current legal resident of {{settings.state}}?',
+			process: simple_store('user.settings.legal_resident', 'per_state', '', {validate: validate_boolean_yes})
 		},
-		18: { 
-			msg: 'Are you 18 or older?',
-			process: simple_store('user.settings.18', 'per_state', '', {validate: validate_boolean_yes})
+		will_be_18: { 
+			msg: 'Are you 18 or older, or will you be by the date of the election?',
+			process: simple_store('user.settings.will_be_18', 'per_state', '', {validate: validate_boolean_yes})
+		},
+		ethnicity: {
+			msg: 'What is your ethnicity or race? (asian-pacific/black/hispanic/native-american/white/multi-racial/other)',
+			process: simple_store('user.settings.ethnicity', 'per_state')
+			// don't try to validate here, just votebot-api will transform to state specific format
 		},
 		disenfranchised: {
 			msg: 'Are you currently disenfranchised from voting (for instance due to a felony conviction)?',
@@ -150,7 +159,7 @@ var chains = {
 			process: simple_store('user.settings.ssn_last4', 'per_state', 'Please enter the last 4 digits of your SSN')
 		},
 		state_id_or_ssn_last4: {
-			msg: 'What\'s your {{settings.state}} driver\'s license (or state ID) number? If you don\'t one, enter the last 4 digits of your SSN.',
+			msg: 'What\'s your {{settings.state}} driver\'s license (or state ID) number? If you don\'t have one, enter the last 4 digits of your SSN.',
 			process: simple_store('user.settings.state_id_or_ssn_last4', 'per_state', 'Please enter your state ID number or last 4 of your SSN')
 		},
 		gender: {
@@ -160,6 +169,10 @@ var chains = {
 		county: {
 			msg: 'What county do you reside in?',
 			process: simple_store('user.settings.county', 'per_state', 'Please enter the name of the county you reside in')
+		},
+		consent_use_signature: {
+			msg: 'May we use your signature on file with the DMV to complete the form with your state?',
+			process: simple_store('user.settings.consent_use_signature', 'per_state', 'Please reply Yes to let us request your signature from the DMV. We do not store this information.')
 		}
 	}
 };
@@ -268,6 +281,13 @@ function validate_date(body)
 	].join('/');
 	return Promise.resolve([body]);
 };
+
+function validate_email(body)
+{
+	var email = body.match(/@/);
+	if(email[0]) return Promise.resolve([email]);
+	return data_error('Please enter your email address', {promise: true});
+}
 
 function validate_boolean(body)
 {

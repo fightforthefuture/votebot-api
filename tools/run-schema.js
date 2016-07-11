@@ -6,7 +6,7 @@ var user_model = require('../models/user');
 var bot_number = user_model.parsenum(config.twilio.from_number);
 var schema = [
 	// start with tables
-	'create table if not exists users (id serial primary key, username varchar(64) not null, firstname varchar(255), lastname varchar(255), settings json, active boolean default true, created timestamp);',
+	'create table if not exists users (id serial primary key, username varchar(64) not null, first_name varchar(255), last_name varchar(255), settings json, active boolean default true, created timestamp);',
 	'create table if not exists conversations (id serial primary key, user_id bigint not null, type varchar(64), state json, active boolean default true, created timestamp);',
 	'create table if not exists conversations_recipients (id serial primary key, conversation_id bigint not null, user_id bigint not null, created timestamp);',
 	'create table if not exists messages (id serial primary key, user_id bigint not null, conversation_id bigint not null, body varchar(255), created timestamp);',
@@ -18,7 +18,7 @@ var schema = [
 	'create index if not exists conversations_recipients_convuser on conversations_recipients (conversation_id, user_id);',
 
 	// create our first user (VoterBot) and set our auto-inc user id
-	'insert into users (id, username, firstname, lastname, created) values ('+config.bot.user_id+', \''+bot_number+'\', \'VoteBot\', \'\', now()) on conflict (id) do update set username = \''+bot_number+'\'',
+	'insert into users (id, username, first_name, last_name, created) values ('+config.bot.user_id+', \''+bot_number+'\', \'VoteBot\', \'\', now()) on conflict (id) do update set username = \''+bot_number+'\'',
 	'select setval(\'users_id_seq\', max(id)) from users'
 ];
 
