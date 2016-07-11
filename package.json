@@ -1,7 +1,7 @@
 {
-  "name": "votereg",
+  "name": "votebot",
   "version": "0.0.1",
-  "description": "Votereg's API",
+  "description": "VoteBot's Messaging API",
   "scripts": {
     "prestart": "bash scripts/prestart.sh"
   },

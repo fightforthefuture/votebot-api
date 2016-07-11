@@ -4,7 +4,7 @@ var config = {
 
 	// the app website for votebot
 	app: {
-		url: 'http://voteymcbotface.com'
+		url: 'http://voteymcbotface.com',
 		admin_password: process.env.ADMIN_PASSWORD
 	},
 

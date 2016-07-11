@@ -468,7 +468,7 @@ exports.next = function(user_id, conversation, message)
 							var found = find_next_step(action, conversation, user);
 							var nextstep = found.step;
 
-							// destructively modify our convresation state object,
+							// destructively modify our conversation state object,
 							// replacing the "step" value with our new step's name.
 							// this will get saved once our message goes out
 							state.step = found.name;
