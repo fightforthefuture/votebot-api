@@ -6,7 +6,7 @@ var user_model = require('../models/user');
 var bot_number = user_model.parsenum(config.twilio.from_number);
 var schema = [
 	// start with tables
-	'create table if not exists users (id serial primary key, username varchar(64) not null, first_name varchar(255), last_name varchar(255), settings json, active boolean default true, created timestamp);',
+	'create table if not exists users (id serial primary key, username varchar(64) not null, first_name varchar(255), last_name varchar(255), settings json, active boolean default true, submit boolean default false, created timestamp);',
 	'create table if not exists conversations (id serial primary key, user_id bigint not null, type varchar(64), state json, active boolean default true, created timestamp);',
 	'create table if not exists conversations_recipients (id serial primary key, conversation_id bigint not null, user_id bigint not null, created timestamp);',
 	'create table if not exists messages (id serial primary key, user_id bigint not null, conversation_id bigint not null, body varchar(255), created timestamp);',

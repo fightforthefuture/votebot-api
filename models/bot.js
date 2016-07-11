@@ -31,7 +31,7 @@ var chains = {
 			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
 		},
 		last_name: {
-			msg: 'What\'s your last name?',
+			msg: 'Hi {{first_name}}, what\'s your last name?',
 			process: simple_store('user.last_name', 'zip', 'Please enter your last name')
 		},
 		zip: {
@@ -51,10 +51,10 @@ var chains = {
 		},
 		state: {
 			pre_process: function(action, conversation, user) {
-				if(util.object.get(user, 'settings.state')) return {next: 'dob'};
+				if(util.object.get(user, 'settings.state')) return {next: 'date_of_birth'};
 			},
 			msg: 'What state do you live in? (eg CA)',
-			process: simple_store('user.settings.state', 'dob', 'Please enter your state')
+			process: simple_store('user.settings.state', 'date_of_birth', 'Please enter your state')
 		},
 		date_of_birth: {
 			msg: 'When were you born? (MM/DD/YYYY)',
@@ -71,9 +71,7 @@ var chains = {
 			pre_process: function(action, conversation, user) {
 				var state = util.object.get(user, 'settings.state').trim().toLowerCase();
 				var state_questions = vote_per_state[state] || vote_per_state_default;
-
-				// who likes to party?
-				var next_default = {next: 'party'};
+				var next_default = {next: 'submit'};
 
 				// no per-state questions? skip!!
 				if(!state_questions) return next_default;
@@ -93,20 +91,47 @@ var chains = {
 				}
 				if(next) return {next: next};
 
-				// nothing left, let's party
+				// nothing left, submit to state
 				return next_default;
 			}
 		},
-		party: {
-			msg: 'What\'s your party preference? (democrat/republican/libertarian/green/other/none)',
-			process: simple_store('user.settings.political_party', 'mail', 'Please let us know your party preference')
+		submit: {
+			pre_process: function(action, conversation, user) {
+				console.log('submit pre_process', user.settings);
+				// if user has all required fields, send to votebot-forms
+				if(  util.object.get(user, 'first_name')
+					&& util.object.get(user, 'last_name')
+					&& util.object.get(user, 'settings.address')
+					&& util.object.get(user, 'settings.city')
+					&& util.object.get(user, 'settings.state')
+					&& util.object.get(user, 'settings.date_of_birth')
+					&& ( util.object.get(user, 'settings.state_id')
+						|| util.object.get(user, 'settings.ssn_last4')
+						|| util.object.get(user, 'settings.state_id_or_ssn_last4')
+					)
+					&& util.object.get(user, 'settings.us_citizen')
+				) {
+					// TODO, create Promise for API post
+					log.info('bot: registration infcomplete! submitting...');
+					// store response from promise in user.submit
+					
+					return {next: 'share'};
+				} else {
+					// re-query missing fields
+					//return {next: 'incomplete'};
+
+					// temp
+					return {next: 'share'};
+				}
+			},
+			process: simple_store('user.submit', 'share', 'We\'ll begin processing your registration! Check your email for further instructions.'),
 		},
-		mail: {
-			msg: 'Would you like to vote by mail-in ballot?',
-			process: simple_store('user.settings.mail_in', 'done', '', {validate: validate_boolean})
+		incomplete: {
+			msg: 'Sorry, your registration is incomplete',
+			// TODO, re-query missing fields
 		},
-		done: {
-			msg: 'Thanks! We\'ll begin processing your registration! Share this bot to get your friends registered too: https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(config.app.url),
+		share: {
+			msg: 'Share this bot to get your friends registered too: https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(config.app.url),
 			final: true
 		},
 
@@ -126,13 +151,26 @@ var chains = {
 			process: simple_store('user.settings.legal_resident', 'per_state', '', {validate: validate_boolean_yes})
 		},
 		will_be_18: { 
+			pre_process: function(action, conversation, user) {
+				// if user has already told us their birthdate, calculate will_be_18 automatically
+				if( util.object.get(user, 'settings.date_of_birth') ) {
+					var date_of_birth = new Date(util.object.get(user, 'settings.date_of_birth'));
+					var next_election = new Date(config.election.date);
+					var cutoff_date = next_election.setFullYear(next_election.getFullYear() - 18);
+					user.settings.will_be_18 = (cutoff_date >= date_of_birth);
+					return {next: 'per_state'};
+				}
+			},
 			msg: 'Are you 18 or older, or will you be by the date of the election?',
 			process: simple_store('user.settings.will_be_18', 'per_state', '', {validate: validate_boolean_yes})
 		},
 		ethnicity: {
 			msg: 'What is your ethnicity or race? (asian-pacific/black/hispanic/native-american/white/multi-racial/other)',
-			process: simple_store('user.settings.ethnicity', 'per_state')
-			// don't try to validate here, just votebot-api will transform to state specific format
+			process: simple_store('user.settings.ethnicity', 'per_state', 'Please let us know your ethnicity or race.')
+		},
+		party: {
+			msg: 'What\'s your party preference? (democrat/republican/libertarian/green/other/none)',
+			process: simple_store('user.settings.political_party', 'per_state', 'Please let us know your party preference')
 		},
 		disenfranchised: {
 			msg: 'Are you currently disenfranchised from voting (for instance due to a felony conviction)?',
@@ -172,8 +210,14 @@ var chains = {
 		},
 		consent_use_signature: {
 			msg: 'May we use your signature on file with the DMV to complete the form with your state?',
-			process: simple_store('user.settings.consent_use_signature', 'per_state', 'Please reply Yes to let us request your signature from the DMV. We do not store this information.')
-		}
+			process: simple_store('user.settings.consent_use_signature', 'per_state',
+			                      'Please reply Yes to let us request your signature from the DMV. We do not store this information.',
+			                      {validate: validate_boolean_yes})
+		},
+		mail: {
+			msg: 'Would you like to vote by mail-in ballot?',
+			process: simple_store('user.settings.mail_in', 'per_state', '', {validate: validate_boolean})
+		},
 	}
 };
 
@@ -255,8 +299,8 @@ function validate_date(body)
 
 function validate_email(body)
 {
-	var email = body.match(/@/);
-	if(email[0]) return Promise.resolve([email]);
+	var valid_email = body.indexOf('@') > 0; // really really simple email validation
+	if(valid_email) return Promise.resolve([body.trim()]);
 	return data_error('Please enter your email address', {promise: true});
 }
 
@@ -402,11 +446,11 @@ exports.next = function(user_id, conversation, message)
 			var step = util.object.get(chains, key);
 			if(!step) throw error('conversation chain missing: '+key);
 
-			// we've reached the final step, do nothing
-			// TODO: maybe have some kind of prompt or CTA here?
+			// we've reached the final step
 			if(step.final)
 			{
 				log.info('bot: recv msg, but conversation finished');
+				// TODO: let user reset or start again?
 				return;
 			}
 
