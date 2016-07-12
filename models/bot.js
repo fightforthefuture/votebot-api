@@ -30,6 +30,10 @@ var chains = {
 			msg: 'Hi! One of your friends has asked me to help you get registered to vote. What\'s your first name?',
 			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
 		},
+		intro_web: {
+			msg: 'Hi, welcome to Fight for the Future! Let\'s get you registered to vote. What\'s your first name?',
+			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
+		},
 		last_name: {
 			msg: 'Hi {{first_name}}, what\'s your last name?',
 			process: simple_store('user.last_name', 'zip', 'Please enter your last name')

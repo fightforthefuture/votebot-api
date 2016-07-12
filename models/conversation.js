@@ -19,9 +19,9 @@ exports.create = function(user_id, data)
 		return Promise.reject(error('Please specify at least one recipient', {code: 400}));
 	}
 
-	if(!message.body)
+	if(!data.type)
 	{
-		return Promise.reject(error('Please enter a message to send', {code: 400}));
+		return Promise.reject(error('Please specify a conversation type (web|p2p)', {code: 400}));
 	}
 
 	var usernames = recipients.map(function(r) { return r.username; });
@@ -31,7 +31,7 @@ exports.create = function(user_id, data)
 			users = _users;
 			var conversation = {
 				user_id: user_id,
-				type: data.type || 'p2p',
+				type: data.type,
 				state: data.state || null,
 				created: db.now()
 			};
@@ -41,19 +41,27 @@ exports.create = function(user_id, data)
 			var user_ids = users.map(function(u) { return u.id; });
 			return exports.set_recipients(conversation.id, user_ids)
 				.then(function() {
-					return message_model.create(user_id, conversation.id, {body: message.body})
+					if (message.body) {
+						return message_model.create(user_id, conversation.id, {body: message.body})
+					}
 				})
 				.then(function(message) {
 					conversation.messages = [message];
 					return conversation;
 				})
 				.tap(function(conversation) {
-					// if we're starting a p2p conversation, init a bot chat to
-					// each recipient as well
-					if(conversation.type != 'p2p') return;
-					return Promise.all(users.map(function(user) {
-						return bot_model.start('vote_1', user.id, {start: 'intro_refer'});
-					}));
+					if (conversation.type === 'web') {
+						// start bot with intro_direct
+						return bot_model.start('vote_1', users[0].id, {start: 'intro_web'});
+					}
+
+					if(conversation.type === 'p2p') {
+						// if we're starting a p2p conversation, init a bot chat to
+						// each recipient as well
+						return Promise.all(users.map(function(user) {
+							return bot_model.start('vote_1', user.id, {start: 'intro_refer'});
+						}));
+					} 
 				});
 		});
 };
