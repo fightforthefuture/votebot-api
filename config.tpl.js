@@ -13,6 +13,11 @@ var config = {
 	// true when developing, false in prod
 	error_responses: true,
 
+	// parameters for next election
+	election: {
+		date: '11/08/2016',
+	},
+
 	database: {
 		server: 'localhost',
 		port: 5432,

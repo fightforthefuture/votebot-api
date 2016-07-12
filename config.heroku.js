@@ -14,6 +14,11 @@ var config = {
 	// true when developing, false in prod
 	error_responses: true,
 
+	// parameters for next election
+	election: {
+		date: process.env.NEXT_ELECTION_DATE || '11/08/2016',
+	},
+
 	database: {
 		ssl: true,
 		connstr: process.env.DATABASE_URL,
