@@ -74,7 +74,7 @@ var chains = {
 		per_state: {
 			pre_process: function(action, conversation, user) {
 				var state = util.object.get(user, 'settings.state').trim().toLowerCase();
-				var state_questions = vote_per_state[state] || vote_per_state_default;
+				var state_questions = state_required_questions[state] || state_required_questions_default;
 				var next_default = {next: 'submit'};
 
 				// no per-state questions? skip!!
@@ -198,7 +198,7 @@ var chains = {
 		},
 		ssn_last4: {
 			msg: 'What are the last 4 digits of your SSN?',
-			process: simple_store('user.settings.ssn_last4', 'per_state', 'Please enter the last 4 digits of your SSN')
+			process: simple_store('user.settings.ssn_last4', 'per_state', 'Please enter the last 4 digits of your SSN', {validate: validate_ssn_last_4})
 		},
 		state_id_or_ssn_last4: {
 			msg: 'What\'s your {{settings.state}} driver\'s license (or state ID) number? If you don\'t have one, enter the last 4 digits of your SSN.',
@@ -218,7 +218,7 @@ var chains = {
 			                      'Please reply Yes to let us request your signature from the DMV. We do not store this information.',
 			                      {validate: validate_boolean_yes})
 		},
-		mail: {
+		mail_in: {
 			msg: 'Would you like to vote by mail-in ballot?',
 			process: simple_store('user.settings.mail_in', 'per_state', '', {validate: validate_boolean})
 		},
@@ -228,7 +228,7 @@ var chains = {
 // state-specific questions we need to ask after the main flow is completed.
 // these are in order of how the questions will be asked, and each item is a
 // key in the `chains.vote_1` flow object that loads that question.
-var vote_per_state = {
+var state_required_questions = {
 	az: ['us_citizen', 'legal_resident', 'will_be_18', 'incompetent', 'ssn_last4'],
 	ca: ['us_citizen', 'legal_resident', 'will_be_18', 'ssn_last4', 'state_id', 'consent_use_signature'],
 	co: ['us_citizen', 'state_id'],
@@ -238,7 +238,7 @@ var vote_per_state = {
 	nm: ['us_citizen', 'legal_resident', 'will_be_18', 'disenfranchised', 'state_id', 'ssn'],
 };
 // defaults for national voter registration form via vote.org
-var vote_per_state_default = ['us_citizen', 'will_be_18', 'state_id'];
+var state_required_questions_default = ['us_citizen', 'will_be_18', 'state_id'];
 
 // a helper for very simple ask-and-store type questions. can perform data
 // validation as well.
@@ -372,8 +372,15 @@ function validate_gender(body)
 function validate_ssn(body)
 {
 	var ssn = body.match(/[0-9]{3}-?[0-9]{2}-?[0-9]{4}/);
-	if(ssn[0]) return Promise.resolve([ssn]);
+	if(ssn && ssn[0]) return Promise.resolve([ssn]);
 	return data_error('Please enter your SSN', {promise: true});
+}
+
+function validate_ssn_last_4(body)
+{
+	var ssn = body.match(/[0-9]{4}/);
+	if(ssn && ssn[0]) return Promise.resolve([ssn]);
+	return data_error('Please enter the last 4 digits of your SSN', {promise: true});
 }
 
 var parse_step = function(step, body)
@@ -539,14 +546,16 @@ exports.next = function(user_id, conversation, message)
 					if(err.data_error)
 					{
 						log.notice('bot: next: data error: ', err);
+						if (err.message)
+						{
+							var message = err.message;
+						} else {
+							var message = 'Please try again!';
+						}
+
 						if(err.end_conversation)
 						{
 							// TODO: actually end the conversation here
-							var message = err.message+'.';
-						}
-						else
-						{
-							var message = err.message+'. Please try again!';
 						}
 					}
 					else
