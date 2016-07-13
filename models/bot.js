@@ -9,6 +9,7 @@ var error = require('../lib/error');
 var util = require('../lib/util');
 var language = require('../lib/language');
 var log = require('../lib/logger');
+var usdl = require('../lib/usdl');
 
 // holds conversation chains. essentially, each "step" in the chain defines a
 // part of the conversation (generally a question) and how to process the answer.
@@ -185,8 +186,15 @@ var chains = {
 			process: simple_store('user.settings.incompetent', 'per_state', '', {validate: validate_boolean_no})
 		},
 		state_id: {
+			// pre_process: function(action, conversation, user) {
+			// 	// get state-specific drivers license validation rules
+			// 	var state = util.object.get(user, 'settings.state');
+			// 	// QUESTION, how to pass validate_extra to simple_store?
+			// 	return {next: 'per_state', validate_extra: state};
+			// },
 			msg: 'What\'s your {{settings.state}} driver\'s license (or state ID) number?',
-			process: simple_store('user.settings.state_id', 'per_state', 'Please enter your state ID number')
+			process: simple_store('user.settings.state_id', 'per_state', 'Please enter your state ID number',
+			                      {validate: validate_state_id})
 		},
 		state_id_issue_date: {
 			msg: 'What date was your state id/driver\'s license issued? (mm/dd/yyyy)',
@@ -240,8 +248,8 @@ var state_required_questions = {
 // defaults for national voter registration form via vote.org
 var state_required_questions_default = ['us_citizen', 'will_be_18', 'state_id'];
 
-// a helper for very simple ask-and-store type questions. can perform data
-// validation as well.
+// a helper for very simple ask-and-store type questions.
+// can perform data validation as well.
 function simple_store(store, next, errormsg, options)
 {
 	options || (options = {});
@@ -255,7 +263,7 @@ function simple_store(store, next, errormsg, options)
 		var promise = Promise.resolve({next: next, store: obj});
 		if(options.validate)
 		{
-			promise = options.validate(body)
+			promise = options.validate(body, options.validate_extra)
 				.spread(function(body, extra_store) {
 					extra_store || (extra_store = {});
 					extra_store[store] = body;
@@ -381,6 +389,19 @@ function validate_ssn_last_4(body)
 	var ssn = body.match(/[0-9]{4}/);
 	if(ssn && ssn[0]) return Promise.resolve([ssn]);
 	return data_error('Please enter the last 4 digits of your SSN', {promise: true});
+}
+
+function validate_state_id(body, state)
+{
+	if (state) {
+		var validation = usdl.validation(state);
+		var state_id = body.match(validation.rule);
+	} else {
+		// most permissive
+		var state_id = body.match(/[\d\w]{1,13}/);
+	}
+	if(state_id[0]) return Promise.resolve([state_id]);
+	return data_error('Please enter a valid {{state}} ID', {promise: true});
 }
 
 var parse_step = function(step, body)
