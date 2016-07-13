@@ -31,7 +31,7 @@ var chains = {
 			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
 		},
 		intro_web: {
-			msg: 'Hi, welcome to Fight for the Future! Let\'s get you registered to vote. What\'s your first name?',
+			msg: 'Hi, welcome to Text2Vote! Let\'s get you registered. What\'s your first name?',
 			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
 		},
 		last_name: {
