@@ -24,15 +24,15 @@ var chains = {
 	vote_1: {
 		_start: 'intro_direct',
 		intro_direct: {
-			msg: 'Hi! Let\'s get you registered to vote. What\'s your first name?',
+			msg: 'Welcome to HelloVote! Let\'s get you registered. What\'s your first name?',
 			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
 		},
 		intro_refer: {
-			msg: 'Hi! One of your friends has asked me to help you get registered to vote. What\'s your first name?',
+			msg: 'Welcome to HelloVote! One of your friends has asked me to help you get registered. What\'s your first name?',
 			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
 		},
 		intro_web: {
-			msg: 'Hi, welcome to Text2Vote! Let\'s get you registered. What\'s your first name?',
+			msg: 'Welcome to HelloVote! Let\'s get you registered. What\'s your first name?',
 			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
 		},
 		last_name: {
@@ -63,11 +63,11 @@ var chains = {
 		},
 		date_of_birth: {
 			msg: 'When were you born? (MM/DD/YYYY)',
-			process: simple_store('user.settings.date_of_birth', 'email', 'Please enter your date of birth', {validate: validate_date})
+			process: simple_store('user.settings.date_of_birth', 'email', 'Please enter your date of birth as month/day/year', {validate: validate_date})
 		},
 		email: {
 			msg: 'What\'s your email address?',
-			process: simple_store('user.settings.email', 'per_state', 'Please enter your email address', {validate: validate_email})
+			process: simple_store('user.settings.email', 'per_state', 'Please enter your email address. If you don\'t have one, reply SKIP', {validate: validate_email})
 		},
 		// this is a MAGICAL step. it never actually runs, but instead just
 		// points to other steps until it runs out of per-state questions to
@@ -129,14 +129,14 @@ var chains = {
 					return {next: 'share'};
 				}
 			},
-			process: simple_store('user.submit', 'share', 'We\'ll begin processing your registration! Check your email for further instructions.'),
+			process: simple_store('user.submit', 'share', 'We are processing your registration! Check your email for further instructions.'),
 		},
 		incomplete: {
 			msg: 'Sorry, your registration is incomplete',
 			// TODO, re-query missing fields
 		},
 		share: {
-			msg: 'Share this bot to get your friends registered too: https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(config.app.url),
+			msg: 'Thanks for registering with HelloVote! Share this bot to get your friends registered too: https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(config.app.url),
 			final: true
 		},
 
@@ -148,11 +148,11 @@ var chains = {
 		// value in `user.settings.us_citizen` or the bot will infinite loop
 		// !!!!!!!!
 		us_citizen: {
-			msg: 'Are you a US citizen?',
+			msg: 'Are you a US citizen? (yes/no)',
 			process: simple_store('user.settings.us_citizen', 'per_state', '', {validate: validate_boolean_yes})
 		},
 		legal_resident: {
-			msg: 'Are you a current legal resident of {{settings.state}}?',
+			msg: 'Are you a current legal resident of {{settings.state}}? (yes/no)',
 			process: simple_store('user.settings.legal_resident', 'per_state', '', {validate: validate_boolean_yes})
 		},
 		will_be_18: { 
@@ -166,7 +166,7 @@ var chains = {
 					return {next: 'per_state'};
 				}
 			},
-			msg: 'Are you 18 or older, or will you be by the date of the election?',
+			msg: 'Are you 18 or older, or will you be by the date of the election? (yes/no)',
 			process: simple_store('user.settings.will_be_18', 'per_state', '', {validate: validate_boolean_yes})
 		},
 		ethnicity: {
@@ -178,20 +178,14 @@ var chains = {
 			process: simple_store('user.settings.political_party', 'per_state', 'Please let us know your party preference')
 		},
 		disenfranchised: {
-			msg: 'Are you currently disenfranchised from voting (for instance due to a felony conviction)?',
+			msg: 'Are you currently disenfranchised from voting (for instance due to a felony conviction)? (yes/no)',
 			process: simple_store('user.settings.disenfranchised', 'per_state', '', {validate: validate_boolean_no})
 		},
 		incompetent: {
-			msg: 'Have you been found legally incompetent in your state?',
+			msg: 'Have you been found legally incompetent in your state? (yes/no)',
 			process: simple_store('user.settings.incompetent', 'per_state', '', {validate: validate_boolean_no})
 		},
 		state_id: {
-			// pre_process: function(action, conversation, user) {
-			// 	// get state-specific drivers license validation rules
-			// 	var state = util.object.get(user, 'settings.state');
-			// 	// QUESTION, how to pass validate_extra to simple_store?
-			// 	return {next: 'per_state', validate_extra: state};
-			// },
 			msg: 'What\'s your {{settings.state}} driver\'s license (or state ID) number?',
 			process: simple_store('user.settings.state_id', 'per_state', 'Please enter your state ID number',
 			                      {validate: validate_state_id})
@@ -391,8 +385,9 @@ function validate_ssn_last_4(body)
 	return data_error('Please enter the last 4 digits of your SSN', {promise: true});
 }
 
-function validate_state_id(body, state)
+function validate_state_id(body, user)
 {
+	var state = util.object.get(user, 'settings.state');
 	if (state) {
 		var validation = usdl.validation(state);
 		var state_id = body.match(validation.rule);
