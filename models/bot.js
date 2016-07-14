@@ -247,7 +247,8 @@ var state_required_questions_default = ['us_citizen', 'will_be_18', 'state_id'];
 function simple_store(store, next, errormsg, options)
 {
 	options || (options = {});
-	return function(body)
+
+	return function(body, user)
 	{
 		// if we get an empty body, error
 		if(!body.trim()) return data_error(errormsg, {promise: true});
@@ -257,7 +258,7 @@ function simple_store(store, next, errormsg, options)
 		var promise = Promise.resolve({next: next, store: obj});
 		if(options.validate)
 		{
-			promise = options.validate(body, options.validate_extra)
+			promise = options.validate(body, user)
 				.spread(function(body, extra_store) {
 					extra_store || (extra_store = {});
 					extra_store[store] = body;
@@ -399,11 +400,11 @@ function validate_state_id(body, user)
 	return data_error('Please enter a valid {{state}} ID', {promise: true});
 }
 
-var parse_step = function(step, body)
+var parse_step = function(step, body, user)
 {
 	// if the user is canceling, don't bother parsing anything
 	if(language.is_cancel(body)) return Promise.resolve({next: '_cancel'});
-	return step.process(body);
+	return step.process(body, user);
 };
 
 /**
@@ -482,7 +483,7 @@ exports.next = function(user_id, conversation, message)
 			}
 
 			var body = message.body;
-			return parse_step(step, body)
+			return parse_step(step, body, user)
 				.then(function(action) {
 					log.info('bot: action: ', JSON.stringify(action));
 
