@@ -53,8 +53,8 @@ var incoming = function(req, res)
 	log.info('incoming: ', JSON.stringify(data));
 	message_model.incoming_sms(data)
 		.then(function() {
-			// always ack nicely
-			resutil.send(res, true);
+			// don't send json body, Twilio expects TwiML or plain text for response
+			resutil.send(res);
 		})
 		.catch(function(err) {
 			log.error('messages: incoming: ', err);
