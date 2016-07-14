@@ -53,13 +53,12 @@ var incoming = function(req, res)
 	log.info('incoming: ', JSON.stringify(data));
 	message_model.incoming_sms(data)
 		.then(function() {
-			resutil.send(res, {thanks: true});
+			// always ack nicely
+			resutil.send(res, true);
 		})
 		.catch(function(err) {
-			// always ack nicely
-			resutil.send(res, {thanks: true});
 			log.error('messages: incoming: ', err);
-			//resutil.error(res, 'Problem receiving SMS', err);
+			resutil.error(res, 'Problem receiving SMS', err);
 		});
 };
 
