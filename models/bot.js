@@ -139,6 +139,9 @@ var chains = {
 			msg: 'Thanks for registering with HelloVote! Share this bot to get your friends registered too: https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(config.app.url),
 			final: true
 		},
+		restart: {
+			process: simple_store('user.restart', 'intro_direct', 'We are restarting your HelloVote registration!'),
+		},
 
 		// per-state questions
 		// !!!!!!!!
@@ -474,15 +477,23 @@ exports.next = function(user_id, conversation, message)
 			var step = util.object.get(chains, key);
 			if(!step) throw error('conversation chain missing: '+key);
 
+			var body = message.body;
+
 			// we've reached the final step
 			if(step.final)
 			{
 				log.info('bot: recv msg, but conversation finished');
-				// TODO: let user reset or start again?
-				return;
+				if (validate_boolean(body)) {
+					log.info('bot: user wants to restart');
+					key = [state.type, 'restart'].join('.');
+					step = util.object.get(chains, key);
+				} else {
+					log.info('bot: prompt to restart');
+					var restart_msg = 'You are registered with HelloVote. Would you like to start again? (yes/no)'
+					return message_model.create(config.bot.user_id, conversation.id, {body: template(restart_msg, user)});
+				}
 			}
-
-			var body = message.body;
+			
 			return parse_step(step, body, user)
 				.then(function(action) {
 					log.info('bot: action: ', JSON.stringify(action));
