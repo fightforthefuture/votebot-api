@@ -9,7 +9,8 @@ var error = require('../lib/error');
 var util = require('../lib/util');
 var language = require('../lib/language');
 var log = require('../lib/logger');
-var usdl = require('../lib/usdl');
+var us_licenses = require('../lib/us_licenses');
+var us_states = require('../lib/us_states');
 
 // holds conversation chains. essentially, each "step" in the chain defines a
 // part of the conversation (generally a question) and how to process the answer.
@@ -41,11 +42,7 @@ var chains = {
 		},
 		zip: {
 			msg: 'What\'s your zip code?',
-			process: simple_store('user.settings.zip', 'address', 'Please enter your zip code', {validate: validate_zip})
-		},
-		address: {
-			msg: 'What\'s your street address? (including apartment #, if any)',
-			process: simple_store('user.settings.address', 'city', 'Please enter your street address')
+			process: simple_store('user.settings.zip', 'city', 'Please enter your zip code, or SKIP if you don\'t know it.', {validate: validate_zip})
 		},
 		city: {
 			pre_process: function(action, conversation, user) {
@@ -59,7 +56,11 @@ var chains = {
 				if(util.object.get(user, 'settings.state')) return {next: 'date_of_birth'};
 			},
 			msg: 'What state do you live in? (eg CA)',
-			process: simple_store('user.settings.state', 'date_of_birth', 'Please enter your state')
+			process: simple_store('user.settings.state', 'address', 'Please enter your state', {validate: validate_state})
+		},
+		address: {
+			msg: 'What\'s your street address in {{settings.city}}, {{settings.state}}? (including apartment #, if any)',
+			process: simple_store('user.settings.address', 'date_of_birth', 'Please enter your street address')
 		},
 		date_of_birth: {
 			msg: 'When were you born? (MM/DD/YYYY)',
@@ -117,7 +118,7 @@ var chains = {
 					&& util.object.get(user, 'settings.us_citizen')
 				) {
 					// TODO, create Promise for API post
-					log.info('bot: registration infcomplete! submitting...');
+					log.info('bot: registration is complete! submitting...');
 					// store response from promise in user.submit
 					
 					return {next: 'share'};
@@ -129,18 +130,22 @@ var chains = {
 					return {next: 'share'};
 				}
 			},
-			process: simple_store('user.submit', 'share', 'We are processing your registration! Check your email for further instructions.'),
+			process: simple_store('user.submit', 'complete', {validate: validate_submit_response}),
+		},
+		complete: {
+			msg: 'We are processing your registration! Check your email for further instructions.',
+			process: simple_store('user.complete', 'share', {validate: validate_always_true}),
 		},
 		incomplete: {
 			msg: 'Sorry, your registration is incomplete',
 			// TODO, re-query missing fields
 		},
 		share: {
-			msg: 'Thanks for registering with HelloVote! Share this bot to get your friends registered too: https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(config.app.url),
+			msg: 'Thanks for registering with HelloVote! Share with your friends to get them registered too: http://hellovote.org/share?u=ASDF',
 			final: true
 		},
 		restart: {
-			process: simple_store('user.restart', 'intro_direct', 'We are restarting your HelloVote registration!'),
+			process: simple_store('user.settings', 'intro_direct', 'We are restarting your HelloVote registration!', {validate: validate_clear_settings}),
 		},
 
 		// per-state questions
@@ -167,6 +172,7 @@ var chains = {
 					var cutoff_date = next_election.setFullYear(next_election.getFullYear() - 18);
 					user.settings.will_be_18 = (cutoff_date >= date_of_birth);
 					return {next: 'per_state'};
+					// TODO, echo parsed date of birth back to user to confirm?
 				}
 			},
 			msg: 'Are you 18 or older, or will you be by the date of the election? (yes/no)',
@@ -218,9 +224,9 @@ var chains = {
 			process: simple_store('user.settings.county', 'per_state', 'Please enter the name of the county you reside in')
 		},
 		consent_use_signature: {
-			msg: 'May we use your signature on file with the DMV to complete the form with your state?',
+			msg: 'May we use your signature on file with the DMV to complete the form with your state? (yes/no)',
 			process: simple_store('user.settings.consent_use_signature', 'per_state',
-			                      'Please reply Yes to let us request your signature from the DMV. We do not store this information.',
+			                      'Please reply YES to let us request your signature from the DMV. We do not store this information.',
 			                      {validate: validate_boolean_yes})
 		},
 		mail_in: {
@@ -288,7 +294,7 @@ function data_error(msg, options)
 
 function template(str, data)
 {
-	return str.replace(/{{(.*?)}}/, function(all, key) {
+	return str.replace(/{{(.*?)}}/g, function(all, key) {
 		var val = util.object.get(data, key);
 		return val || '';
 	});
@@ -309,9 +315,13 @@ function validate_date(body)
 
 function validate_email(body)
 {
+	// TODO, don't let user skip if email is required
+	if (body.trim().toUpperCase() === 'SKIP') {
+		return Promise.resolve([null]);
+	}
 	var valid_email = body.indexOf('@') > 0; // really really simple email validation
 	if(valid_email) return Promise.resolve([body.trim()]);
-	return data_error('Please enter your email address', {promise: true});
+	return data_error('Please enter your email address, or SKIP if you don\'t have one', {promise: true});
 }
 
 function validate_boolean(body)
@@ -339,10 +349,30 @@ function validate_boolean_no(body)
 		})
 }
 
+function validate_state(body)
+{
+	var state = body.trim();
+	if (state.length === 2) {
+		if(!us_states.valid_abbreviation(state)) {
+			return Promise.reject(data_error('That\'s not a valid state abbreviation. Please enter only 2 letters.'));
+		}
+		return Promise.resolve([state]);
+	} else {
+		if(!us_states.valid_name(state)) {
+			return Promise.reject(data_error('That\'s not a valid state name.'));
+		}
+		return Promise.resolve([us_states.name_to_abbr(state)]);
+	}
+}
+
 function validate_zip(body)
 {
+	if (body.trim().toUpperCase() === 'SKIP') {
+		return Promise.resolve([null]);
+	}
+
 	var zip = body.replace(/-.*/, '');
-	if(!zip.match(/^[0-9]{5}$/)) return Promise.reject(data_error('That zip code isn\'t valid'));
+	if(!zip.match(/^[0-9]{5}$/)) return Promise.reject(data_error('That\'s not a valid zip code. Please enter only 5 numbers.'));
 	return zip_model.find(zip)
 		.then(function(zipdata) {
 			var zip = zipdata.code;
@@ -367,6 +397,14 @@ function validate_zip(body)
 		});
 }
 
+function validate_address(body, user)
+{
+	// TODO, hit SmartyStreets for address validation
+	// parse apt number
+
+	// if it's a multi-unit building, re-prompt if we didn't get one
+}
+
 function validate_gender(body)
 {
 	return Promise.resolve([language.get_gender(body)])
@@ -379,34 +417,58 @@ function validate_ssn(body)
 {
 	var ssn = body.match(/[0-9]{3}-?[0-9]{2}-?[0-9]{4}/);
 	if(ssn && ssn[0]) return Promise.resolve([ssn]);
-	return data_error('Please enter your SSN', {promise: true});
+	return data_error('Please enter your SSN like 123-45-6789', {promise: true});
 }
 
 function validate_ssn_last_4(body)
 {
 	var ssn = body.match(/[0-9]{4}/);
 	if(ssn && ssn[0]) return Promise.resolve([ssn]);
-	return data_error('Please enter the last 4 digits of your SSN', {promise: true});
+	return data_error('Please enter just the last 4 digits of your SSN', {promise: true});
 }
 
 function validate_state_id(body, user)
 {
+	if (body.trim().toUpperCase() === 'NONE') {
+		return Promise.resolve([null]);
+	}
+
 	var state = util.object.get(user, 'settings.state');
+	var id_number = body.trim();
 	if (state) {
-		var validation = usdl.validation(state);
-		var state_id = body.match(validation.rule);
+		var state_id = us_licenses.validate(state, id_number);
 	} else {
 		// most permissive
-		var state_id = body.match(/[\d\w]{1,13}/);
+		var state_id = id_number.match(/[\d\w]{1,13}/);
 	}
-	if(state_id[0]) return Promise.resolve([state_id]);
-	return data_error('Please enter a valid {{state}} ID', {promise: true});
+	if(state_id && state_id[0]) return Promise.resolve([state_id]);
+	return data_error(template('Please enter a valid {{settings.state}} ID, or NONE if you don\'t have one.', user), {promise: true});
+}
+
+function validate_clear_settings(body)
+{
+	// abuse the validation to let user reset
+	// and return an empty settings object
+	return Promise.resolve([{}])
+}
+
+function validate_submit_response(body)
+{
+	// TODO, check for errors in response from votebot-forms
+	return Promise.resolve([{}])
+}
+
+function validate_always_true(body)
+{
+	return Promise.resolve([true])
 }
 
 var parse_step = function(step, body, user)
 {
 	// if the user is canceling, don't bother parsing anything
 	if(language.is_cancel(body)) return Promise.resolve({next: '_cancel'});
+
+	// TODO, let user correct previous step
 	return step.process(body, user);
 };
 
