@@ -5,7 +5,8 @@ var config = {
 
 	// the app website for votebot
 	app: {
-		url: 'http://voteymcbotface.com',
+		url: 'http://api.hellovote.org',
+		share_url: 'http://hellovote.org',
 		admin_password: process.env.ADMIN_PASSWORD
 	},
 
