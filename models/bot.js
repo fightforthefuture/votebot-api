@@ -12,6 +12,7 @@ var log = require('../lib/logger');
 var us_licenses = require('../lib/us_licenses');
 var us_states = require('../lib/us_states');
 var request = require('request-promise');
+var notify = require('./notify.js');
 
 // holds conversation chains. essentially, each "step" in the chain defines a
 // part of the conversation (generally a question) and how to process the answer.
@@ -42,6 +43,9 @@ var chains = {
 			process: simple_store('user.last_name', 'zip', 'Please enter your last name')
 		},
 		zip: {
+			pre_process: function(action, conversation, user) {
+				notify.add_binding(user, 'started')
+			},
 			msg: 'What\'s your zip code?',
 			process: simple_store('user.settings.zip', 'city', 'Please enter your zip code, or SKIP if you don\'t know it.', {validate: validate_zip})
 		},
