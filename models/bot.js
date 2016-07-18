@@ -53,7 +53,7 @@ var chains = {
 		},
 		state: {
 			pre_process: function(action, conversation, user) {
-				if(util.object.get(user, 'settings.state')) return {next: 'date_of_birth'};
+				if(util.object.get(user, 'settings.state')) return {next: 'address'};
 			},
 			msg: 'What state do you live in? (eg CA)',
 			process: simple_store('user.settings.state', 'address', 'Please enter your state', {validate: validate_state})
