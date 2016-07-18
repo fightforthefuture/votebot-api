@@ -52,6 +52,11 @@ var incoming = function(req, res)
 	var data = req.body;
 	log.info('incoming: ', JSON.stringify(data));
 	message_model.incoming_sms(data)
+		.then(function() {
+			// acknowledge response
+			// Twilio expects TwiML or plain text
+			resutil.send(res, '<?xml version="1.0" encoding="UTF-8" ?><Response></Response>', {content_type: 'application/xml'});
+		})
 		.catch(function(err) {
 			log.error('messages: incoming: ', err);
 			resutil.error(res, 'Problem receiving SMS', err);
