@@ -328,7 +328,8 @@ function validate_date(body)
 		util.left_pad(date.getFullYear(), '0000'),
 		util.left_pad(date.getMonth() + 1, '00'),
 		util.left_pad(date.getDate(), '00'),
-	].join('/');
+	].join('-');
+	// store as ISO formatted YYYY-MM-DD
 	return Promise.resolve([body]);
 };
 
