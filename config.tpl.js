@@ -39,7 +39,10 @@ var config = {
 
 	// send all outgoing SMSs to this number instead of the actual user's number
 	// (good for debugging)
-	sms_override: null
+	sms_override: null,
+
+	// url to submit to votebot-forms
+	submit_url: 'http://localhost:5000/registration'
 };
 
 module.exports = config;

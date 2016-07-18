@@ -38,7 +38,9 @@ var config = {
 
 	// send all outgoing SMSs to this number instead of the actual user's number
 	// (good for debugging)
-	sms_override: null
+	sms_override: null,
+
+	submit_url: 'https://fftf-votebot-forms.herokuapp.com/registration'
 };
 
 module.exports = config;

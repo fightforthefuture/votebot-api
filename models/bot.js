@@ -11,6 +11,7 @@ var language = require('../lib/language');
 var log = require('../lib/logger');
 var us_licenses = require('../lib/us_licenses');
 var us_states = require('../lib/us_states');
+var request = require('request-promise');
 
 // holds conversation chains. essentially, each "step" in the chain defines a
 // part of the conversation (generally a question) and how to process the answer.
@@ -104,7 +105,7 @@ var chains = {
 		submit: {
 			pre_process: function(action, conversation, user) {
 				console.log('submit pre_process', user.settings);
-				// if user has all required fields, send to votebot-forms
+				// check to ensure user has all required fields
 				if(  util.object.get(user, 'first_name')
 					&& util.object.get(user, 'last_name')
 					&& util.object.get(user, 'settings.address')
@@ -117,17 +118,35 @@ var chains = {
 					)
 					&& util.object.get(user, 'settings.us_citizen')
 				) {
-					// TODO, create Promise for API post
-					log.info('bot: registration is complete! submitting...');
-					// store response from promise in user.submit
-					
+					if (config.submit_url) {
+						// send to votebot-forms
+						log.info('bot: registration is complete! submitting...');
+						
+						var form_submit = {
+						    method: 'POST',
+						    uri: config.submit_url,
+						    body: user,
+						    json: true 
+						};
+						request(form_submit)
+						    .then(function (parsedBody) {
+						        // store response from in user.submit
+								console.log(body);
+								return user_model.update(user.id, {'submit': body.status});
+						    })
+						    .catch(function (err) {
+						        console.error(error);
+								return {next: 'incomplete'};
+						    });
+					} else {
+						log.info('bot: no submit_url in config, skipping...');
+					}
+
 					return {next: 'share'};
 				} else {
-					// re-query missing fields
-					//return {next: 'incomplete'};
-
-					// temp
-					return {next: 'share'};
+					// incomplete, re-query missing fields
+					log.info('bot: missing fields!');
+					return {next: 'incomplete'};
 				}
 			},
 			process: simple_store('user.submit', 'complete', {validate: validate_submit_response}),
