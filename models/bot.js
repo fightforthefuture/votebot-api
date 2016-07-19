@@ -43,6 +43,7 @@ var chains = {
 			process: simple_store('user.last_name', 'zip', 'Please enter your last name')
 		},
 		zip: {
+			// create a binding for the user now that we have first name and last name
 			pre_process: function(action, conversation, user) {
 				notify.add_binding(user, 'started')
 			},
