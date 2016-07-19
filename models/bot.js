@@ -45,7 +45,7 @@ var chains = {
 		zip: {
 			// create a binding for the user now that we have first name and last name
 			pre_process: function(action, conversation, user) {
-				notify.add_binding(user, 'started')
+				notify.create_binding(user, ['started'])
 			},
 			msg: 'What\'s your zip code?',
 			process: simple_store('user.settings.zip', 'city', 'Please enter your zip code, or SKIP if you don\'t know it.', {validate: validate_zip})
@@ -145,6 +145,7 @@ var chains = {
 						    });
 					} else {
 						log.info('bot: no submit_url in config, skipping...');
+						return {next: 'complete'};
 					}
 
 					return {next: 'share'};
@@ -157,6 +158,9 @@ var chains = {
 			process: simple_store('user.submit', 'complete', {validate: validate_submit_response}),
 		},
 		complete: {
+			pre_process: function(action, conversation, user) {
+				notify.create_binding(user, ['completed'])
+			},
 			msg: 'We are processing your registration! Check your email for further instructions.',
 			process: simple_store('user.complete', 'share', {validate: validate_always_true}),
 		},
