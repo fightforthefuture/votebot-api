@@ -105,18 +105,12 @@ var chains = {
 			pre_process: function(action, conversation, user) {
 				console.log('submit pre_process', user.settings);
 				// check to ensure user has all required fields
-				if(  util.object.get(user, 'first_name')
-					&& util.object.get(user, 'last_name')
-					&& util.object.get(user, 'settings.address')
-					&& util.object.get(user, 'settings.city')
-					&& util.object.get(user, 'settings.state')
-					&& util.object.get(user, 'settings.date_of_birth')
-					&& ( util.object.get(user, 'settings.state_id')
-						|| util.object.get(user, 'settings.ssn_last4')
-						|| util.object.get(user, 'settings.state_id_or_ssn_last4')
-					)
-					&& util.object.get(user, 'settings.us_citizen')
-				) {
+				var missing_fields = validate.voter_registration_complete(user);
+				if (missing_fields) {
+					// incomplete, re-query missing fields
+					log.info('bot: missing fields!');
+					return {next: 'incomplete', errors: missing_fields};
+				} else {
 					if (config.submit_url) {
 						// send to votebot-forms
 						log.info('bot: registration is complete! submitting...');
@@ -130,7 +124,9 @@ var chains = {
 						request(form_submit)
 						    .then(function (parsedBody) {
 						        // store response from in user.submit
-								console.log(body);
+								if (body.status === 'error') {
+									return {next: 'incomplete', 'errors': body.errors};
+								}
 								return user_model.update(user.id, {'submit': body.status});
 						    })
 						    .catch(function (err) {
@@ -138,15 +134,11 @@ var chains = {
 								return {next: 'incomplete'};
 						    });
 					} else {
-						log.info('bot: no submit_url in config, skipping...');
+						log.info('bot: no submit_url in config, skipping submit...');
 					}
 
 					return {next: 'share'};
-				} else {
-					// incomplete, re-query missing fields
-					log.info('bot: missing fields!');
-					return {next: 'incomplete'};
-				}
+				} 
 			},
 			process: simple_store('user.submit', 'complete', {validate: validate.submit_response}),
 		},
@@ -156,14 +148,17 @@ var chains = {
 		},
 		incomplete: {
 			msg: 'Sorry, your registration is incomplete',
-			// TODO, re-query missing fields
+			process: function(body, user) {
+				// TODO, re-query missing fields
+				console.log('missing fields', util.object.get('missing_fields'));
+			}
 		},
 		share: {
 			msg: 'Thanks for registering with HelloVote! Share with your friends to get them registered too: http://hellovote.org/share?u=ASDF',
 			final: true
 		},
 		restart: {
-			process: simple_store('user.settings', 'intro_direct', 'We are restarting your HelloVote registration!', {validate: validate.clear_settings}),
+			process: simple_store('user.settings', 'intro_direct', 'We are restarting your HelloVote registration!', {validate: validate.empty_object}),
 		},
 
 		// per-state questions
