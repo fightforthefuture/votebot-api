@@ -4,13 +4,11 @@ var db = require('../lib/db');
 var convo_model = require('./conversation');
 var message_model = require('./message');
 var user_model = require('./user');
-var zip_model = require('./zip');
 var error = require('../lib/error');
 var util = require('../lib/util');
 var language = require('../lib/language');
 var log = require('../lib/logger');
-var us_licenses = require('../lib/us_licenses');
-var us_states = require('../lib/us_states');
+var validate = require('../lib/validate');
 var request = require('request-promise');
 
 // holds conversation chains. essentially, each "step" in the chain defines a
@@ -43,7 +41,7 @@ var chains = {
 		},
 		zip: {
 			msg: 'What\'s your zip code?',
-			process: simple_store('user.settings.zip', 'city', 'Please enter your zip code, or SKIP if you don\'t know it.', {validate: validate_zip})
+			process: simple_store('user.settings.zip', 'city', 'Please enter your zip code, or SKIP if you don\'t know it.', {validate: validate.zip})
 		},
 		city: {
 			pre_process: function(action, conversation, user) {
@@ -57,7 +55,7 @@ var chains = {
 				if(util.object.get(user, 'settings.state')) return {next: 'address'};
 			},
 			msg: 'What state do you live in? (eg CA)',
-			process: simple_store('user.settings.state', 'address', 'Please enter your state', {validate: validate_state})
+			process: simple_store('user.settings.state', 'address', 'Please enter your state', {validate: validate.state})
 		},
 		address: {
 			msg: 'What\'s your street address in {{settings.city}}, {{settings.state}}? (including apartment #, if any)',
@@ -65,11 +63,11 @@ var chains = {
 		},
 		date_of_birth: {
 			msg: 'When were you born? (MM/DD/YYYY)',
-			process: simple_store('user.settings.date_of_birth', 'email', 'Please enter your date of birth as month/day/year', {validate: validate_date})
+			process: simple_store('user.settings.date_of_birth', 'email', 'Please enter your date of birth as month/day/year', {validate: validate.date})
 		},
 		email: {
 			msg: 'What\'s your email address?',
-			process: simple_store('user.settings.email', 'per_state', 'Please enter your email address. If you don\'t have one, reply SKIP', {validate: validate_email})
+			process: simple_store('user.settings.email', 'per_state', 'Please enter your email address. If you don\'t have one, reply SKIP', {validate: validate.email})
 		},
 		// this is a MAGICAL step. it never actually runs, but instead just
 		// points to other steps until it runs out of per-state questions to
@@ -149,11 +147,11 @@ var chains = {
 					return {next: 'incomplete'};
 				}
 			},
-			process: simple_store('user.submit', 'complete', {validate: validate_submit_response}),
+			process: simple_store('user.submit', 'complete', {validate: validate.submit_response}),
 		},
 		complete: {
 			msg: 'We are processing your registration! Check your email for further instructions.',
-			process: simple_store('user.complete', 'share', {validate: validate_always_true}),
+			process: simple_store('user.complete', 'share', {validate: validate.always_true}),
 		},
 		incomplete: {
 			msg: 'Sorry, your registration is incomplete',
@@ -164,7 +162,7 @@ var chains = {
 			final: true
 		},
 		restart: {
-			process: simple_store('user.settings', 'intro_direct', 'We are restarting your HelloVote registration!', {validate: validate_clear_settings}),
+			process: simple_store('user.settings', 'intro_direct', 'We are restarting your HelloVote registration!', {validate: validate.clear_settings}),
 		},
 
 		// per-state questions
@@ -176,11 +174,11 @@ var chains = {
 		// !!!!!!!!
 		us_citizen: {
 			msg: 'Are you a US citizen? (yes/no)',
-			process: simple_store('user.settings.us_citizen', 'per_state', '', {validate: validate_boolean_yes})
+			process: simple_store('user.settings.us_citizen', 'per_state', '', {validate: validate.boolean_yes})
 		},
 		legal_resident: {
 			msg: 'Are you a current legal resident of {{settings.state}}? (yes/no)',
-			process: simple_store('user.settings.legal_resident', 'per_state', '', {validate: validate_boolean_yes})
+			process: simple_store('user.settings.legal_resident', 'per_state', '', {validate: validate.boolean_yes})
 		},
 		will_be_18: { 
 			pre_process: function(action, conversation, user) {
@@ -195,7 +193,7 @@ var chains = {
 				}
 			},
 			msg: 'Are you 18 or older, or will you be by the date of the election? (yes/no)',
-			process: simple_store('user.settings.will_be_18', 'per_state', '', {validate: validate_boolean_yes})
+			process: simple_store('user.settings.will_be_18', 'per_state', '', {validate: validate.boolean_yes})
 		},
 		ethnicity: {
 			msg: 'What is your ethnicity or race? (asian-pacific/black/hispanic/native-american/white/multi-racial/other)',
@@ -207,28 +205,28 @@ var chains = {
 		},
 		disenfranchised: {
 			msg: 'Are you currently disenfranchised from voting (for instance due to a felony conviction)? (yes/no)',
-			process: simple_store('user.settings.disenfranchised', 'per_state', '', {validate: validate_boolean_no})
+			process: simple_store('user.settings.disenfranchised', 'per_state', '', {validate: validate.boolean_no})
 		},
 		incompetent: {
 			msg: 'Have you been found legally incompetent in your state? (yes/no)',
-			process: simple_store('user.settings.incompetent', 'per_state', '', {validate: validate_boolean_no})
+			process: simple_store('user.settings.incompetent', 'per_state', '', {validate: validate.boolean_no})
 		},
 		state_id: {
 			msg: 'What\'s your {{settings.state}} driver\'s license (or state ID) number?',
 			process: simple_store('user.settings.state_id', 'per_state', 'Please enter your state ID number',
-			                      {validate: validate_state_id})
+			                      {validate: validate.state_id})
 		},
 		state_id_issue_date: {
 			msg: 'What date was your state id/driver\'s license issued? (mm/dd/yyyy)',
-			process: simple_store('user.settings.state_id_issue_date', 'per_state', '', {validate: validate_date})
+			process: simple_store('user.settings.state_id_issue_date', 'per_state', '', {validate: validate.date})
 		},
 		ssn: {
 			msg: 'What\'s your SSN?',
-			process: simple_store('user.settings.ssn', 'per_state', '', {validate: validate_ssn})
+			process: simple_store('user.settings.ssn', 'per_state', '', {validate: validate.ssn})
 		},
 		ssn_last4: {
 			msg: 'What are the last 4 digits of your SSN?',
-			process: simple_store('user.settings.ssn_last4', 'per_state', 'Please enter the last 4 digits of your SSN', {validate: validate_ssn_last_4})
+			process: simple_store('user.settings.ssn_last4', 'per_state', 'Please enter the last 4 digits of your SSN', {validate: validate.ssn_last_4})
 		},
 		state_id_or_ssn_last4: {
 			msg: 'What\'s your {{settings.state}} driver\'s license (or state ID) number? If you don\'t have one, enter the last 4 digits of your SSN.',
@@ -236,7 +234,7 @@ var chains = {
 		},
 		gender: {
 			msg: 'What\'s your gender?',
-			process: simple_store('user.settings.gender', 'per_state', '', {validate: validate_gender})
+			process: simple_store('user.settings.gender', 'per_state', '', {validate: validate.gender})
 		},
 		county: {
 			msg: 'What county do you reside in?',
@@ -246,11 +244,11 @@ var chains = {
 			msg: 'May we use your signature on file with the DMV to complete the form with your state? (yes/no)',
 			process: simple_store('user.settings.consent_use_signature', 'per_state',
 			                      'Please reply YES to let us request your signature from the DMV. We do not store this information.',
-			                      {validate: validate_boolean_yes})
+			                      {validate: validate.boolean_yes})
 		},
 		mail_in: {
 			msg: 'Would you like to vote by mail-in ballot?',
-			process: simple_store('user.settings.mail_in', 'per_state', '', {validate: validate_boolean})
+			process: simple_store('user.settings.mail_in', 'per_state', '', {validate: validate.boolean})
 		},
 	}
 };
@@ -279,7 +277,7 @@ function simple_store(store, next, errormsg, options)
 	return function(body, user)
 	{
 		// if we get an empty body, error
-		if(!body.trim()) return data_error(errormsg, {promise: true});
+		if(!body.trim()) return validate.data_error(errormsg, {promise: true});
 
 		var obj = {};
 		obj[store] = body;
@@ -297,190 +295,12 @@ function simple_store(store, next, errormsg, options)
 	};
 }
 
-// a useful helper for creating "data errors" ie, the code is fine, but some
-// kind of issue exists in the data the user handed us for validation
-function data_error(msg, options)
-{
-	options || (options = {});
-
-	var err = new Error(msg);
-	err.data_error = true;
-	if(options.promise) err = Promise.reject(err);
-	// this conversation.......is over
-	if(options.end) err.end_conversation = true;
-	return err;
-}
-
 function template(str, data)
 {
 	return str.replace(/{{(.*?)}}/g, function(all, key) {
 		var val = util.object.get(data, key);
 		return val || '';
 	});
-}
-
-function validate_date(body)
-{
-	var date = new Date(body);
-	if(date.toString().match(/invalid/i)) return Promise.reject(data_error('We couldn\'t read that date'));
-
-	body = [
-		util.left_pad(date.getFullYear(), '0000'),
-		util.left_pad(date.getMonth() + 1, '00'),
-		util.left_pad(date.getDate(), '00'),
-	].join('-');
-	// store as ISO formatted YYYY-MM-DD
-	return Promise.resolve([body]);
-};
-
-function validate_email(body)
-{
-	// TODO, don't let user skip if email is required
-	if (body.trim().toUpperCase() === 'SKIP') {
-		return Promise.resolve([null]);
-	}
-	var valid_email = body.indexOf('@') > 0; // really really simple email validation
-	if(valid_email) return Promise.resolve([body.trim()]);
-	return data_error('Please enter your email address, or SKIP if you don\'t have one', {promise: true});
-}
-
-function validate_boolean(body)
-{
-	return Promise.resolve([!!language.is_yes(body)]);
-}
-
-function validate_boolean_yes(body)
-{
-	return Promise.resolve([language.is_yes(body), language.is_no(body)])
-		.spread(function(is_yes, is_no) {
-			if(!is_yes && !is_no) throw data_error('Please answer yes or no');
-			if(!is_yes) throw data_error('Sorry, you are not eligible to vote in your state', {end: true});
-			return [true];
-		})
-}
-
-function validate_boolean_no(body)
-{
-	return Promise.resolve([language.is_yes(body), language.is_no(body)])
-		.spread(function(is_yes, is_no) {
-			if(!is_yes && !is_no) throw data_error('Please answer yes or no');
-			if(!is_no) throw data_error('Sorry, you are not eligible to vote in your state', {end: true});
-			return [false];
-		})
-}
-
-function validate_state(body)
-{
-	var state = body.trim();
-	if (state.length === 2) {
-		if(!us_states.valid_abbreviation(state)) {
-			return Promise.reject(data_error('That\'s not a valid state abbreviation. Please enter only 2 letters.'));
-		}
-		return Promise.resolve([state]);
-	} else {
-		if(!us_states.valid_name(state)) {
-			return Promise.reject(data_error('That\'s not a valid state name.'));
-		}
-		return Promise.resolve([us_states.name_to_abbr(state)]);
-	}
-}
-
-function validate_zip(body)
-{
-	if (body.trim().toUpperCase() === 'SKIP') {
-		return Promise.resolve([null]);
-	}
-
-	var zip = body.replace(/-.*/, '');
-	if(!zip.match(/^[0-9]{5}$/)) return Promise.reject(data_error('That\'s not a valid zip code. Please enter only 5 numbers.'));
-	return zip_model.find(zip)
-		.then(function(zipdata) {
-			var zip = zipdata.code;
-			if(!zip) return reject(data_error('We couldn\'t find that zip code'));
-
-			var places = zipdata.places;
-			var setter = {};
-			// if we have 0 (or 2 or more) places, we cannot assume a location,
-			// so we only populate the city/state fields if we get one location
-			if(places.length == 1)
-			{
-				var place = places[0];
-				var city = place.city;
-				var state = place.state;
-				if(city) setter['user.settings.city'] = city;
-				if(state) setter['user.settings.state'] = state;
-			}
-			return [zip, setter];
-		})
-		.catch(function(err) { return err && err.message == 'not_found'; }, function(err) {
-			throw data_error('We couldn\'t find that zip code');
-		});
-}
-
-function validate_address(body, user)
-{
-	// TODO, hit SmartyStreets for address validation
-	// parse apt number
-
-	// if it's a multi-unit building, re-prompt if we didn't get one
-}
-
-function validate_gender(body)
-{
-	return Promise.resolve([language.get_gender(body)])
-		.tap(function(gender) {
-			if(!gender) throw data_error('Please enter your gender as male or female');
-		});
-}
-
-function validate_ssn(body)
-{
-	var ssn = body.match(/[0-9]{3}-?[0-9]{2}-?[0-9]{4}/);
-	if(ssn && ssn[0]) return Promise.resolve([ssn]);
-	return data_error('Please enter your SSN like 123-45-6789', {promise: true});
-}
-
-function validate_ssn_last_4(body)
-{
-	var ssn = body.match(/[0-9]{4}/);
-	if(ssn && ssn[0]) return Promise.resolve([ssn]);
-	return data_error('Please enter just the last 4 digits of your SSN', {promise: true});
-}
-
-function validate_state_id(body, user)
-{
-	if (body.trim().toUpperCase() === 'NONE') {
-		return Promise.resolve([null]);
-	}
-
-	var state = util.object.get(user, 'settings.state');
-	var id_number = body.trim();
-	if (state) {
-		var state_id = us_licenses.validate(state, id_number);
-	} else {
-		// most permissive
-		var state_id = id_number.match(/[\d\w]{1,13}/);
-	}
-	if(state_id && state_id[0]) return Promise.resolve([state_id]);
-	return data_error(template('Please enter a valid {{settings.state}} ID, or NONE if you don\'t have one.', user), {promise: true});
-}
-
-function validate_clear_settings(body)
-{
-	// abuse the validation to let user reset
-	// and return an empty settings object
-	return Promise.resolve([{}])
-}
-
-function validate_submit_response(body)
-{
-	// TODO, check for errors in response from votebot-forms
-	return Promise.resolve([{}])
-}
-
-function validate_always_true(body)
-{
-	return Promise.resolve([true])
 }
 
 var parse_step = function(step, body, user)
@@ -565,7 +385,7 @@ exports.next = function(user_id, conversation, message)
 			if(step.final)
 			{
 				log.info('bot: recv msg, but conversation finished');
-				if (validate_boolean(body)) {
+				if (validate.boolean(body)) {
 					log.info('bot: user wants to restart');
 					key = [state.type, 'restart'].join('.');
 					step = util.object.get(chains, key);
