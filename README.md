@@ -2,7 +2,7 @@
 
 A node chatbot to guide users through a conversation to register them to vote. Signs them up for email alerts and election deadline notifications. Works over SMS and Facebook messenger (TBD). 
 
-Works in tandem with [votebot-forms](fightforthefuture/votebot-forms) to submit registration data to their Secretary of State.
+Works in tandem with [votebot-forms](https://github.com/fightforthefuture/votebot-forms) to submit registration data to their Secretary of State.
 
 ## Requirements
 - node 4.4+
