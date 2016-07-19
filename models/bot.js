@@ -9,6 +9,7 @@ var util = require('../lib/util');
 var language = require('../lib/language');
 var log = require('../lib/logger');
 var validate = require('../lib/validate');
+var us_states = require('../lib/us_states');
 var request = require('request-promise');
 
 // holds conversation chains. essentially, each "step" in the chain defines a
@@ -75,7 +76,7 @@ var chains = {
 		per_state: {
 			pre_process: function(action, conversation, user) {
 				var state = util.object.get(user, 'settings.state').trim().toLowerCase();
-				var state_questions = state_required_questions[state] || state_required_questions_default;
+				var state_questions = us_states.required_questions[state] || us_states.required_questions_default;
 				var next_default = {next: 'submit'};
 
 				// no per-state questions? skip!!
@@ -252,21 +253,6 @@ var chains = {
 		},
 	}
 };
-
-// state-specific questions we need to ask after the main flow is completed.
-// these are in order of how the questions will be asked, and each item is a
-// key in the `chains.vote_1` flow object that loads that question.
-var state_required_questions = {
-	az: ['us_citizen', 'legal_resident', 'will_be_18', 'incompetent', 'ssn_last4'],
-	ca: ['us_citizen', 'legal_resident', 'will_be_18', 'ssn_last4', 'state_id', 'consent_use_signature'],
-	co: ['us_citizen', 'state_id'],
-	ga: ['us_citizen', 'legal_resident', 'will_be_18', 'disenfranchised', 'incompetent', 'state_id'],
-	il: ['us_citizen', 'will_be_18', 'state_id', 'state_id_issue_date'],
-	ma: ['us_citizen', 'legal_resident', 'will_be_18', 'state_id', 'consent_use_signature'],
-	nm: ['us_citizen', 'legal_resident', 'will_be_18', 'disenfranchised', 'state_id', 'ssn'],
-};
-// defaults for national voter registration form via vote.org
-var state_required_questions_default = ['us_citizen', 'will_be_18', 'state_id'];
 
 // a helper for very simple ask-and-store type questions.
 // can perform data validation as well.
