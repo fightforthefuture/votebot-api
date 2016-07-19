@@ -27,3 +27,4 @@ node server.js
     ]
 }``` to `/conversations`
 - connect Twilio number with POST to `/conversations/incoming`
+- wipe user by sending DELETE to `/users/:username` with basic auth admin:admin_password from config

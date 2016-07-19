@@ -1,7 +1,9 @@
 var resutil = require('../lib/resutil');
+var express = require('express');
 var model = require('../models/conversation');
 var user_model = require('../models/user');
 var message_model = require('../models/message');
+var auth = require('../lib/auth');
 var log = require('../lib/logger');
 var error = require('../lib/error');
 var config = require('../config');
@@ -13,7 +15,7 @@ exports.hook = function(app)
 	app.post('/conversations/incoming', incoming);
 	app.get('/conversations/:id/new', poll);
 	// TODO: move to users controller
-	app.delete('/users/:username', wipe);
+	app.delete('/users/:username', auth.basic, wipe);
 };
 
 var create = function(req, res)
@@ -80,11 +82,6 @@ var poll = function(req, res)
 var wipe = function(req, res)
 {
 	var username = req.params.username;
-	var password = req.query.admin_password;
-	if(!config.app.admin_password || password != config.app.admin_password)
-	{
-		return resutil.error(res, 'Access denied', new Error('Access denied'), {status: 401});
-	}
 	user_model.wipe(username)
 		.then(function(messages) {
 			resutil.send(res, true);
