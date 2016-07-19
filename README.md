@@ -4,11 +4,11 @@ A node chatbot to guide users through a conversation to register them to vote. S
 
 Works in tandem with [votebot-forms](fightforthefuture/votebot-forms) to submit registration data to their Secretary of State.
 
-# Requirements
+## Requirements
 - node 4.4+
 - postgres 9.5+ running
 
-# Development
+## Development
 ```sh
 cd voterbot/
 npm install
@@ -18,8 +18,7 @@ node tools/run-schema.js
 node server.js
 ```
 
-# Testing
-
+## Testing
 - start conversation by POSTing ```{
      "type":"web",
     "recipients":[
