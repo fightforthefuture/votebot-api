@@ -4,16 +4,27 @@ var phone = require('phone');
 /**
  * takes a mobile number or chat username and turns it into a standard format
  */
-exports.parse_username = function(number, options)
+exports.parse_username = function(username, options)
 {
 	options || (options = {});
 
-	if(number.includes(':')){
+	if(username.startsWith('messenger:')){
 		//is a chat username
-		return number;
+		return {
+			username: username,
+			type: 'facebook-messenger'
+		};
 	}else{
-		//is a phone number
-		return phone(number, options.country)[0];
+		parsed_phone = phone(username, options.country)[0];
+		if (parsed_phone) {
+			//is a phone number
+			return {
+				username: parsed_phone,
+				type: 'sms'
+			};
+		} else {
+			return;
+		}
 	}
 };
 
@@ -40,7 +51,7 @@ exports.update = function(user_id, userdata)
 exports.batch_create = function(usernames)
 {
 	return Promise.all((usernames || []).map(function(username) {
-		return exports.upsert({username: exports.parse_username(username)});
+		return exports.upsert(exports.parse_username(username));
 	}));
 };
 
