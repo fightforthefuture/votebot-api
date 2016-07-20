@@ -126,7 +126,10 @@ var chains = {
 						var form_submit = {
 						    method: 'POST',
 						    uri: config.submit_url,
-						    body: user,
+						    body: {
+						    	user: user,
+						    	callback_url: '' // TODO, define callback to notify user of form submit success
+						    },
 						    json: true 
 						};
 						request(form_submit)
