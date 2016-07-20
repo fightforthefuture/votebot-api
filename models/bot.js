@@ -45,7 +45,7 @@ var chains = {
 		zip: {
 			// create a binding for the user now that we have first name and last name
 			pre_process: function(action, conversation, user) {
-				notify.create_binding(user, ['started'])
+				notify.add_tags(user, ['started']);
 			},
 			msg: 'What\'s your zip code?',
 			process: simple_store('user.settings.zip', 'city', 'Please enter your zip code, or SKIP if you don\'t know it.', {validate: validate_zip})
@@ -65,6 +65,9 @@ var chains = {
 			process: simple_store('user.settings.state', 'address', 'Please enter your state', {validate: validate_state})
 		},
 		address: {
+			pre_process: function(action, conversation, user) {
+				notify.add_tags(user, [user.settings.state]);
+			},
 			msg: 'What\'s your street address in {{settings.city}}, {{settings.state}}? (including apartment #, if any)',
 			process: simple_store('user.settings.address', 'date_of_birth', 'Please enter your street address')
 		},
@@ -159,7 +162,7 @@ var chains = {
 		},
 		complete: {
 			pre_process: function(action, conversation, user) {
-				notify.create_binding(user, ['completed'])
+				notify.replace_tags(user, ['started'], ['completed']);
 			},
 			msg: 'We are processing your registration! Check your email for further instructions.',
 			process: simple_store('user.complete', 'share', {validate: validate_always_true}),

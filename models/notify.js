@@ -9,16 +9,17 @@ var service = twilio.notifications.v1.services(config.twilio.notify_service_sid)
 // overrites any existing binding for the user
 // accepts a user object and a list of tags as strings
 // returns a promise that fulfills to the binding SID on success; error details on failure
-exports.create_binding = function(user, tags) {
+function create_binding(user, tags) {
 	return new Promise(function(fulfill, reject){
 		service.bindings.create({
-			endpoint: 'votebot',
+			endpoint: 'votebot-api',
 			identity: user.first_name + ' ' + user.last_name,
 			bindingType: 'sms',
 			address: user.username,
 			tag: tags
 		}).then(function(response) {
 			log.info('notify: created binding for', user.username, 'with tags:', JSON.stringify(tags));
+			// store the binding SID with the user object
 			if (!user.settings) {
 				user.settings = {};
 			}
@@ -34,24 +35,28 @@ exports.create_binding = function(user, tags) {
 
 // adds tags to a user's binding
 // updates the binding SID for the user
-// accepts a user object and a list of additional tags as strings
-// returns a promise that fulfills to the binding SID on success, error details on failure
+// accepts a user object and a list of new tags as strings
+// returns a promise that fulfills to the binding SID on success; error details on failure
 exports.add_tags = function(user, new_tags) {
+	return exports.replace_tags(user, [], new_tags);
+}
+
+// removes tags from a user's binding
+// creates a binding with no tags if no binding exists
+// accepts a user obejct and a list of tags to remove
+// returns a promise that fulfills to the binding SID on success; error details on failure
+exports.remove_tags = function(user, old_tags) {
+	return exports.replace_tags(user, old_tags, []);
+}
+
+// fetches all tags associated with a user
+// accepts a user object
+// returns a promise that fulfills to array of tags; error details on failure
+exports.get_tags = function(user) {
 	return new Promise(function(fulfill, reject) {
-		exports.fetch_binding(user)
+		fetch_binding(user)
 		.then(function(binding) {
-			all_tags = binding.tags.slice();
-			new_tags.map(function(tag) {
-				if (binding.tags.indexOf(tag) == -1) {
-					all_tags.push(tag);
-				}
-			});
-			exports.create_binding(user, all_tags)
-			.then(function(binding_sid) {
-				fulfill(binding_sid);
-			}).catch(function(error) {
-				reject(error);
-			});
+			fulfill(binding.tags);
 		}).catch(function(error) {
 			reject(error);
 		});
@@ -60,18 +65,57 @@ exports.add_tags = function(user, new_tags) {
 
 // fetches a binding associated with a user
 // accepts a user object
-// returns a promise that fulfills to the user's binding; error details on failure
-exports.fetch_binding = function(user) {
+// returns a promise that fulfills to the user's binding or null; error details on failure
+function fetch_binding(user) {
 	return new Promise(function(fulfill, reject) {
-		if (!user.settings.notify_binding_sid) {
-			log.error('notify: user does not have a binding:', user.username);
-			reject(null);
+		if (!user.settings || !user.settings.notify_binding_sid) {
+			fulfill(null);
+		} else {
+			service.bindings(user.settings.notify_binding_sid).fetch()
+			.then(function(response) {
+				fulfill(response);
+			}).catch(function(error) {
+				log.error('notify: error fetching binding:', error);
+				reject(error);
+			});	
 		}
-		service.bindings(user.settings.notify_binding_sid).fetch()
-		.then(function(response) {
-			fulfill(response)
+	});
+}
+
+// removes old tags and adds new tags to a user's binding
+// updates the binding SID for the user
+// accepts a user object, list of tags to remove and a list of tags to add as strings
+// returns a promise that fulfills to the new binding SID on success; error details on failure
+exports.replace_tags = function(user, tags_to_remove, tags_to_add) {
+	return new Promise(function(fulfill, reject) {
+		fetch_binding(user)
+		.then(function(binding) {
+			if (binding) {
+				// if binding exists, remove old tags
+				tags = binding.tags.slice();
+				for (tag in tags_to_remove) {
+					tag_to_remove = tags_to_remove[tag];
+					if ((tag_index = tags.indexOf(tag_to_remove)) > -1) {
+						tags.splice(tag_index, 1);
+					}
+				}
+			} else {
+				// if no binding exists, start with empty tag list
+				tags = [];
+			}
+			// add new tags
+			for (tag in tags_to_add) {
+				tag_to_add = tags_to_add[tag];
+				if ((tag_index = tags.indexOf(tag_to_add)) == -1) {
+					tags.push(tag_to_add);
+				}
+			}
+			// create a new binding with udpated tags
+			create_binding(user, tags)
+			.then(function(response_sid) {
+				fulfill(response_sid);
+			});
 		}).catch(function(error) {
-			log.error('notify: error fetching binding:', error)
 			reject(error);
 		});
 	});
