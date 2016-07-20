@@ -7,16 +7,22 @@ describe('User', function() {
       assert.equal(undefined, user_model.parse_username('123'));
     });
     it('should return a number with country code when passed without', function() {
-      assert.equal('+19145550001', user_model.parse_username('9145550001'));
+      validate_parsed_user('9145550001', '+19145550001', 'sms');
     });
     it('should return a number with a plus sign when passed without', function() {
-      assert.equal('+19145550001', user_model.parse_username('19145550001'));
+      validate_parsed_user('19145550001', '+19145550001', 'sms');
     });
     it('should return an IE number with a plus sign when passed country', function() {
-      assert.equal('+353875550001', user_model.parse_username('0875550001', {country: 'IE'}));
+      validate_parsed_user('0875550001', '+353875550001', 'sms', {country: 'IE'});
     });
     it('should return a messenger id untouched', function() {
-      assert.equal('messenger:999', user_model.parse_username('messenger:999'));
+      validate_parsed_user('messenger:999', 'messenger:999', 'facebook-messenger');
     });
   });
 });
+
+function validate_parsed_user(raw_username, username, type, options) {
+  var parsed_username = user_model.parse_username(raw_username, options);
+  assert.equal(username, parsed_username.username);
+  assert.equal(type, parsed_username.type);
+}

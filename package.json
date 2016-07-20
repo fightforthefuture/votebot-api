@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "VoteBot's Messaging API",
   "scripts": {
-    "prestart": "bash scripts/prestart.sh"
+    "prestart": "bash scripts/prestart.sh",
+    "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "main": "server.js",
   "private": true,
