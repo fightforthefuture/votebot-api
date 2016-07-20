@@ -82,7 +82,7 @@ exports.incoming_sms = function(data)
 {
 	var user;
 	log.info('msg: incoming: from: '+data.From+' -- '+data.Body);
-	return user_model.upsert({username: user_model.parsenum(data.From)})
+	return user_model.upsert({username: user_model.parse_username(data.From)})
 		.then(function(_user) {
 			user = _user;
 			if(!user) throw error('couldn\'t create user');
