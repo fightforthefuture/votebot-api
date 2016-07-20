@@ -12,6 +12,7 @@ var log = require('../lib/logger');
 var us_licenses = require('../lib/us_licenses');
 var us_states = require('../lib/us_states');
 var request = require('request-promise');
+var notify = require('./notify.js');
 
 // holds conversation chains. essentially, each "step" in the chain defines a
 // part of the conversation (generally a question) and how to process the answer.
@@ -42,6 +43,10 @@ var chains = {
 			process: simple_store('user.last_name', 'zip', 'Please enter your last name')
 		},
 		zip: {
+			// create a binding for the user now that we have first name and last name
+			pre_process: function(action, conversation, user) {
+				notify.add_tags(user, ['started']);
+			},
 			msg: 'What\'s your zip code?',
 			process: simple_store('user.settings.zip', 'city', 'Please enter your zip code, or SKIP if you don\'t know it.', {validate: validate_zip})
 		},
@@ -60,6 +65,9 @@ var chains = {
 			process: simple_store('user.settings.state', 'address', 'Please enter your state', {validate: validate_state})
 		},
 		address: {
+			pre_process: function(action, conversation, user) {
+				notify.add_tags(user, [user.settings.state]);
+			},
 			msg: 'What\'s your street address in {{settings.city}}, {{settings.state}}? (including apartment #, if any)',
 			process: simple_store('user.settings.address', 'date_of_birth', 'Please enter your street address')
 		},
@@ -140,6 +148,7 @@ var chains = {
 						    });
 					} else {
 						log.info('bot: no submit_url in config, skipping...');
+						return {next: 'complete'};
 					}
 
 					return {next: 'share'};
@@ -152,6 +161,9 @@ var chains = {
 			process: simple_store('user.submit', 'complete', {validate: validate_submit_response}),
 		},
 		complete: {
+			pre_process: function(action, conversation, user) {
+				notify.replace_tags(user, ['started'], ['completed']);
+			},
 			msg: 'We are processing your registration! Check your email for further instructions.',
 			process: simple_store('user.complete', 'share', {validate: validate_always_true}),
 		},

@@ -33,7 +33,8 @@ var config = {
 	twilio: {
 		account_sid: process.env.TWILIO_SID,
 		auth_token: process.env.TWILIO_AUTH_TOKEN,
-		from_number: process.env.TWILIO_FROM_NUMBER
+		from_number: process.env.TWILIO_FROM_NUMBER,
+		notify_service_sid: process.env.TWILIO_NOTIFY_SERVICE_SID
 	},
 
 	// send all outgoing SMSs to this number instead of the actual user's number
