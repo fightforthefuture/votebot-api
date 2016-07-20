@@ -8,12 +8,23 @@ exports.parse_username = function(number, options)
 {
 	options || (options = {});
 
-	if(number.includes(':')){
+	if(number.startsWith('messenger:')){
 		//is a chat username
-		return number;
+		return {
+			username: number,
+			type: 'facebook-messenger'
+		};
 	}else{
-		//is a phone number
-		return phone(number, options.country)[0];
+		parsed_phone = phone(number, options.country)[0];
+		if (parsed_phone) {
+			//is a phone number
+			return {
+				username: parsed_phone,
+				type: 'sms'
+			};
+		} else {
+			return;
+		}
 	}
 };
 
@@ -40,7 +51,7 @@ exports.update = function(user_id, userdata)
 exports.batch_create = function(usernames)
 {
 	return Promise.all((usernames || []).map(function(username) {
-		return exports.upsert({username: exports.parse_username(username)});
+		return exports.upsert(exports.parse_username(username));
 	}));
 };
 
