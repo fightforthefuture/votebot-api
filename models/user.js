@@ -2,16 +2,19 @@ var db = require('../lib/db');
 var phone = require('phone');
 
 /**
- * takes a mobile number and turns it into a standard format
+ * takes a mobile number or chat username and turns it into a standard format
  */
-exports.parsenum = function(number, options)
+exports.parse_username = function(number, options)
 {
 	options || (options = {});
 
-	if(options.country) var processed = phone(number, options.country);
-	else var processed = phone(number);
-
-	return processed[0];
+	if(number.includes(':')){
+		//is a chat username
+		return number;
+	}else{
+		//is a phone number
+		return phone(number, options.country)[0];
+	}
 };
 
 exports.get = function(id)
@@ -37,7 +40,7 @@ exports.update = function(user_id, userdata)
 exports.batch_create = function(usernames)
 {
 	return Promise.all((usernames || []).map(function(username) {
-		return exports.upsert({username: exports.parsenum(username)});
+		return exports.upsert({username: exports.parse_username(username)});
 	}));
 };
 
