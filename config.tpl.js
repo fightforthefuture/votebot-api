@@ -34,7 +34,8 @@ var config = {
 	twilio: {
 		account_sid: '<SID>',
 		auth_token: '<TOKEN>',
-		from_number: '+183155512345'
+		from_number: '+183155512345',
+		notify_service_sid: '<SID>'
 	},
 
 	// send all outgoing SMSs to this number instead of the actual user's number
