@@ -159,10 +159,15 @@ var chains = {
 			process: simple_store('user.complete', 'share', {validate: validate.always_true}),
 		},
 		incomplete: {
-			msg: 'Sorry, your registration is incomplete',
+			msg: 'Sorry, your registration is incomplete. (fix/restart)?',
 			process: function(body, user) {
 				// TODO, re-query missing fields
-				console.log('missing fields', util.object.get('missing_fields'));
+				console.log('missing fields', util.object.get(user, 'settings.missing_fields'));
+				var next = 'incomplete';
+				if (body.trim().toUpperCase() === 'RESTART') {
+					next = 'restart';
+				}
+				return Promise.resolve({next: next});
 			}
 		},
 		share: {
@@ -170,7 +175,8 @@ var chains = {
 			final: true
 		},
 		restart: {
-			process: simple_store('user.settings', 'intro_direct', 'We are restarting your HelloVote registration!', {validate: validate.empty_object}),
+			msg: 'This will restart your HelloVote registration! Reply (ok) to continue.',
+			process: simple_store('user.settings', 'intro_direct', '', {validate: validate.empty_object}),
 		},
 
 		// per-state questions
