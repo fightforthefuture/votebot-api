@@ -113,8 +113,8 @@ var chains = {
 			pre_process: function(action, conversation, user) {
 				console.log('submit pre_process', user.settings);
 				// check to ensure user has all required fields
-				var missing_fields = validate.voter_registration_complete(user);
-				if (missing_fields) {
+				var missing_fields = validate.voter_registration_complete(user.settings);
+				if (missing_fields.length) {
 					// incomplete, re-query missing fields
 					log.info('bot: missing fields!');
 					return {next: 'incomplete', errors: missing_fields};
