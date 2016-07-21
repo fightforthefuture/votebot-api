@@ -71,6 +71,13 @@ var chains = {
 			process: simple_store('user.settings.address', 'date_of_birth', 'Please enter your street address')
 		},
 		date_of_birth: {
+			pre_process: function(action, conversation, user) {
+				notify.add_identity(user, {
+					address: user.settings.address,
+					city: user.settings.city,
+					state: user.settings.state
+				});
+			},
 			msg: 'When were you born? (MM/DD/YYYY)',
 			process: simple_store('user.settings.date_of_birth', 'email', 'Please enter your date of birth as month/day/year', {validate: validate.date})
 		},
