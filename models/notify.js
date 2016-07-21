@@ -19,7 +19,7 @@ function create_binding(user, tags, identity) {
 		service.bindings.create({
 			endpoint: 'votebot-api',
 			identity: JSON.stringify(identity),
-			bindingType: 'sms',
+			bindingType: user.type,
 			address: user.username,
 			tag: tags
 		}).then(function(response) {
