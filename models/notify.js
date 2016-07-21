@@ -9,11 +9,16 @@ var service = twilio.notifications.v1.services(config.twilio.notify_service_sid)
 // overrites any existing binding for the user
 // accepts a user object and a list of tags as strings
 // returns a promise that fulfills to the binding SID on success; error details on failure
-function create_binding(user, tags) {
+function create_binding(user, tags, identity) {
+	if (!identity) {
+		identity = {};
+	}
+	identity.first_name = user.first_name;
+	identity.last_name = user.last_name;
 	return new Promise(function(fulfill, reject){
 		service.bindings.create({
 			endpoint: 'votebot-api',
-			identity: user.first_name + ' ' + user.last_name,
+			identity: JSON.stringify(identity),
 			bindingType: 'sms',
 			address: user.username,
 			tag: tags
