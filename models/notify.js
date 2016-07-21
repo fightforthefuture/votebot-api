@@ -14,7 +14,7 @@ function create_binding(user, tags) {
 		service.bindings.create({
 			endpoint: 'votebot-api',
 			identity: user.first_name + ' ' + user.last_name,
-			bindingType: 'sms',
+			bindingType: user.type,
 			address: user.username,
 			tag: tags
 		}).then(function(response) {
