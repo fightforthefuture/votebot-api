@@ -38,6 +38,22 @@ function create_binding(user, tags, identity) {
 	});
 };
 
+// adds identity fields to a user's binding
+// accepts a user object and a identity object with new fields
+// returns a promise that fulfills to the new binding SID; error details on reject
+exports.add_identity = function(user, new_identity) {
+	fetch_binding(user)
+		.then(function(binding) {
+			var identity = JSON.parse(binding.identity);
+			for (var key in new_identity) {
+				if (new_identity.hasOwnProperty(key)) {
+					identity[key] = new_identity[key];
+				}
+			}
+			return create_binding(user, binding.tags, identity);
+		});
+};
+
 // adds tags to a user's binding
 // updates the binding SID for the user
 // accepts a user object and a list of new tags as strings
