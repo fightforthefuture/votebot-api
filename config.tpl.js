@@ -35,7 +35,8 @@ var config = {
 		account_sid: '<SID>',
 		auth_token: '<TOKEN>',
 		from_number: '+183155512345',
-		notify_service_sid: '<SID>'
+		messaging_sid: '<MSG_SID>',
+		notify_sid: '<NOTIFY_SID>'
 	},
 
 	// send all outgoing SMSs to this number instead of the actual user's number
