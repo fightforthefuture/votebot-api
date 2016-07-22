@@ -6,7 +6,7 @@ var user_model = require('../models/user');
 var bot_number = user_model.parse_username(config.twilio.from_number);
 var schema = [
 	// create user types
-	'CREATE TYPE user_type AS ENUM (\'sms\', \'facebook-messenger\');',
+	// 'CREATE TYPE user_type AS ENUM (\'sms\', \'facebook-messenger\');',
 
 	// start with tables
 	'create table if not exists users (id serial primary key, username varchar(64) not null, type user_type not null, first_name varchar(255), last_name varchar(255), settings json, active boolean default true, submit boolean default false, created timestamp);',
