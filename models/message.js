@@ -71,7 +71,8 @@ exports.broadcast = function(conversation_id, message)
 				log.info('sending sms to '+to);
 				return twilio.messages.createAsync({
 					to: to,
-					messaging_service_sid: config.twilio.messaging_sid,
+					from: config.twilio.from_number,
+					//messaging_service_sid: config.twilio.messaging_sid,
 					body: message.body
 				});
 			}));
