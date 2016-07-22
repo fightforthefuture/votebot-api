@@ -156,6 +156,9 @@ var chains = {
 						return {next: 'complete'};
 					}
 
+					// finally, remove SSN or state ID from our data
+					// TODO, lol
+
 					return {next: 'share'};
 				} 
 			},
@@ -245,15 +248,15 @@ var chains = {
 			process: simple_store('user.settings.state_id_issue_date', 'per_state', '', {validate: validate.date})
 		},
 		ssn: {
-			msg: 'What\'s your SSN?',
+			msg: 'What\'s your SSN? Your information is safe with us, and we don\'t store it after submitting to your state.',
 			process: simple_store('user.settings.ssn', 'per_state', '', {validate: validate.ssn})
 		},
 		ssn_last4: {
-			msg: 'What are the last 4 digits of your SSN?',
-			process: simple_store('user.settings.ssn_last4', 'per_state', 'Please enter the last 4 digits of your SSN', {validate: validate.ssn_last_4})
+			msg: 'What are the last 4 digits of your SSN? Your information is safe with us, and we don\'t store it after submitting to your state.',
+			process: simple_store('user.settings.ssn_last4', 'per_state', 'Please enter the last 4 digits of your SSN.', {validate: validate.ssn_last_4})
 		},
 		state_id_or_ssn_last4: {
-			msg: 'What\'s your {{settings.state}} driver\'s license (or state ID) number? If you don\'t have one, enter the last 4 digits of your SSN.',
+			msg: 'What\'s your {{settings.state}} ID number? If you don\'t have one, enter the last 4 digits of your SSN. Your info is safe with us.',
 			process: simple_store('user.settings.state_id_or_ssn_last4', 'per_state', 'Please enter your state ID number or last 4 of your SSN')
 		},
 		gender: {
