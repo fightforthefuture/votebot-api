@@ -44,7 +44,7 @@ var chains = {
 		zip: {
 			// create a binding for the user now that we have first name and last name
 			pre_process: function(action, conversation, user) {
-				notify.add_tags(user, ['started']);
+				//notify.add_tags(user, ['started']);
 			},
 			msg: 'What\'s your zip code?',
 			process: simple_store('user.settings.zip', 'city', 'Please enter your zip code, or SKIP if you don\'t know it.', {validate: validate.zip})
@@ -65,18 +65,18 @@ var chains = {
 		},
 		address: {
 			pre_process: function(action, conversation, user) {
-				notify.add_tags(user, [user.settings.state]);
+				//notify.add_tags(user, [user.settings.state]);
 			},
 			msg: 'What\'s your street address in {{settings.city}}, {{settings.state}}? (including apartment #, if any)',
 			process: simple_store('user.settings.address', 'date_of_birth', 'Please enter your street address')
 		},
 		date_of_birth: {
 			pre_process: function(action, conversation, user) {
-				notify.add_identity(user, {
+				/*notify.add_identity(user, {
 					address: user.settings.address,
 					city: user.settings.city,
 					state: user.settings.state
-				});
+				});*/
 			},
 			msg: 'When were you born? (MM/DD/YYYY)',
 			process: simple_store('user.settings.date_of_birth', 'email', 'Please enter your date of birth as month/day/year', {validate: validate.date})
@@ -163,7 +163,7 @@ var chains = {
 		},
 		complete: {
 			pre_process: function(action, conversation, user) {
-				notify.replace_tags(user, ['started'], ['completed']);
+				//notify.replace_tags(user, ['started'], ['completed']);
 			},
 			msg: 'We are processing your registration! Check your email for further instructions.',
 			process: simple_store('user.complete', 'share', {validate: validate.always_true}),
