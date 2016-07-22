@@ -307,14 +307,6 @@ function simple_store(store, next, errormsg, options)
 	};
 }
 
-function template(str, data)
-{
-	return str.replace(/{{(.*?)}}/g, function(all, key) {
-		var val = util.object.get(data, key);
-		return val || '';
-	});
-}
-
 var parse_step = function(step, body, user)
 {
 	// if the user is canceling, don't bother parsing anything
@@ -404,7 +396,7 @@ exports.next = function(user_id, conversation, message)
 				} else {
 					log.info('bot: prompt to restart');
 					var restart_msg = 'You are registered with HelloVote. Would you like to start again? (yes/no)'
-					return message_model.create(config.bot.user_id, conversation.id, {body: template(restart_msg, user)});
+					return message_model.create(config.bot.user_id, conversation.id, {body: language.template(restart_msg, user)});
 				}
 			}
 			
@@ -471,7 +463,7 @@ exports.next = function(user_id, conversation, message)
 							state.step = found.name;
 
 							// create/send the message from the next step in the convo chain
-							return message_model.create(config.bot.user_id, conversation.id, {body: template(nextstep.msg, user)});
+							return message_model.create(config.bot.user_id, conversation.id, {body: language.template(nextstep.msg, user)});
 						})
 						.then(function() {
 							// save our current state into the conversation so's
