@@ -132,7 +132,7 @@ exports.replace_tags = function(user, tags_to_remove, tags_to_add) {
 				}
 			}
 			// create a new binding with udpated tags
-			create_binding(user, tags)
+			create_binding(user, tags, JSON.parse(binding.identity))
 			.then(function(response_sid) {
 				fulfill(response_sid);
 			});
