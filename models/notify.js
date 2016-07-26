@@ -1,8 +1,10 @@
 var config = require('../config');
 var log = require('../lib/logger');
 var user_model = require('./user');
-var twilio = require('twilio')(config.twilio.account_sid, config.twilio.auth_token);
-var service = twilio.notifications.v1.services(config.twilio.notify_sid);
+if (config.twilio) {
+	var twilio = require('twilio')(config.twilio.account_sid, config.twilio.auth_token);
+	var service = twilio.notifications.v1.services(config.twilio.notify_sid);
+}
 
 // adds a binding for a user, with the given tag
 // stores binding SID as a user setting
