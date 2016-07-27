@@ -2,6 +2,7 @@ process.setMaxListeners(100);
 
 var config = require('./config');
 var express = require('express');
+var express_enforces_ssl = require('express-enforces-ssl');
 var body_parser = require('body-parser');
 var cookie_parser = require('cookie-parser');
 var method_override = require('method-override');
@@ -11,6 +12,12 @@ var fs = require('fs');
 var morgan = require('morgan');
 var resutil = require('./lib/resutil');
 var log = require('./lib/logger');
+
+
+app.enable('trust proxy');
+if (config.app.force_ssl) {
+	app.use(express_enforces_ssl());
+}
 
 app.disable('etag');
 app.use(cookie_parser());

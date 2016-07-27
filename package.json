@@ -17,6 +17,7 @@
     "chai": "^3.5.0",
     "cookie-parser": "^1.4.1",
     "express": "^4.13.4",
+    "express-enforces-ssl": "^1.1.0",
     "form-data": "^1.0.0-rc4",
     "method-override": "^2.3.5",
     "mocha": "^2.5.0",

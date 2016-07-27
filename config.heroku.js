@@ -7,7 +7,8 @@ var config = {
 	app: {
 		url: 'http://api.hellovote.org',
 		share_url: 'http://hellovote.org',
-		admin_password: process.env.ADMIN_PASSWORD
+		admin_password: process.env.ADMIN_PASSWORD,
+		force_ssl: true
 	},
 
 	// sends detailed error information back with failed requests
