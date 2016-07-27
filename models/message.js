@@ -67,11 +67,16 @@ exports.broadcast = function(conversation_id, message)
 
 			log.info('messages: broadcast to: ', JSON.stringify(users.map(function(u) { return u.id; })));
 			return Promise.all(users.map(function(user) {
-				var to = config.sms_override || user.username;
-				log.info('sending message to '+to);
+				var to_user = config.sms_override || user.username;
+				if (user.type === 'facebook-messenger') {
+					var from_number = 'messenger:'+ config.twilio.facebook_page_id
+				} else {
+					var from_number = config.twilio.from_number;
+				}
+				log.info('sending message to '+to_user);
 				return twilio.messages.createAsync({
-					to: to,
-					from: config.twilio.from_number,
+					to: to_user,
+					from: from_number,
 					messaging_service_sid: config.twilio.messaging_sid,
 					body: message.body
 				});

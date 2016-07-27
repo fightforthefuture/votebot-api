@@ -35,7 +35,8 @@ var config = {
 		auth_token: process.env.TWILIO_AUTH_TOKEN,
 		from_number: process.env.TWILIO_FROM_NUMBER,
 		messaging_sid: process.env.TWILIO_MESSAGING_SID,
-		notify_sid: process.env.TWILIO_NOTIFY_SID
+		notify_sid: process.env.TWILIO_NOTIFY_SID,
+		facebook_page_id: process.env.FACEBOOK_PAGE_ID,
 	},
 
 	// send all outgoing SMSs to this number instead of the actual user's number

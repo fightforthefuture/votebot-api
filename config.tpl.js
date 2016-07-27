@@ -36,7 +36,8 @@ var config = {
 		auth_token: '<TOKEN>',
 		from_number: '+183155512345',
 		messaging_sid: '<MSG_SID>',
-		notify_sid: '<NOTIFY_SID>'
+		notify_sid: '<NOTIFY_SID>',
+		facebook_page_id: '<FACEBOOK_PAGE_ID>',
 	},
 
 	// send all outgoing SMSs to this number instead of the actual user's number
