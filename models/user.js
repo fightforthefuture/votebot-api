@@ -8,13 +8,19 @@ exports.parse_username = function(username, options)
 {
 	options || (options = {});
 
-	if(username.startsWith('messenger:')){
+	if (username.startsWith('messenger:')) {
 		//is a chat username
 		return {
 			username: username,
 			type: 'facebook-messenger'
 		};
-	}else{
+	} else if (username.startsWith('web:')) {
+		//is a web username, lol
+		return {
+			username: username,
+			type: 'web'
+		}
+	} else {
 		parsed_phone = phone(username, options.country)[0];
 		if (parsed_phone) {
 			//is a phone number

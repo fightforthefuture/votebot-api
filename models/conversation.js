@@ -1,6 +1,7 @@
 var db = require('../lib/db');
 var Promise = require('bluebird');
 var error = require('../lib/error');
+var hasher = require('../lib/hasher');
 var message_model = require('./message');
 var user_model = require('./user');
 var bot_model = require('./bot');
@@ -14,18 +15,25 @@ exports.create = function(user_id, data)
 {
 	var recipients = data.recipients || [];
 	var message = data.message || {};
-	if(recipients.length == 0 || !recipients[0].username)
-	{
-		return Promise.reject(error('Please specify at least one recipient', {code: 400}));
-	}
+	
 
 	if(!data.type)
 	{
 		return Promise.reject(error('Please specify a conversation type (web|p2p)', {code: 400}));
 	}
+	else if (data.type == 'web' && recipients.length == 0)
+	{
+		recipients.push({username: 'web:' + hasher.sort_of_unique_id(JSON.stringify(message))});
+	}
 
-	var usernames = recipients.map(function(r) { return r.username; });
-	var users;
+	if(recipients.length == 0 || !recipients[0].username)
+	{
+		return Promise.reject(error('Please specify at least one recipient', {code: 400}));
+	}
+
+	var usernames = recipients.map(function(r) { return r.username; }),
+		users;
+
 	return user_model.batch_create(usernames)
 		.then(function(_users) {
 			users = _users;

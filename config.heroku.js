@@ -38,6 +38,10 @@ var config = {
 		notify_sid: process.env.TWILIO_NOTIFY_SID
 	},
 
+	session: {
+		secret: process.env.SESSION_SECRET
+	},
+
 	// send all outgoing SMSs to this number instead of the actual user's number
 	// (good for debugging)
 	sms_override: null,
