@@ -8,7 +8,7 @@ exports.parse_username = function(username, options)
 {
 	options || (options = {});
 
-	if(username.startsWith('messenger:')){
+	if(username.startsWith('Messenger:')){
 		//is a chat username
 		return {
 			username: username,
