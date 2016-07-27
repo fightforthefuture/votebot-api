@@ -16,7 +16,7 @@ describe('User', function() {
       validate_parsed_user('0875550001', '+353875550001', 'sms', {country: 'IE'});
     });
     it('should return a messenger id untouched', function() {
-      validate_parsed_user('messenger:999', 'messenger:999', 'facebook-messenger');
+      validate_parsed_user('Messenger:999', 'Messenger:999', 'facebook-messenger');
     });
   });
 });

@@ -53,7 +53,7 @@ var incoming = function(req, res)
 {
 	var data = req.body;
 	log.info('incoming: ', JSON.stringify(data));
-	message_model.incoming_sms(data)
+	message_model.incoming_message(data)
 		.then(function() {
 			// acknowledge response
 			// Twilio expects TwiML or plain text
@@ -61,7 +61,7 @@ var incoming = function(req, res)
 		})
 		.catch(function(err) {
 			log.error('messages: incoming: ', err);
-			resutil.error(res, 'Problem receiving SMS', err);
+			resutil.error(res, 'Problem receiving message', err);
 		});
 };
 
@@ -89,5 +89,6 @@ var wipe = function(req, res)
 		.catch(function(err) {
 			resutil.error(res, 'Problem wiping that user\'s data', err);
 		});
+	// TODO, also wipe notify bindings
 };
 
