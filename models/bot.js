@@ -15,13 +15,20 @@ var notify = require('./notify.js');
 
 // holds conversation chains. essentially, each "step" in the chain defines a
 // part of the conversation (generally a question) and how to process the answer.
-// this processing step can store data in various places as well as determine
-// the next step in the conversationt to run.
 //
-// note that the `msg` string can template in variables of user data. for
-// instance, we do things like:
+// pre_process functions can change the flow by returning a new step in the 'next' key
+// they can also store calculated values on the user object, for use by other steps
+// if they return a 'msg' key, the conversation will send an extra prompt, but not advance the state
 //
+// process functions can store data to the user or conversation model
+// simple_store provides easy hooks for validation and setting nested keys 
+//
+// post_process functions can send follow-up information based on the user object
+// by returning a 'msg' key
+//
+// note that `msg` strings can template in variables of user data. eg:
 //   msg: 'hello {{fullname}}! how is the weather in {{settings.city}}?'
+
 var chains = {
 	vote_1: {
 		_start: 'intro_direct',
@@ -81,10 +88,26 @@ var chains = {
 				}
 			},
 			msg: 'When were you born? (MM/DD/YYYY)',
-			process: simple_store('user.settings.date_of_birth', 'email', 'Please enter your date of birth as month/day/year', {validate: validate.date})
+			process: simple_store('user.settings.date_of_birth', 'email', 'Please enter your date of birth as month/day/year', {validate: validate.date}),
+			post_process: function(user) {
+				// if today is their birthday, send a cake
+				var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
+				if (moment().isSame(date_of_birth, 'day')) {
+					return Promise.resolve({msg: 'Happy birthday! :cake:'});
+				}	
+			}
 		},
 		email: {
-			msg: 'What\'s your email address?',
+			pre_process: function(action, conversation, user) {
+				// send email prompt dependent on user state
+				var state = util.object.get(user, 'settings.state').trim().toLowerCase();
+				if (us_states.required_questions[state]) {
+					return {msg: "Almost done! Now, {{settings.state}} requires an email for online registration. We'll also send you crucial voting information."};
+				} else {
+					return {msg: "Almost done! Now, {{settings.state}} requires you to print, sign, and mail a form. We’ll email it to you, along with crucial voting information."};
+				}
+			},
+			msg: "What's your email?",
 			process: simple_store('user.settings.email', 'per_state', 'Please enter your email address. If you don\'t have one, reply SKIP', {validate: validate.email})
 		},
 		// this is a MAGICAL step. it never actually runs, but instead just
@@ -338,6 +361,10 @@ var find_next_step = function(action, conversation, user)
 	var res = nextstep.pre_process(action, conversation, user);
 	if(!res || !res.next) return default_step;
 
+	// if our pre_process returns a "msg" key, then we should send it immediately
+	// doesn't update state, it's just an extra prompt
+	message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg)});
+
 	// if our pre_process returns a "next" key, then we know we should load
 	// another step. wicked. recurse and find that shit.
 	var action = util.object.merge({}, action, {next: res.next});
@@ -450,6 +477,17 @@ exports.next = function(user_id, conversation, message)
 							promise = setter.set(setter.obj);
 						}
 					}
+
+					// send post-process message for user
+					promise = promise
+						.then(function() {
+							if (action.post_process) {
+								var res = action.post_process(user);
+								if (res.msg) {
+									message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
+								}
+							}
+						});
 
 					// we're processing the next step, inject some steps
 					// into the promise chain
