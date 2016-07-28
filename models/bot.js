@@ -31,17 +31,15 @@ var notify = require('./notify.js');
 
 var chains = {
 	vote_1: {
-		_start: 'intro_direct',
+		_start: 'intro',
 		intro_direct: {
-			msg: 'Welcome to HelloVote! Let\'s get you registered. What\'s your first name?',
-			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
+			msg: 'Hi! This is HelloVote! I\'m going to help you register to vote. I\'ll ask a few questions so I can fill out your registration form. All your answers are protected with encryption, for privacy.',
+			process: function() {
+				return Promise.resolve({next: 'first_name'});
+			}
 		},
-		intro_refer: {
-			msg: 'Welcome to HelloVote! One of your friends has asked me to help you get registered. What\'s your first name?',
-			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
-		},
-		intro_web: {
-			msg: 'Welcome to HelloVote! Let\'s get you registered. What\'s your first name?',
+		first_name: {
+			msg: 'So, what’s your first name? (This is an official state form, so we need your official information.)',
 			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
 		},
 		last_name: {
@@ -49,11 +47,11 @@ var chains = {
 			process: simple_store('user.last_name', 'zip', 'Please enter your last name')
 		},
 		zip: {
-			// create a binding for the user now that we have first name and last name
+			// create a binding for the user now that we have identity
 			pre_process: function(action, conversation, user) {
 				if (config.twilio) notify.add_tags(user, ['votebot-started']);
 			},
-			msg: 'What\'s your zip code?',
+			msg: 'Got it. Now, what\'s your zip code?',
 			process: simple_store('user.settings.zip', 'city', 'Please enter your zip code, or SKIP if you don\'t know it.', {validate: validate.zip})
 		},
 		city: {
