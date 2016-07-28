@@ -23,7 +23,7 @@ exports.create = function(user_id, data)
 	}
 	else if (data.type == 'web' && recipients.length == 0)
 	{
-		recipients.push({username: 'web:' + hasher.sort_of_unique_id(JSON.stringify(message))});
+		recipients.push({username: 'Web:' + hasher.sort_of_unique_id(JSON.stringify(message))});
 	}
 
 	if(recipients.length == 0 || !recipients[0].username)
@@ -37,12 +37,14 @@ exports.create = function(user_id, data)
 	return user_model.batch_create(usernames)
 		.then(function(_users) {
 			users = _users;
+
 			var conversation = {
 				user_id: user_id,
 				type: data.type,
 				state: data.state || null,
 				created: db.now()
 			};
+
 			return db.create('conversations', conversation);
 		})
 		.then(function(conversation) {
@@ -54,13 +56,24 @@ exports.create = function(user_id, data)
 					}
 				})
 				.then(function(message) {
+					var sanitized_users = users.map(function(u) { return { id: u.id, username: u.username }; });
+
 					conversation.messages = [message];
+					conversation.users = sanitized_users;
+
 					return conversation;
 				})
 				.tap(function(conversation) {
 					if (conversation.type === 'web') {
 						// start bot with intro_direct
-						return bot_model.start('vote_1', users[0].id, {start: 'intro_web'});
+						return bot_model.start(
+							'vote_1',
+							users[0].id,
+							{
+								start: 'intro_web',
+								existing_conversation_id: conversation.id
+							}
+						);
 					}
 
 					if(conversation.type === 'p2p') {
@@ -117,7 +130,7 @@ exports.get_recent_by_user = function(user_id)
 
 // TODO: check user can access conversation
 // TODO: use pubsub instead of looping DB
-exports.poll = function(user_id, conversation_id, last_id, options)
+exports.poll = function(user_id, conversation_id, last_id, username, options)
 {
 	options || (options = {});
 	var seconds = options.seconds || 30;
@@ -130,12 +143,23 @@ exports.poll = function(user_id, conversation_id, last_id, options)
 			'	m.*',
 			'FROM',
 			'	messages m',
+			'INNER JOIN',
+			'	conversations_recipients cr',
+			'ON',
+			'	cr.conversation_id = m.conversation_id',
+			'INNER JOIN',
+			'	users u',
+			'ON',
+			'	u.id = cr.user_id',
 			'WHERE',
 			'	m.conversation_id = {{convo_id}} AND',
-			'	m.id > {{last_id}}',
+			'	m.id > {{last_id}} AND',
+			'	u.username = {{username}}',
 		];
-		return db.query(qry.join('\n'), {convo_id: conversation_id, last_id: last_id})
+		return db.query(qry.join('\n'), {convo_id: conversation_id, last_id: last_id, username: username})
 			.then(function(res) {
+				console.log('res: ', res);
+				console.log('username: ', username);
 				if(res.length > 0) return res;
 				var now = new Date().getTime();
 				if((now - start) > (seconds * 1000)) return [];

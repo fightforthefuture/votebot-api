@@ -2,6 +2,7 @@ var resutil = require('../lib/resutil');
 var express = require('express');
 var model = require('../models/conversation');
 var user_model = require('../models/user');
+var bot_model = require('../models/bot');
 var message_model = require('../models/message');
 var auth = require('../lib/auth');
 var log = require('../lib/logger');
@@ -35,13 +36,18 @@ var new_message = function(req, res)
 {
 	var user_id = 1;
 	var data = req.body;
+	var conversation;
 	var conversation_id = req.params.id;
 	model.get(conversation_id)
-		.then(function(conversation) {
+		.then(function(_conversation) {
+			conversation = _conversation;
+
 			if(!conversation) throw error('Conversation '+conversation_id+' not found', {code: 404});
+			
 			return message_model.create(user_id, conversation_id, data)
 		})
 		.then(function(message) {
+			bot_model.next(user_id, conversation, message)
 			resutil.send(res, message);
 		})
 		.catch(function(err) {
@@ -53,7 +59,7 @@ var incoming = function(req, res)
 {
 	var data = req.body;
 	log.info('incoming: ', JSON.stringify(data));
-	message_model.incoming_sms(data)
+	message_model.incoming_message(data)
 		.then(function() {
 			// acknowledge response
 			// Twilio expects TwiML or plain text
@@ -61,7 +67,7 @@ var incoming = function(req, res)
 		})
 		.catch(function(err) {
 			log.error('messages: incoming: ', err);
-			resutil.error(res, 'Problem receiving SMS', err);
+			resutil.error(res, 'Problem receiving message', err);
 		});
 };
 
@@ -70,7 +76,8 @@ var poll = function(req, res)
 	var user_id = 1;
 	var conversation_id = req.params.id;
 	var last_id = req.query.last_id || 0;
-	model.poll(user_id, conversation_id, last_id)
+	var username = req.query.username || '';
+	model.poll(user_id, conversation_id, last_id, username)
 		.then(function(messages) {
 			resutil.send(res, messages);
 		})
@@ -89,5 +96,6 @@ var wipe = function(req, res)
 		.catch(function(err) {
 			resutil.error(res, 'Problem wiping that user\'s data', err);
 		});
+	// TODO, also wipe notify bindings
 };
 
