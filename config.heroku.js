@@ -7,7 +7,8 @@ var config = {
 	app: {
 		url: 'http://api.hellovote.org',
 		share_url: 'http://hellovote.org',
-		admin_password: process.env.ADMIN_PASSWORD
+		admin_password: process.env.ADMIN_PASSWORD,
+		force_ssl: true
 	},
 
 	// sends detailed error information back with failed requests
@@ -35,7 +36,8 @@ var config = {
 		auth_token: process.env.TWILIO_AUTH_TOKEN,
 		from_number: process.env.TWILIO_FROM_NUMBER,
 		messaging_sid: process.env.TWILIO_MESSAGING_SID,
-		notify_sid: process.env.TWILIO_NOTIFY_SID
+		notify_sid: process.env.TWILIO_NOTIFY_SID,
+		facebook_page_id: process.env.FACEBOOK_PAGE_ID,
 	},
 
 	session: {
