@@ -21,6 +21,7 @@
     "form-data": "^1.0.0-rc4",
     "method-override": "^2.3.5",
     "mocha": "^2.5.0",
+    "moment": "^2.14.1",
     "morgan": "^1.7.0",
     "pg": "^4.5.5",
     "phone": "^1.0.6",
