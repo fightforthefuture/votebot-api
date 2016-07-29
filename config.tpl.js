@@ -6,7 +6,7 @@ var config = {
 	app: {
 		url: 'http://voteymcbotface.com',
 		admin_password: process.env.ADMIN_PASSWORD,
-		force_ssl: true
+		force_ssl: false
 	},
 
 	// sends detailed error information back with failed requests

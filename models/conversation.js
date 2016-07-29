@@ -158,8 +158,6 @@ exports.poll = function(user_id, conversation_id, last_id, username, options)
 		];
 		return db.query(qry.join('\n'), {convo_id: conversation_id, last_id: last_id, username: username})
 			.then(function(res) {
-				console.log('res: ', res);
-				console.log('username: ', username);
 				if(res.length > 0) return res;
 				var now = new Date().getTime();
 				if((now - start) > (seconds * 1000)) return [];

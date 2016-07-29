@@ -27,19 +27,27 @@ var chains = {
 		_start: 'intro_direct',
 		intro_direct: {
 			msg: 'Welcome to HelloVote! Let\'s get you registered. What\'s your first name?',
-			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
+			errormsg: 'Please enter your first name',
+			next: 'last_name',
+			process: simple_store('user.first_name')
 		},
 		intro_refer: {
 			msg: 'Welcome to HelloVote! One of your friends has asked me to help you get registered. What\'s your first name?',
-			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
+			errormsg: 'Please enter your first name',
+			next: 'last_name',
+			process: simple_store('user.first_name')
 		},
 		intro_web: {
 			msg: 'Welcome to HelloVote! Let\'s get you registered. What\'s your first name?',
-			process: simple_store('user.first_name', 'last_name', 'Please enter your first name')
+			errormsg: 'Please enter your first name',
+			next: 'last_name',
+			process: simple_store('user.first_name')
 		},
 		last_name: {
 			msg: 'Hi {{first_name}}, what\'s your last name?',
-			process: simple_store('user.last_name', 'zip', 'Please enter your last name')
+			errormsg: 'Please enter your last name',
+			next: 'zip',
+			process: simple_store('user.last_name')
 		},
 		zip: {
 			// create a binding for the user now that we have first name and last name
@@ -47,28 +55,36 @@ var chains = {
 				if (config.twilio) notify.add_tags(user, ['votebot-started']);
 			},
 			msg: 'What\'s your zip code?',
-			process: simple_store('user.settings.zip', 'city', 'Please enter your zip code, or SKIP if you don\'t know it.', {validate: validate.zip})
+			errormsg: 'Please enter your zip code, or SKIP if you don\'t know it.',
+			next: 'city',
+			process: simple_store('user.settings.zip', {validate: validate.zip})
 		},
 		city: {
 			pre_process: function(action, conversation, user) {
 				if(util.object.get(user, 'settings.city')) return {next: 'state'};
 			},
 			msg: 'What city do you live in?',
-			process: simple_store('user.settings.city', 'state', 'Please enter your city')
+			errormsg: 'Please enter your city',
+			next: 'state',
+			process: simple_store('user.settings.city')
 		},
 		state: {
 			pre_process: function(action, conversation, user) {
 				if(util.object.get(user, 'settings.state')) return {next: 'address'};
 			},
 			msg: 'What state do you live in? (eg CA)',
-			process: simple_store('user.settings.state', 'address', 'Please enter your state', {validate: validate.state})
+			errormsg: 'Please enter your state', 
+			next: 'address', 
+			process: simple_store('user.settings.state', {validate: validate.state})
 		},
 		address: {
 			pre_process: function(action, conversation, user) {
 				if (config.twilio) notify.add_tags(user, [user.settings.state]);
 			},
 			msg: 'What\'s your street address in {{settings.city}}, {{settings.state}}? (including apartment #, if any)',
-			process: simple_store('user.settings.address', 'date_of_birth', 'Please enter your street address')
+			errormsg: 'Please enter your street address',
+			next: 'date_of_birth',
+			process: simple_store('user.settings.address')
 		},
 		date_of_birth: {
 			pre_process: function(action, conversation, user) {
@@ -81,11 +97,15 @@ var chains = {
 				}
 			},
 			msg: 'When were you born? (MM/DD/YYYY)',
-			process: simple_store('user.settings.date_of_birth', 'email', 'Please enter your date of birth as month/day/year', {validate: validate.date})
+			errormsg: 'Please enter your date of birth as month/day/year',
+			next: 'email', 
+			process: simple_store('user.settings.date_of_birth', {validate: validate.date})
 		},
 		email: {
 			msg: 'What\'s your email address?',
-			process: simple_store('user.settings.email', 'per_state', 'Please enter your email address. If you don\'t have one, reply SKIP', {validate: validate.email})
+			errormsg: 'Please enter your email address. If you don\'t have one, reply SKIP',
+			next: 'per_state', 
+			process: simple_store('user.settings.email', {validate: validate.email})
 		},
 		// this is a MAGICAL step. it never actually runs, but instead just
 		// points to other steps until it runs out of per-state questions to
@@ -164,14 +184,16 @@ var chains = {
 					return {next: 'share'};
 				} 
 			},
-			process: simple_store('user.submit', 'complete', {validate: validate.submit_response}),
+			next: 'complete',
+			process: simple_store('user.submit', {validate: validate.submit_response}),
 		},
 		complete: {
 			pre_process: function(action, conversation, user) {
 				if (config.twilio) notify.replace_tags(user, ['votebot-started'], ['votebot-completed']);
 			},
 			msg: 'We are processing your registration! Check your email for further instructions.',
-			process: simple_store('user.complete', 'share', {validate: validate.always_true}),
+			next: 'share', 
+			process: simple_store('user.complete', {validate: validate.always_true}),
 		},
 		incomplete: {
 			msg: 'Sorry, your registration is incomplete. (fix/restart)?',
@@ -191,7 +213,9 @@ var chains = {
 		},
 		restart: {
 			msg: 'This will restart your HelloVote registration! Reply (ok) to continue.',
-			process: simple_store('user.settings', 'intro_direct', '', {validate: validate.empty_object}),
+			errormsg: '',
+			next: 'intro_direct',
+			process: simple_store('user.settings', {validate: validate.empty_object}),
 		},
 
 		// per-state questions
@@ -203,11 +227,15 @@ var chains = {
 		// !!!!!!!!
 		us_citizen: {
 			msg: 'Are you a US citizen? (yes/no)',
-			process: simple_store('user.settings.us_citizen', 'per_state', '', {validate: validate.boolean_yes})
+			errormsg: '',
+			next: 'per_state', 
+			process: simple_store('user.settings.us_citizen', {validate: validate.boolean_yes})
 		},
 		legal_resident: {
 			msg: 'Are you a current legal resident of {{settings.state}}? (yes/no)',
-			process: simple_store('user.settings.legal_resident', 'per_state', '', {validate: validate.boolean_yes})
+			errormsg: '',
+			next: 'per_state', 
+			process: simple_store('user.settings.legal_resident', {validate: validate.boolean_yes})
 		},
 		will_be_18: { 
 			pre_process: function(action, conversation, user) {
@@ -222,73 +250,98 @@ var chains = {
 				}
 			},
 			msg: 'Are you 18 or older, or will you be by the date of the election? (yes/no)',
-			process: simple_store('user.settings.will_be_18', 'per_state', '', {validate: validate.boolean_yes})
+			errormsg: '',
+			next: 'per_state', 
+			process: simple_store('user.settings.will_be_18', {validate: validate.boolean_yes})
 		},
 		ethnicity: {
 			msg: 'What is your ethnicity or race? (asian-pacific/black/hispanic/native-american/white/multi-racial/other)',
-			process: simple_store('user.settings.ethnicity', 'per_state', 'Please let us know your ethnicity or race.')
+			errormsg: 'Please let us know your ethnicity or race.',
+			next: 'per_state', 
+			process: simple_store('user.settings.ethnicity')
 		},
 		party: {
 			msg: 'What\'s your party preference? (democrat/republican/libertarian/green/other/none)',
-			process: simple_store('user.settings.political_party', 'per_state', 'Please let us know your party preference')
+			errormsg: 'Please let us know your party preference',
+			next: 'per_state', 
+			process: simple_store('user.settings.political_party')
 		},
 		disenfranchised: {
 			msg: 'Are you currently disenfranchised from voting (for instance due to a felony conviction)? (yes/no)',
-			process: simple_store('user.settings.disenfranchised', 'per_state', '', {validate: validate.boolean_no})
+			errormsg: '',
+			next: 'per_state', 
+			process: simple_store('user.settings.disenfranchised', {validate: validate.boolean_no})
 		},
 		incompetent: {
 			msg: 'Have you been found legally incompetent in your state? (yes/no)',
-			process: simple_store('user.settings.incompetent', 'per_state', '', {validate: validate.boolean_no})
+			errormsg: '',
+			next: 'per_state', 
+			process: simple_store('user.settings.incompetent', {validate: validate.boolean_no})
 		},
 		state_id: {
 			msg: 'What\'s your {{settings.state}} driver\'s license (or state ID) number?',
-			process: simple_store('user.settings.state_id', 'per_state', 'Please enter your state ID number',
-			                      {validate: validate.state_id})
+			errormsg: 'Please enter your state ID number',
+			next: 'per_state', 
+			process: simple_store('user.settings.state_id', {validate: validate.state_id})
 		},
 		state_id_issue_date: {
 			msg: 'What date was your state id/driver\'s license issued? (mm/dd/yyyy)',
-			process: simple_store('user.settings.state_id_issue_date', 'per_state', '', {validate: validate.date})
+			errormsg: '',
+			next: 'per_state', 
+			process: simple_store('user.settings.state_id_issue_date', {validate: validate.date})
 		},
 		ssn: {
 			msg: 'What\'s your SSN? Your information is safe with us, and we don\'t store it after submitting to your state.',
-			process: simple_store('user.settings.ssn', 'per_state', '', {validate: validate.ssn})
+			errormsg: '',
+			next: 'per_state', 
+			process: simple_store('user.settings.ssn', {validate: validate.ssn})
 		},
 		ssn_last4: {
 			msg: 'What are the last 4 digits of your SSN? Your information is safe with us, and we don\'t store it after submitting to your state.',
-			process: simple_store('user.settings.ssn_last4', 'per_state', 'Please enter the last 4 digits of your SSN.', {validate: validate.ssn_last_4})
+			errormsg: 'Please enter the last 4 digits of your SSN.',
+			next: 'per_state', 
+			process: simple_store('user.settings.ssn_last4', {validate: validate.ssn_last_4})
 		},
 		state_id_or_ssn_last4: {
 			msg: 'What\'s your {{settings.state}} ID number? If you don\'t have one, enter the last 4 digits of your SSN. Your info is safe with us.',
-			process: simple_store('user.settings.state_id_or_ssn_last4', 'per_state', 'Please enter your state ID number or last 4 of your SSN')
+			errormsg: 'Please enter your state ID number or last 4 of your SSN',
+			next: 'per_state', 
+			process: simple_store('user.settings.state_id_or_ssn_last4')
 		},
 		gender: {
 			msg: 'What\'s your gender?',
-			process: simple_store('user.settings.gender', 'per_state', '', {validate: validate.gender})
+			errormsg: '',
+			next: 'per_state', 
+			process: simple_store('user.settings.gender', {validate: validate.gender})
 		},
 		county: {
 			msg: 'What county do you reside in?',
-			process: simple_store('user.settings.county', 'per_state', 'Please enter the name of the county you reside in')
+			errormsg: 'Please enter the name of the county you reside in',
+			next: 'per_state', 
+			process: simple_store('user.settings.county')
 		},
 		consent_use_signature: {
 			msg: 'May we use your signature on file with the DMV to complete the form with your state? (yes/no)',
-			process: simple_store('user.settings.consent_use_signature', 'per_state',
-			                      'Please reply YES to let us request your signature from the DMV. We do not store this information.',
-			                      {validate: validate.boolean_yes})
+			errormsg: 'Please reply YES to let us request your signature from the DMV. We do not store this information.',
+			next: 'per_state',
+			process: simple_store('user.settings.consent_use_signature', {validate: validate.boolean_yes})
 		},
 		mail_in: {
 			msg: 'Would you like to vote by mail-in ballot?',
-			process: simple_store('user.settings.mail_in', 'per_state', '', {validate: validate.boolean})
+			errormsg: '',
+			next: 'per_state', 
+			process: simple_store('user.settings.mail_in', {validate: validate.boolean})
 		},
 	}
 };
 
 // a helper for very simple ask-and-store type questions.
 // can perform data validation as well.
-function simple_store(store, next, errormsg, options)
+function simple_store(store, options)
 {
 	options || (options = {});
 
-	return function(body, user)
+	return function(body, user, next, errormsg)
 	{
 		// if we get an empty body, error
 		if(!body.trim()) return validate.data_error(errormsg, {promise: true});
@@ -315,7 +368,7 @@ var parse_step = function(step, body, user)
 	if(language.is_cancel(body)) return Promise.resolve({next: '_cancel'});
 
 	// TODO, let user correct previous step
-	return step.process(body, user);
+	return step.process(body, user, step.next, step.errormsg);
 };
 
 /**
