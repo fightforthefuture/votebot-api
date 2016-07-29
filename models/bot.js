@@ -374,7 +374,7 @@ var find_next_step = function(action, conversation, user)
 };
 
 /**
- * start a bot-initiated conversation
+ * start a bot-initiated conversation, or continue a web-initiated one
  */
 exports.start = function(type, to_user_id, options)
 {
@@ -388,12 +388,24 @@ exports.start = function(type, to_user_id, options)
 			var first_step_name = options.start || chain._start;
 			var step = chain[first_step_name];
 			if(!step) throw new Error('bot: error loading step: '+type+'.'+step);
-			return convo_model.create(config.bot.user_id, {
-				type: 'bot',
-				state: {type: type, step: first_step_name},
-				recipients: [user],
-				message: { body: step.msg }
-			});
+
+			if (!options.existing_conversation_id) {
+				return convo_model.create(config.bot.user_id, {
+					type: 'bot',
+					state: {type: type, step: first_step_name},
+					recipients: [user],
+					message: { body: step.msg }
+				});
+			} else {
+				convo_model.update(options.existing_conversation_id, {
+					state: {type: type, step: first_step_name},
+				});
+				return message_model.create(
+					config.bot.user_id,
+					options.existing_conversation_id,
+					{ body: step.msg }
+					);
+			}
 		});
 };
 

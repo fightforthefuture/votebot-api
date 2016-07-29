@@ -14,7 +14,13 @@ exports.parse_username = function(username, options)
 			username: username,
 			type: 'facebook-messenger'
 		};
-	}else{
+	} else if (username.startsWith('Web:')) {
+		//is a web username, lol
+		return {
+			username: username,
+			type: 'web'
+		}
+	} else {
 		parsed_phone = phone(username, options.country)[0];
 		if (parsed_phone) {
 			//is a phone number

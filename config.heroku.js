@@ -40,6 +40,10 @@ var config = {
 		facebook_page_id: process.env.FACEBOOK_PAGE_ID,
 	},
 
+	session: {
+		secret: process.env.SESSION_SECRET
+	},
+
 	// send all outgoing SMSs to this number instead of the actual user's number
 	// (good for debugging)
 	sms_override: null,

@@ -2,7 +2,7 @@ process.setMaxListeners(100);
 
 var config = require('./config');
 var express = require('express');
-var express_enforces_ssl = require('express-enforces-ssl');
+var enforce = require('express-sslify');
 var body_parser = require('body-parser');
 var cookie_parser = require('cookie-parser');
 var method_override = require('method-override');
@@ -16,7 +16,8 @@ var log = require('./lib/logger');
 
 app.enable('trust proxy');
 if (config.app.force_ssl) {
-	app.use(express_enforces_ssl());
+	// trust x-forwarded-proto header on Heroku
+	app.use(enforce.HTTPS({ trustProtoHeader: true }));
 }
 
 app.disable('etag');

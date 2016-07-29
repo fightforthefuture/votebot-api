@@ -67,13 +67,19 @@ exports.broadcast = function(conversation_id, message)
 
 			log.info('messages: broadcast to: ', JSON.stringify(users.map(function(u) { return u.id; })));
 			return Promise.all(users.map(function(user) {
+				if (user.type == 'web') {
+					console.info('user ' + user.id + ' is web-only. skip twilio lol');
+					return false;
+				}
+				
 				var to_user = config.sms_override || user.username;
 				if (user.type === 'facebook-messenger') {
-					var from_number = 'messenger:'+ config.twilio.facebook_page_id
+					var from_number = 'Messenger:'+ config.twilio.facebook_page_id
 				} else {
 					var from_number = config.twilio.from_number;
 				}
 				log.info('sending message to '+to_user);
+
 				return twilio.messages.createAsync({
 					to: to_user,
 					from: from_number,
@@ -101,7 +107,7 @@ exports.incoming_message = function(data)
 				log.info('msg: incoming: continuing existing voter reg');
 				return exports.create(user.id, conversation.id, {body: data.Body})
 					.tap(function(message) {
-						if(conversation.type == 'bot')
+						if(conversation.type == 'sms' || conversation.type == 'web')
 						{
 							return bot_model.next(user.id, conversation, message)
 						}
