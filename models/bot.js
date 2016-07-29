@@ -209,7 +209,7 @@ var chains = {
 					return {msg: "Great! In a moment, we’ll email you a completed voter registration form to print, sign, and mail."};
 				}
 			},
-			process: simple_store('user.complete', 'share', {validate: validate.always_true, advance: true}),
+			process: simple_store('user.settings.complete', 'share', {validate: validate.always_true, advance: true}),
 		},
 		incomplete: {
 			msg: 'Sorry, your registration is incomplete. (fix/restart)?',
@@ -224,12 +224,27 @@ var chains = {
 			}
 		},
 		share: {
-			msg: 'Thanks for registering with HelloVote! Share with your friends to get them registered too: http://hellovote.org/share?u=ASDF',
+			pre_process: function(action, conversation, user) {
+				var share_url = 'http://hellovote.org/?u=ASDF';
+				// TODO, should hash user.id and append to share_url
+				// TODO, send app-scheme url to share if user is on SMS?
+				var share_messages = [
+					'Now, there\'s one last important thing. We need you to pass on the <3 and register some friends.',
+					'1. Share this on Facebook: http://facebook.com/sharer.php?u='+encodeURI(share_url),
+					'2. Share this on Twitter: http://twitter.com/message?u='+encodeURI(share_url),
+					'3. Forward the following text message to as many friends as you can. Focus on friends who are young, just moved, or might not be registered.',
+					'Hey, I just registered to vote. You should too! This made it really easy: '+share_url
+				];
+				share_messages.map(function(msg) {
+					message_model.create(config.bot.user_id, conversation.id, {body: language.template(msg)});
+				});
+				return {'end': true};
+			},
 			final: true
 		},
 		restart: {
 			msg: 'This will restart your HelloVote registration! Reply (ok) to continue.',
-			process: simple_store('user.settings', 'intro_direct', '', {validate: validate.empty_object}),
+			process: simple_store('user.settings', 'intro', '', {validate: validate.empty_object}),
 		},
 
 		// per-state questions
