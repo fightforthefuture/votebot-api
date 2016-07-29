@@ -51,15 +51,14 @@ exports.create = function(user_id, data)
 				})
 				.tap(function(conversation) {
 					if (conversation.type === 'web') {
-						// start bot with intro_direct
-						return bot_model.start('vote_1', users[0].id, {start: 'intro_web'});
+						return bot_model.start('vote_1', users[0].id, {start: 'intro'});
 					}
 
 					if(conversation.type === 'p2p') {
 						// if we're starting a p2p conversation, init a bot chat to
 						// each recipient as well
 						return Promise.all(users.map(function(user) {
-							return bot_model.start('vote_1', user.id, {start: 'intro_refer'});
+							return bot_model.start('vote_1', user.id, {start: 'intro'});
 						}));
 					} 
 				});

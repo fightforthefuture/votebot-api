@@ -110,7 +110,7 @@ exports.incoming_message = function(data)
 			else
 			{
 				log.info('msg: incoming: starting new voter reg');
-				return bot_model.start('vote_1', user.id, {start: 'intro_direct'});
+				return bot_model.start('vote_1', user.id, {start: 'intro'});
 			}
 		});
 };
