@@ -45,6 +45,10 @@ var config = {
 	// (good for debugging)
 	sms_override: null,
 
+	session: {
+		secret: process.env.SESSION_SECRET
+	},
+
 	// url to submit to votebot-forms
 	submit_url: 'http://localhost:5000/registration'
 };

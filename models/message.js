@@ -107,7 +107,7 @@ exports.incoming_message = function(data)
 				log.info('msg: incoming: continuing existing voter reg');
 				return exports.create(user.id, conversation.id, {body: data.Body})
 					.tap(function(message) {
-						if(conversation.type == 'bot' || conversation.type == 'web')
+						if(conversation.type == 'sms' || conversation.type == 'web')
 						{
 							return bot_model.next(user.id, conversation, message)
 						}
@@ -116,7 +116,7 @@ exports.incoming_message = function(data)
 			else
 			{
 				log.info('msg: incoming: starting new voter reg');
-				return bot_model.start('vote_1', user.id, {start: 'intro_direct'});
+				return bot_model.start('vote_1', user.id, {start: 'intro'});
 			}
 		});
 };

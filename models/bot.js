@@ -15,30 +15,34 @@ var notify = require('./notify.js');
 
 // holds conversation chains. essentially, each "step" in the chain defines a
 // part of the conversation (generally a question) and how to process the answer.
-// this processing step can store data in various places as well as determine
-// the next step in the conversationt to run.
 //
-// note that the `msg` string can template in variables of user data. for
-// instance, we do things like:
+// pre_process functions can change the flow by returning a new step in the 'next' key
+// they can also store calculated values on the user object, for use by other steps
+// if they return a 'msg' key, the conversation will send an extra prompt, but not advance the state
 //
+// process functions can store data to the user or conversation model
+// simple_store provides easy hooks for validation and setting nested keys 
+// if they return an 'advance' key, the bot will go to the next step without waiting for a new message
+//
+// post_process functions can send follow-up information based on the user object
+// by returning a 'msg' key
+//
+// note that `msg` strings can template in variables of user data. eg:
 //   msg: 'hello {{fullname}}! how is the weather in {{settings.city}}?'
+
 var chains = {
 	vote_1: {
-		_start: 'intro_direct',
-		intro_direct: {
-			msg: 'Welcome to HelloVote! Let\'s get you registered. What\'s your first name?',
-			errormsg: 'Please enter your first name',
-			next: 'last_name',
-			process: simple_store('user.first_name')
+		_start: 'intro',
+		intro: {
+			msg: 'Hi! This is HelloVote! I\'m going to help you register to vote. I\'ll ask a few questions so I can fill out your registration form. All your answers are protected with encryption, for privacy.',
+			process: function() {
+				// advance directly next step
+				return Promise.resolve({next: 'first_name'});
+			},
+			advance: true // don't wait for response, continue immediately
 		},
-		intro_refer: {
-			msg: 'Welcome to HelloVote! One of your friends has asked me to help you get registered. What\'s your first name?',
-			errormsg: 'Please enter your first name',
-			next: 'last_name',
-			process: simple_store('user.first_name')
-		},
-		intro_web: {
-			msg: 'Welcome to HelloVote! Let\'s get you registered. What\'s your first name?',
+		first_name: {
+			msg: 'So, what’s your first name? (This is an official state form, so we need your official information.)',
 			errormsg: 'Please enter your first name',
 			next: 'last_name',
 			process: simple_store('user.first_name')
@@ -50,11 +54,11 @@ var chains = {
 			process: simple_store('user.last_name')
 		},
 		zip: {
-			// create a binding for the user now that we have first name and last name
+			// create a binding for the user now that we have identity
 			pre_process: function(action, conversation, user) {
 				if (config.twilio) notify.add_tags(user, ['votebot-started']);
 			},
-			msg: 'What\'s your zip code?',
+			msg: 'Got it. Now, what\'s your zip code?',
 			errormsg: 'Please enter your zip code, or SKIP if you don\'t know it.',
 			next: 'city',
 			process: simple_store('user.settings.zip', {validate: validate.zip})
@@ -81,10 +85,19 @@ var chains = {
 			pre_process: function(action, conversation, user) {
 				if (config.twilio) notify.add_tags(user, [user.settings.state]);
 			},
-			msg: 'What\'s your street address in {{settings.city}}, {{settings.state}}? (including apartment #, if any)',
+			msg: 'What\'s your street address in {{settings.city}}, {{settings.state}}?',
 			errormsg: 'Please enter your street address',
-			next: 'date_of_birth',
+			next: 'apartment',
 			process: simple_store('user.settings.address')
+		},
+		apartment: {
+			pre_process: function(action, conversation, user) {
+				// TODO skip this question if smarty streets indicates it's a single unit building
+			},
+			msg: 'Is there an apartment number? If not, say “no”. Otherwise, say the number!',
+			errormsg: 'Please enter an apartment number',
+			next: 'date_of_birth',
+			process: simple_store('user.settings.address_unit', {validate: validate.address_unit})
 		},
 		date_of_birth: {
 			pre_process: function(action, conversation, user) {
@@ -99,10 +112,26 @@ var chains = {
 			msg: 'When were you born? (MM/DD/YYYY)',
 			errormsg: 'Please enter your date of birth as month/day/year',
 			next: 'email', 
-			process: simple_store('user.settings.date_of_birth', {validate: validate.date})
+			process: simple_store('user.settings.date_of_birth', {validate: validate.date}),
+			post_process: function(user) {
+				// if today is their birthday, send a cake
+				var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
+				if (moment().isSame(date_of_birth, 'day')) {
+					return Promise.resolve({msg: 'Happy birthday! :cake:'});
+				}	
+			}
 		},
 		email: {
-			msg: 'What\'s your email address?',
+			pre_process: function(action, conversation, user) {
+				// send email prompt dependent on user state
+				var state = util.object.get(user, 'settings.state').trim().toLowerCase();
+				if (us_states.required_questions[state]) {
+					return {msg: "Almost done! Now, {{settings.state}} requires an email for online registration. We'll also send you crucial voting information."};
+				} else {
+					return {msg: "Almost done! Now, {{settings.state}} requires you to print, sign, and mail a form. We’ll email it to you, along with crucial voting information."};
+				}
+			},
+			msg: "What's your email?",
 			errormsg: 'Please enter your email address. If you don\'t have one, reply SKIP',
 			next: 'per_state', 
 			process: simple_store('user.settings.email', {validate: validate.email})
@@ -140,12 +169,12 @@ var chains = {
 		},
 		submit: {
 			pre_process: function(action, conversation, user) {
-				console.log('submit pre_process', user.settings);
+				log.info('submit pre_process', user.settings);
 				// check to ensure user has all required fields
 				var missing_fields = validate.voter_registration_complete(user.settings);
 				if (missing_fields.length) {
 					// incomplete, re-query missing fields
-					log.info('bot: missing fields!', missing_fields);
+					log.info('bot: missing fields!', missing_fields.length);
 					return {next: 'incomplete', errors: missing_fields};
 				} else {
 					if (config.submit_url) {
@@ -167,21 +196,21 @@ var chains = {
 								if (body.status === 'error') {
 									return {next: 'incomplete', 'errors': body.errors};
 								}
-								return user_model.update(user.id, {'submit': body.status});
+								user_model.update(user.id, {'submit': body.status});
 						    })
 						    .catch(function (err) {
-						        console.error(error);
+						        log.error(error);
 								return {next: 'incomplete'};
 						    });
 					} else {
 						log.info('bot: no submit_url in config, skipping...');
-						return {next: 'complete'};
+						user_model.update(user.id, {'submit': {status: 'skipped'}});
 					}
 
 					// finally, remove SSN or state ID from our data
-					// TODO, lol
+					user_model.update(user.id, {'settings.ssn': 'cleared', 'settings.state_id': 'cleared'});
 
-					return {next: 'share'};
+					return {next: 'complete'};
 				} 
 			},
 			next: 'complete',
@@ -190,10 +219,18 @@ var chains = {
 		complete: {
 			pre_process: function(action, conversation, user) {
 				if (config.twilio) notify.replace_tags(user, ['votebot-started'], ['votebot-completed']);
+
+				// send confirmation prompt dependent on user state
+				var state = util.object.get(user, 'settings.state').trim().toLowerCase();
+				if (us_states.required_questions[state]) {
+					return {msg: "We are processing your registration! In a moment, we’ll email you a receipt for your voter registration."};
+				} else {
+					return {msg: "Great! In a moment, we’ll email you a completed voter registration form to print, sign, and mail."};
+				}
 			},
 			msg: 'We are processing your registration! Check your email for further instructions.',
 			next: 'share', 
-			process: simple_store('user.complete', {validate: validate.always_true}),
+			process: simple_store('user.settings.complete', {validate: validate.always_true}),
 		},
 		incomplete: {
 			msg: 'Sorry, your registration is incomplete. (fix/restart)?',
@@ -208,13 +245,28 @@ var chains = {
 			}
 		},
 		share: {
-			msg: 'Thanks for registering with HelloVote! Share with your friends to get them registered too: http://hellovote.org/share?u=ASDF',
+			pre_process: function(action, conversation, user) {
+				var share_url = 'http://hellovote.org/?u=ASDF';
+				// TODO, should hash user.id and append to share_url
+				// TODO, send app-scheme url to share if user is on SMS?
+				var share_messages = [
+					'Now, there\'s one last important thing. We need you to pass on the <3 and register some friends.',
+					'1. Share this on Facebook: http://facebook.com/sharer.php?u='+encodeURI(share_url),
+					'2. Share this on Twitter: http://twitter.com/message?u='+encodeURI(share_url),
+					'3. Forward the following text message to as many friends as you can. Focus on friends who are young, just moved, or might not be registered.',
+					'Hey, I just registered to vote. You should too! This made it really easy: '+share_url
+				];
+				share_messages.map(function(msg) {
+					message_model.create(config.bot.user_id, conversation.id, {body: language.template(msg)});
+				});
+				return {'end': true};
+			},
 			final: true
 		},
 		restart: {
 			msg: 'This will restart your HelloVote registration! Reply (ok) to continue.',
 			errormsg: '',
-			next: 'intro_direct',
+			next: 'intro',
 			process: simple_store('user.settings', {validate: validate.empty_object}),
 		},
 
@@ -391,6 +443,12 @@ var find_next_step = function(action, conversation, user)
 	var res = nextstep.pre_process(action, conversation, user);
 	if(!res || !res.next) return default_step;
 
+	// if our pre_process returns a "msg" key, then we should send it immediately
+	// doesn't update state, it's just an extra prompt
+	if (res.msg) {
+		message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg)});
+	}
+
 	// if our pre_process returns a "next" key, then we know we should load
 	// another step. wicked. recurse and find that shit.
 	var action = util.object.merge({}, action, {next: res.next});
@@ -407,7 +465,7 @@ exports.start = function(type, to_user_id, options)
 	return user_model.get(to_user_id)
 		.then(function(_user) {
 			user = _user;
-			if(!user) throw error('user '+user_id+' was not found');
+			if(!user) throw error('user '+to_user_id+' was not found');
 			var chain = chains[type];
 			var first_step_name = options.start || chain._start;
 			var step = chain[first_step_name];
@@ -423,12 +481,28 @@ exports.start = function(type, to_user_id, options)
 			} else {
 				convo_model.update(options.existing_conversation_id, {
 					state: {type: type, step: first_step_name},
-				});
-				return message_model.create(
-					config.bot.user_id,
-					options.existing_conversation_id,
-					{ body: step.msg }
-					);
+				}).then(function(conversation) {
+					log.info('about to send first message! conversation: ', conversation.id);
+					return message_model.create(
+						config.bot.user_id,
+						conversation.id,
+						{ body: step.msg }
+					)
+				}).then(function() {
+					if (step.advance) {
+						// need to re-query for conversation to get updated result
+						convo_model.get(options.existing_conversation_id)
+							.then(function(conversation) {
+								// advance conversation to next step, without waiting for a new message
+								return exports.next(user.id, conversation, {
+									user_id: user.id,
+									conversation_id: conversation.id,
+									body: '', // empty body, because it's a fake message
+									created: db.now()
+								});	
+							});
+						}
+					});
 			}
 		});
 };
@@ -516,6 +590,17 @@ exports.next = function(user_id, conversation, message)
 						}
 					}
 
+					if (action.post_process) {
+						// send post-process message for user
+						promise = promise
+							.then(function() {
+								var res = action.post_process(user);
+								if (res.msg) {
+									message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
+								}
+							});
+					}
+
 					// we're processing the next step, inject some steps
 					// into the promise chain
 					promise = promise
@@ -530,7 +615,9 @@ exports.next = function(user_id, conversation, message)
 							state.step = found.name;
 
 							// create/send the message from the next step in the convo chain
-							return message_model.create(config.bot.user_id, conversation.id, {body: language.template(nextstep.msg, user)});
+							if (nextstep.msg) {
+								return message_model.create(config.bot.user_id, conversation.id, {body: language.template(nextstep.msg, user)});
+							}
 						})
 						.then(function() {
 							// save our current state into the conversation so's
@@ -538,6 +625,20 @@ exports.next = function(user_id, conversation, message)
 							// comes in
 							return convo_model.update(conversation.id, {state: state});
 						});
+
+					if(action.advance) {
+						// advance to next step, without waiting for user response
+						promise = promise
+							.then(function() {
+								// construct empty message
+								return exports.next(user.id, conversation, {
+									user_id: user.id,
+									conversation_id: conversation.id,
+									body: '', // empty body, because it's a fake message
+									created: db.now()
+								})
+							});
+					}
 
 					// all done
 					return promise;

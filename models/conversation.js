@@ -19,7 +19,7 @@ exports.create = function(user_id, data)
 
 	if(!data.type)
 	{
-		return Promise.reject(error('Please specify a conversation type (web|p2p)', {code: 400}));
+		return Promise.reject(error('Please specify a conversation type (sms|web|p2p)', {code: 400}));
 	}
 	else if (data.type == 'web' && recipients.length == 0)
 	{
@@ -65,12 +65,12 @@ exports.create = function(user_id, data)
 				})
 				.tap(function(conversation) {
 					if (conversation.type === 'web') {
-						// start bot with intro_direct
+						// start bot!
 						return bot_model.start(
 							'vote_1',
 							users[0].id,
 							{
-								start: 'intro_web',
+								start: 'intro',
 								existing_conversation_id: conversation.id
 							}
 						);
@@ -80,7 +80,7 @@ exports.create = function(user_id, data)
 						// if we're starting a p2p conversation, init a bot chat to
 						// each recipient as well
 						return Promise.all(users.map(function(user) {
-							return bot_model.start('vote_1', user.id, {start: 'intro_refer'});
+							return bot_model.start('vote_1', user.id, {start: 'intro'});
 						}));
 					} 
 				});
@@ -155,6 +155,8 @@ exports.poll = function(user_id, conversation_id, last_id, username, options)
 			'	m.conversation_id = {{convo_id}} AND',
 			'	m.id > {{last_id}} AND',
 			'	u.username = {{username}}',
+			'ORDER BY',
+			'	m.created ASC'
 		];
 		return db.query(qry.join('\n'), {convo_id: conversation_id, last_id: last_id, username: username})
 			.then(function(res) {
