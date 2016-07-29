@@ -178,21 +178,21 @@ var chains = {
 								if (body.status === 'error') {
 									return {next: 'incomplete', 'errors': body.errors};
 								}
-								return user_model.update(user.id, {'submit': body.status});
+								user_model.update(user.id, {'submit': body.status});
 						    })
 						    .catch(function (err) {
-						        console.error(error);
+						        log.error(error);
 								return {next: 'incomplete'};
 						    });
 					} else {
 						log.info('bot: no submit_url in config, skipping...');
-						return {next: 'complete'};
+						user_model.update(user.id, {'submit': {status: 'skipped'}});
 					}
 
 					// finally, remove SSN or state ID from our data
-					// TODO, lol
+					user_model.update(user.id, {'settings.ssn': 'cleared', 'settings.state_id': 'cleared'});
 
-					return {next: 'share'};
+					return {next: 'complete'};
 				} 
 			},
 			process: simple_store('user.submit', 'complete', {validate: validate.submit_response}),
@@ -200,9 +200,16 @@ var chains = {
 		complete: {
 			pre_process: function(action, conversation, user) {
 				if (config.twilio) notify.replace_tags(user, ['votebot-started'], ['votebot-completed']);
+
+				// send confirmation prompt dependent on user state
+				var state = util.object.get(user, 'settings.state').trim().toLowerCase();
+				if (us_states.required_questions[state]) {
+					return {msg: "We are processing your registration! In a moment, we’ll email you a receipt for your voter registration."};
+				} else {
+					return {msg: "Great! In a moment, we’ll email you a completed voter registration form to print, sign, and mail."};
+				}
 			},
-			msg: 'We are processing your registration! Check your email for further instructions.',
-			process: simple_store('user.complete', 'share', {validate: validate.always_true}),
+			process: simple_store('user.complete', 'share', {validate: validate.always_true, advance: true}),
 		},
 		incomplete: {
 			msg: 'Sorry, your registration is incomplete. (fix/restart)?',
@@ -371,7 +378,9 @@ var find_next_step = function(action, conversation, user)
 
 	// if our pre_process returns a "msg" key, then we should send it immediately
 	// doesn't update state, it's just an extra prompt
-	message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg)});
+	if (res.msg) {
+		message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg)});
+	}
 
 	// if our pre_process returns a "next" key, then we know we should load
 	// another step. wicked. recurse and find that shit.
