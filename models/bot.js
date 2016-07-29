@@ -73,7 +73,11 @@ var chains = {
 				if (config.twilio) notify.add_tags(user, [user.settings.state]);
 			},
 			msg: 'What\'s your street address in {{settings.city}}, {{settings.state}}? (including apartment #, if any)',
-			process: simple_store('user.settings.address', 'date_of_birth', 'Please enter your street address')
+			process: simple_store('user.settings.address', 'date_of_birth', 'Please enter your street address', {validate: validate.address})
+		},
+		apartment: {
+			msg: 'Is there an apartment number? If not, say “no”. Otherwise, say the number!',
+			process: simple_store('user.settings.address_unit', 'address_unit', 'Please enter an apartment number', {validate: validate.address_unit})
 		},
 		date_of_birth: {
 			pre_process: function(action, conversation, user) {
