@@ -22,6 +22,7 @@ var notify = require('./notify.js');
 //
 // process functions can store data to the user or conversation model
 // simple_store provides easy hooks for validation and setting nested keys 
+// if they return an 'advance' key, the bot will go to the next step without waiting for a new message
 //
 // post_process functions can send follow-up information based on the user object
 // by returning a 'msg' key
@@ -32,11 +33,13 @@ var notify = require('./notify.js');
 var chains = {
 	vote_1: {
 		_start: 'intro',
-		intro_direct: {
+		intro: {
 			msg: 'Hi! This is HelloVote! I\'m going to help you register to vote. I\'ll ask a few questions so I can fill out your registration form. All your answers are protected with encryption, for privacy.',
 			process: function() {
+				// advance directly next step
 				return Promise.resolve({next: 'first_name'});
-			}
+			},
+			advance: true // don't wait for response, continue immediately
 		},
 		first_name: {
 			msg: 'So, what’s your first name? (This is an official state form, so we need your official information.)',
@@ -145,7 +148,7 @@ var chains = {
 		},
 		submit: {
 			pre_process: function(action, conversation, user) {
-				console.log('submit pre_process', user.settings);
+				log.info('submit pre_process', user.settings);
 				// check to ensure user has all required fields
 				var missing_fields = validate.voter_registration_complete(user.settings);
 				if (missing_fields.length) {
@@ -383,7 +386,7 @@ exports.start = function(type, to_user_id, options)
 	return user_model.get(to_user_id)
 		.then(function(_user) {
 			user = _user;
-			if(!user) throw error('user '+user_id+' was not found');
+			if(!user) throw error('user '+to_user_id+' was not found');
 			var chain = chains[type];
 			var first_step_name = options.start || chain._start;
 			var step = chain[first_step_name];
@@ -399,12 +402,28 @@ exports.start = function(type, to_user_id, options)
 			} else {
 				convo_model.update(options.existing_conversation_id, {
 					state: {type: type, step: first_step_name},
-				});
-				return message_model.create(
-					config.bot.user_id,
-					options.existing_conversation_id,
-					{ body: step.msg }
-					);
+				}).then(function(conversation) {
+					log.info('about to send first message! conversation: ', conversation.id);
+					return message_model.create(
+						config.bot.user_id,
+						conversation.id,
+						{ body: step.msg }
+					)
+				}).then(function() {
+					if (step.advance) {
+						// need to re-query for conversation to get updated result
+						convo_model.get(options.existing_conversation_id)
+							.then(function(conversation) {
+								// advance conversation to next step, without waiting for a new message
+								return exports.next(user.id, conversation, {
+									user_id: user.id,
+									conversation_id: conversation.id,
+									body: '', // empty body, because it's a fake message
+									created: db.now()
+								});	
+							});
+						}
+					});
 			}
 		});
 };
@@ -492,16 +511,16 @@ exports.next = function(user_id, conversation, message)
 						}
 					}
 
-					// send post-process message for user
-					promise = promise
-						.then(function() {
-							if (action.post_process) {
+					if (action.post_process) {
+						// send post-process message for user
+						promise = promise
+							.then(function() {
 								var res = action.post_process(user);
 								if (res.msg) {
 									message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
 								}
-							}
-						});
+							});
+					}
 
 					// we're processing the next step, inject some steps
 					// into the promise chain
@@ -525,6 +544,20 @@ exports.next = function(user_id, conversation, message)
 							// comes in
 							return convo_model.update(conversation.id, {state: state});
 						});
+
+					if(action.advance) {
+						// advance to next step, without waiting for user response
+						promise = promise
+							.then(function() {
+								// construct empty message
+								return exports.next(user.id, conversation, {
+									user_id: user.id,
+									conversation_id: conversation.id,
+									body: '', // empty body, because it's a fake message
+									created: db.now()
+								})
+							});
+					}
 
 					// all done
 					return promise;
