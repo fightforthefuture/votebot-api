@@ -563,7 +563,9 @@ exports.next = function(user_id, conversation, message)
 							state.step = found.name;
 
 							// create/send the message from the next step in the convo chain
-							return message_model.create(config.bot.user_id, conversation.id, {body: language.template(nextstep.msg, user)});
+							if (nextstep.msg) {
+								return message_model.create(config.bot.user_id, conversation.id, {body: language.template(nextstep.msg, user)});
+							}
 						})
 						.then(function() {
 							// save our current state into the conversation so's
