@@ -69,7 +69,7 @@ exports.broadcast = function(conversation_id, message)
 			return Promise.all(users.map(function(user) {
 				var to_user = config.sms_override || user.username;
 				if (user.type === 'facebook-messenger') {
-					var from_number = 'messenger:'+ config.twilio.facebook_page_id
+					var from_number = 'Messenger:'+ config.twilio.facebook_page_id
 				} else {
 					var from_number = config.twilio.from_number;
 				}
