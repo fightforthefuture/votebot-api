@@ -156,7 +156,7 @@ var chains = {
 				var missing_fields = validate.voter_registration_complete(user.settings);
 				if (missing_fields.length) {
 					// incomplete, re-query missing fields
-					log.info('bot: missing fields!', missing_fields);
+					log.info('bot: missing fields!', missing_fields.length);
 					return {next: 'incomplete', errors: missing_fields};
 				} else {
 					if (config.submit_url) {
