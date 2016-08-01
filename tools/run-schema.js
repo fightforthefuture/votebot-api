@@ -84,7 +84,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'address',
-		msg: 'What\'s your street address in {{settings.city}}, {{settings.state}}? (including apartment #, if any)',
+		msg: 'What\'s your street address in {{settings.city}}, {{settings.state}}?',
 		errormsg: 'Please enter your street address',
 		next: 'apartment',
 		admin_order: 6,
@@ -123,6 +123,7 @@ var default_chain_steps = [
 		msg: 'THIS IS THE STEP THAT SUBMITS TO THE FORM STUFFER.',
 		errormsg: '',
 		next: 'complete',
+		admin_special: true,
 		admin_order: 10,
 	},
 	{
@@ -130,6 +131,7 @@ var default_chain_steps = [
 		msg: 'We are processing your registration! Check your email for further instructions.',
 		errormsg: '',
 		next: 'share', 
+		advance: true,
 		admin_order: 11,
 	},
 	{

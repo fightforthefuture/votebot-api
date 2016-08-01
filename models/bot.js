@@ -13,8 +13,11 @@ var us_states = require('../lib/us_states');
 var request = require('request-promise');
 var notify = require('./notify.js');
 
-// holds conversation chains. essentially, each "step" in the chain defines a
+// holds default steps for conversation chains. essentially, each "step" in the chain defines a
 // part of the conversation (generally a question) and how to process the answer.
+//
+// conversation chains are defined in the database. each step in a conversation chain is
+// loaded from the database and then used to override the defaults as listed here.
 //
 // pre_process functions can change the flow by returning a new step in the 'next' key
 // they can also store calculated values on the user object, for use by other steps
@@ -30,362 +33,329 @@ var notify = require('./notify.js');
 // note that `msg` strings can template in variables of user data. eg:
 //   msg: 'hello {{fullname}}! how is the weather in {{settings.city}}?'
 
-var chains = {
-	vote_1: {
-		_start: 'intro',
-		intro: {
-			msg: 'Hi! This is HelloVote! I\'m going to help you register to vote. I\'ll ask a few questions so I can fill out your registration form. All your answers are protected with encryption, for privacy.',
-			process: function() {
-				// advance directly next step
-				return Promise.resolve({next: 'first_name'});
-			},
-			advance: true // don't wait for response, continue immediately
+var default_steps = {
+	
+	intro: {
+		process: function() {
+			// advance directly next step
+			return Promise.resolve({next: 'first_name'});
 		},
-		first_name: {
-			msg: 'So, what’s your first name? (This is an official state form, so we need your official information.)',
-			errormsg: 'Please enter your first name',
-			next: 'last_name',
-			process: simple_store('user.first_name')
+	},
+	first_name: {
+		process: simple_store('user.first_name')
+	},
+	last_name: {
+		process: simple_store('user.last_name')
+	},
+	zip: {
+		// create a binding for the user now that we have identity
+		pre_process: function(action, conversation, user) {
+			if (config.twilio) notify.add_tags(user, ['votebot-started']);
 		},
-		last_name: {
-			msg: 'Hi {{first_name}}, what\'s your last name?',
-			errormsg: 'Please enter your last name',
-			next: 'zip',
-			process: simple_store('user.last_name')
+		process: simple_store('user.settings.zip', {validate: validate.zip})
+	},
+	city: {
+		pre_process: function(action, conversation, user) {
+			console.log('city.pre_process:', action, conversation, user);
+			if(util.object.get(user, 'settings.city')) return {next: 'state'};
 		},
-		zip: {
-			// create a binding for the user now that we have identity
-			pre_process: function(action, conversation, user) {
-				if (config.twilio) notify.add_tags(user, ['votebot-started']);
-			},
-			msg: 'Got it. Now, what\'s your zip code?',
-			errormsg: 'Please enter your zip code, or SKIP if you don\'t know it.',
-			next: 'city',
-			process: simple_store('user.settings.zip', {validate: validate.zip})
+		process: simple_store('user.settings.city')
+	},
+	state: {
+		pre_process: function(action, conversation, user) {
+			if(util.object.get(user, 'settings.state')) return {next: 'address'};
 		},
-		city: {
-			pre_process: function(action, conversation, user) {
-				if(util.object.get(user, 'settings.city')) return {next: 'state'};
-			},
-			msg: 'What city do you live in?',
-			errormsg: 'Please enter your city',
-			next: 'state',
-			process: simple_store('user.settings.city')
+		process: simple_store('user.settings.state', {validate: validate.state})
+	},
+	address: {
+		pre_process: function(action, conversation, user) {
+			if (config.twilio) notify.add_tags(user, [user.settings.state]);
 		},
-		state: {
-			pre_process: function(action, conversation, user) {
-				if(util.object.get(user, 'settings.state')) return {next: 'address'};
-			},
-			msg: 'What state do you live in? (eg CA)',
-			errormsg: 'Please enter your state', 
-			next: 'address', 
-			process: simple_store('user.settings.state', {validate: validate.state})
+		process: simple_store('user.settings.address')
+	},
+	apartment: {
+		pre_process: function(action, conversation, user) {
+			// TODO skip this question if smarty streets indicates it's a single unit building
 		},
-		address: {
-			pre_process: function(action, conversation, user) {
-				if (config.twilio) notify.add_tags(user, [user.settings.state]);
-			},
-			msg: 'What\'s your street address in {{settings.city}}, {{settings.state}}?',
-			errormsg: 'Please enter your street address',
-			next: 'apartment',
-			process: simple_store('user.settings.address')
-		},
-		apartment: {
-			pre_process: function(action, conversation, user) {
-				// TODO skip this question if smarty streets indicates it's a single unit building
-			},
-			msg: 'Is there an apartment number? If not, say “no”. Otherwise, say the number!',
-			errormsg: 'Please enter an apartment number',
-			next: 'date_of_birth',
-			process: simple_store('user.settings.address_unit', {validate: validate.address_unit})
-		},
-		date_of_birth: {
-			pre_process: function(action, conversation, user) {
-				if (config.twilio) {
-					notify.add_identity(user, {
-						address: user.settings.address,
-						city: user.settings.city,
-						state: user.settings.state
-					});
-				}
-			},
-			msg: 'When were you born? (MM/DD/YYYY)',
-			errormsg: 'Please enter your date of birth as month/day/year',
-			next: 'email', 
-			process: simple_store('user.settings.date_of_birth', {validate: validate.date}),
-			post_process: function(user) {
-				// if today is their birthday, send a cake
-				var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
-				if (moment().isSame(date_of_birth, 'day')) {
-					return Promise.resolve({msg: 'Happy birthday! :cake:'});
-				}	
-			}
-		},
-		email: {
-			pre_process: function(action, conversation, user) {
-				// send email prompt dependent on user state
-				var state = util.object.get(user, 'settings.state').trim().toLowerCase();
-				if (us_states.required_questions[state]) {
-					return {msg: "Almost done! Now, {{settings.state}} requires an email for online registration. We'll also send you crucial voting information."};
-				} else {
-					return {msg: "Almost done! Now, {{settings.state}} requires you to print, sign, and mail a form. We’ll email it to you, along with crucial voting information."};
-				}
-			},
-			msg: "What's your email?",
-			errormsg: 'Please enter your email address. If you don\'t have one, reply SKIP',
-			next: 'per_state', 
-			process: simple_store('user.settings.email', {validate: validate.email})
-		},
-		// this is a MAGICAL step. it never actually runs, but instead just
-		// points to other steps until it runs out of per-state questions to
-		// ask. then it parties.
-		per_state: {
-			pre_process: function(action, conversation, user) {
-				var state = util.object.get(user, 'settings.state').trim().toLowerCase();
-				var state_questions = us_states.required_questions[state] || us_states.required_questions_default;
-				var next_default = {next: 'submit'};
-
-				// no per-state questions? skip!!
-				if(!state_questions) return next_default;
-
-				// loop over the per-state questions, skipping any we have
-				// already processed. if we get to the end of the list, we
-				// load our next step.
-				var next = null;
-				for(var i = 0; i < state_questions.length; i++)
-				{
-					var key = state_questions[i];
-					var exists = util.object.get(user, 'settings.'+key);
-					// if we already have this answer, skip
-					if(exists !== undefined) continue;
-					next = key;
-					break;
-				}
-				if(next) return {next: next};
-
-				// nothing left, submit to state
-				return next_default;
-			}
-		},
-		submit: {
-			pre_process: function(action, conversation, user) {
-				log.info('submit pre_process', user.settings);
-				// check to ensure user has all required fields
-				var missing_fields = validate.voter_registration_complete(user.settings);
-				if (missing_fields.length) {
-					// incomplete, re-query missing fields
-					log.info('bot: missing fields!', missing_fields.length);
-					return {next: 'incomplete', errors: missing_fields};
-				} else {
-					if (config.submit_url) {
-						// send to votebot-forms
-						log.info('bot: registration is complete! submitting...');
-						
-						var form_submit = {
-						    method: 'POST',
-						    uri: config.submit_url,
-						    body: {
-						    	user: user,
-						    	callback_url: '' // TODO, define callback to notify user of form submit success
-						    },
-						    json: true 
-						};
-						request(form_submit)
-						    .then(function (parsedBody) {
-						        // store response from in user.submit
-								if (body.status === 'error') {
-									return {next: 'incomplete', 'errors': body.errors};
-								}
-								user_model.update(user.id, {'submit': body.status});
-						    })
-						    .catch(function (err) {
-						        log.error(error);
-								return {next: 'incomplete'};
-						    });
-					} else {
-						log.info('bot: no submit_url in config, skipping...');
-						user_model.update(user.id, {'submit': {status: 'skipped'}});
-					}
-
-					// finally, remove SSN or state ID from our data
-					user_model.update(user.id, {'settings.ssn': 'cleared', 'settings.state_id': 'cleared'});
-
-					return {next: 'complete'};
-				} 
-			},
-			next: 'complete',
-			process: simple_store('user.submit', {validate: validate.submit_response}),
-		},
-		complete: {
-			pre_process: function(action, conversation, user) {
-				if (config.twilio) notify.replace_tags(user, ['votebot-started'], ['votebot-completed']);
-
-				// send confirmation prompt dependent on user state
-				var state = util.object.get(user, 'settings.state').trim().toLowerCase();
-				if (us_states.required_questions[state]) {
-					return {msg: "We are processing your registration! In a moment, we’ll email you a receipt for your voter registration."};
-				} else {
-					return {msg: "Great! In a moment, we’ll email you a completed voter registration form to print, sign, and mail."};
-				}
-			},
-			msg: 'We are processing your registration! Check your email for further instructions.',
-			next: 'share', 
-			process: simple_store('user.settings.complete', {validate: validate.always_true}),
-		},
-		incomplete: {
-			msg: 'Sorry, your registration is incomplete. (fix/restart)?',
-			process: function(body, user) {
-				// TODO, re-query missing fields
-				console.log('missing fields', util.object.get(user, 'settings.missing_fields'));
-				var next = 'incomplete';
-				if (body.trim().toUpperCase() === 'RESTART') {
-					next = 'restart';
-				}
-				return Promise.resolve({next: next});
-			}
-		},
-		share: {
-			pre_process: function(action, conversation, user) {
-				var share_url = 'http://hellovote.org/?u=ASDF';
-				// TODO, should hash user.id and append to share_url
-				// TODO, send app-scheme url to share if user is on SMS?
-				var share_messages = [
-					'Now, there\'s one last important thing. We need you to pass on the <3 and register some friends.',
-					'1. Share this on Facebook: http://facebook.com/sharer.php?u='+encodeURI(share_url),
-					'2. Share this on Twitter: http://twitter.com/message?u='+encodeURI(share_url),
-					'3. Forward the following text message to as many friends as you can. Focus on friends who are young, just moved, or might not be registered.',
-					'Hey, I just registered to vote. You should too! This made it really easy: '+share_url
-				];
-				share_messages.map(function(msg) {
-					message_model.create(config.bot.user_id, conversation.id, {body: language.template(msg)});
+		process: simple_store('user.settings.address_unit', {validate: validate.address_unit})
+	},
+	date_of_birth: {
+		pre_process: function(action, conversation, user) {
+			if (config.twilio) {
+				notify.add_identity(user, {
+					address: user.settings.address,
+					city: user.settings.city,
+					state: user.settings.state
 				});
-				return {'end': true};
-			},
-			final: true
+			}
 		},
-		restart: {
-			msg: 'This will restart your HelloVote registration! Reply (ok) to continue.',
-			errormsg: '',
-			next: 'intro',
-			process: simple_store('user.settings', {validate: validate.empty_object}),
+		process: simple_store('user.settings.date_of_birth', {validate: validate.date}),
+		post_process: function(user) {
+			// if today is their birthday, send a cake
+			var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
+			if (moment().isSame(date_of_birth, 'day')) {
+				return Promise.resolve({msg: 'Happy birthday! :cake:'});
+			}	
+		}
+	},
+	email: {
+		pre_process: function(action, conversation, user) {
+			// send email prompt dependent on user state
+			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
+			if (us_states.required_questions[state]) {
+				return {msg: "Almost done! Now, {{settings.state}} requires an email for online registration. We'll also send you crucial voting information."};
+			} else {
+				return {msg: "Almost done! Now, {{settings.state}} requires you to print, sign, and mail a form. We’ll email it to you, along with crucial voting information."};
+			}
 		},
+		process: simple_store('user.settings.email', {validate: validate.email})
+	},
+	// this is a MAGICAL step. it never actually runs, but instead just
+	// points to other steps until it runs out of per-state questions to
+	// ask. then it parties.
+	per_state: {
+		pre_process: function(action, conversation, user) {
+			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
+			var state_questions = us_states.required_questions[state] || us_states.required_questions_default;
+			var next_default = {next: 'submit'};
 
-		// per-state questions
-		// !!!!!!!!
-		// !!NOTE!! these *HAVE* to store their value in settings.{{name}} where
-		// {{name}} is the same as the key name in the conversation object.
-		// in other words, the `us_citizen` conversation step needs to store its
-		// value in `user.settings.us_citizen` or the bot will infinite loop
-		// !!!!!!!!
-		us_citizen: {
-			msg: 'Are you a US citizen? (yes/no)',
-			errormsg: '',
-			next: 'per_state', 
-			process: simple_store('user.settings.us_citizen', {validate: validate.boolean_yes})
-		},
-		legal_resident: {
-			msg: 'Are you a current legal resident of {{settings.state}}? (yes/no)',
-			errormsg: '',
-			next: 'per_state', 
-			process: simple_store('user.settings.legal_resident', {validate: validate.boolean_yes})
-		},
-		will_be_18: { 
-			pre_process: function(action, conversation, user) {
-				// if user has already told us their birthdate, calculate will_be_18 automatically
-				if( util.object.get(user, 'settings.date_of_birth') ) {
-					var date_of_birth = new Date(util.object.get(user, 'settings.date_of_birth'));
-					var next_election = new Date(config.election.date);
-					var cutoff_date = next_election.setFullYear(next_election.getFullYear() - 18);
-					user.settings.will_be_18 = (cutoff_date >= date_of_birth);
-					return {next: 'per_state'};
-					// TODO, echo parsed date of birth back to user to confirm?
+			// no per-state questions? skip!!
+			if(!state_questions) return next_default;
+
+			// loop over the per-state questions, skipping any we have
+			// already processed. if we get to the end of the list, we
+			// load our next step.
+			var next = null;
+			for(var i = 0; i < state_questions.length; i++)
+			{
+				var key = state_questions[i];
+				var exists = util.object.get(user, 'settings.'+key);
+				// if we already have this answer, skip
+				if(exists !== undefined) continue;
+				next = key;
+				break;
+			}
+			if(next) return {next: next};
+
+			// nothing left, submit to state
+			return next_default;
+		}
+	},
+	submit: {
+		pre_process: function(action, conversation, user) {
+			log.info('submit pre_process', user.settings);
+			// check to ensure user has all required fields
+			var missing_fields = validate.voter_registration_complete(user.settings);
+			if (missing_fields.length) {
+				// incomplete, re-query missing fields
+				log.info('bot: missing fields!', missing_fields.length);
+				return {next: 'incomplete', errors: missing_fields};
+			} else {
+				if (config.submit_url) {
+					// send to votebot-forms
+					log.info('bot: registration is complete! submitting...');
+					
+					var form_submit = {
+					    method: 'POST',
+					    uri: config.submit_url,
+					    body: {
+					    	user: user,
+					    	callback_url: '' // TODO, define callback to notify user of form submit success
+					    },
+					    json: true 
+					};
+					request(form_submit)
+					    .then(function (parsedBody) {
+					        // store response from in user.submit
+							if (body.status === 'error') {
+								return {next: 'incomplete', 'errors': body.errors};
+							}
+							user_model.update(user.id, {'submit': body.status});
+					    })
+					    .catch(function (err) {
+					        log.error(error);
+							return {next: 'incomplete'};
+					    });
+				} else {
+					log.info('bot: no submit_url in config, skipping...');
+					user_model.update(user.id, {'submit': {status: 'skipped'}});
 				}
-			},
-			msg: 'Are you 18 or older, or will you be by the date of the election? (yes/no)',
-			errormsg: '',
-			next: 'per_state', 
-			process: simple_store('user.settings.will_be_18', {validate: validate.boolean_yes})
+
+				// finally, remove SSN or state ID from our data
+				user_model.update(user.id, {'settings.ssn': 'cleared', 'settings.state_id': 'cleared'});
+
+				return {next: 'complete'};
+			} 
 		},
-		ethnicity: {
-			msg: 'What is your ethnicity or race? (asian-pacific/black/hispanic/native-american/white/multi-racial/other)',
-			errormsg: 'Please let us know your ethnicity or race.',
-			next: 'per_state', 
-			process: simple_store('user.settings.ethnicity')
+		// next: 'complete',
+		process: simple_store('user.submit', {validate: validate.submit_response}),
+	},
+	complete: {
+		pre_process: function(action, conversation, user) {
+			if (config.twilio) notify.replace_tags(user, ['votebot-started'], ['votebot-completed']);
+
+			// send confirmation prompt dependent on user state
+			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
+			if (us_states.required_questions[state]) {
+				return {msg: "We are processing your registration! In a moment, we’ll email you a receipt for your voter registration."};
+			} else {
+				return {msg: "Great! In a moment, we’ll email you a completed voter registration form to print, sign, and mail."};
+			}
 		},
-		party: {
-			msg: 'What\'s your party preference? (democrat/republican/libertarian/green/other/none)',
-			errormsg: 'Please let us know your party preference',
-			next: 'per_state', 
-			process: simple_store('user.settings.political_party')
+		process: simple_store('user.settings.complete', {validate: validate.always_true}),
+	},
+	incomplete: {
+		// msg: 'Sorry, your registration is incomplete. (fix/restart)?',
+		process: function(body, user) {
+			// TODO, re-query missing fields
+			console.log('missing fields', util.object.get(user, 'settings.missing_fields'));
+			var next = 'incomplete';
+			if (body.trim().toUpperCase() === 'RESTART') {
+				next = 'restart';
+			}
+			return Promise.resolve({next: next});
+		}
+	},
+	share: {
+		pre_process: function(action, conversation, user) {
+			var share_url = 'http://hellovote.org/?u=ASDF';
+			// TODO, should hash user.id and append to share_url
+			// TODO, send app-scheme url to share if user is on SMS?
+			var share_messages = [
+				'Now, there\'s one last important thing. We need you to pass on the <3 and register some friends.',
+				'1. Share this on Facebook: http://facebook.com/sharer.php?u='+encodeURI(share_url),
+				'2. Share this on Twitter: http://twitter.com/message?u='+encodeURI(share_url),
+				'3. Forward the following text message to as many friends as you can. Focus on friends who are young, just moved, or might not be registered.',
+				'Hey, I just registered to vote. You should too! This made it really easy: '+share_url
+			];
+			share_messages.map(function(msg) {
+				message_model.create(config.bot.user_id, conversation.id, {body: language.template(msg)});
+			});
+			return {'end': true};
 		},
-		disenfranchised: {
-			msg: 'Are you currently disenfranchised from voting (for instance due to a felony conviction)? (yes/no)',
-			errormsg: '',
-			next: 'per_state', 
-			process: simple_store('user.settings.disenfranchised', {validate: validate.boolean_no})
+		final: true
+	},
+	restart: {
+		process: simple_store('user.settings', {validate: validate.empty_object}),
+	},
+
+	// per-state questions
+	// !!!!!!!!
+	// !!NOTE!! these *HAVE* to store their value in settings.{{name}} where
+	// {{name}} is the same as the key name in the conversation object.
+	// in other words, the `us_citizen` conversation step needs to store its
+	// value in `user.settings.us_citizen` or the bot will infinite loop
+	// !!!!!!!!
+	us_citizen: {
+		process: simple_store('user.settings.us_citizen', {validate: validate.boolean_yes})
+	},
+	legal_resident: {
+		process: simple_store('user.settings.legal_resident', {validate: validate.boolean_yes})
+	},
+	will_be_18: { 
+		pre_process: function(action, conversation, user) {
+			// if user has already told us their birthdate, calculate will_be_18 automatically
+			if( util.object.get(user, 'settings.date_of_birth') ) {
+				var date_of_birth = new Date(util.object.get(user, 'settings.date_of_birth'));
+				var next_election = new Date(config.election.date);
+				var cutoff_date = next_election.setFullYear(next_election.getFullYear() - 18);
+				user.settings.will_be_18 = (cutoff_date >= date_of_birth);
+				return {next: 'per_state'};
+				// TODO, echo parsed date of birth back to user to confirm?
+			}
 		},
-		incompetent: {
-			msg: 'Have you been found legally incompetent in your state? (yes/no)',
-			errormsg: '',
-			next: 'per_state', 
-			process: simple_store('user.settings.incompetent', {validate: validate.boolean_no})
-		},
-		state_id: {
-			msg: 'What\'s your {{settings.state}} driver\'s license (or state ID) number?',
-			errormsg: 'Please enter your state ID number',
-			next: 'per_state', 
-			process: simple_store('user.settings.state_id', {validate: validate.state_id})
-		},
-		state_id_issue_date: {
-			msg: 'What date was your state id/driver\'s license issued? (mm/dd/yyyy)',
-			errormsg: '',
-			next: 'per_state', 
-			process: simple_store('user.settings.state_id_issue_date', {validate: validate.date})
-		},
-		ssn: {
-			msg: 'What\'s your SSN? Your information is safe with us, and we don\'t store it after submitting to your state.',
-			errormsg: '',
-			next: 'per_state', 
-			process: simple_store('user.settings.ssn', {validate: validate.ssn})
-		},
-		ssn_last4: {
-			msg: 'What are the last 4 digits of your SSN? Your information is safe with us, and we don\'t store it after submitting to your state.',
-			errormsg: 'Please enter the last 4 digits of your SSN.',
-			next: 'per_state', 
-			process: simple_store('user.settings.ssn_last4', {validate: validate.ssn_last_4})
-		},
-		state_id_or_ssn_last4: {
-			msg: 'What\'s your {{settings.state}} ID number? If you don\'t have one, enter the last 4 digits of your SSN. Your info is safe with us.',
-			errormsg: 'Please enter your state ID number or last 4 of your SSN',
-			next: 'per_state', 
-			process: simple_store('user.settings.state_id_or_ssn_last4')
-		},
-		gender: {
-			msg: 'What\'s your gender?',
-			errormsg: '',
-			next: 'per_state', 
-			process: simple_store('user.settings.gender', {validate: validate.gender})
-		},
-		county: {
-			msg: 'What county do you reside in?',
-			errormsg: 'Please enter the name of the county you reside in',
-			next: 'per_state', 
-			process: simple_store('user.settings.county')
-		},
-		consent_use_signature: {
-			msg: 'May we use your signature on file with the DMV to complete the form with your state? (yes/no)',
-			errormsg: 'Please reply YES to let us request your signature from the DMV. We do not store this information.',
-			next: 'per_state',
-			process: simple_store('user.settings.consent_use_signature', {validate: validate.boolean_yes})
-		},
-		mail_in: {
-			msg: 'Would you like to vote by mail-in ballot?',
-			errormsg: '',
-			next: 'per_state', 
-			process: simple_store('user.settings.mail_in', {validate: validate.boolean})
-		},
-	}
+		process: simple_store('user.settings.will_be_18', {validate: validate.boolean_yes})
+	},
+	ethnicity: {
+		process: simple_store('user.settings.ethnicity')
+	},
+	party: {
+		process: simple_store('user.settings.political_party')
+	},
+	disenfranchised: {
+		process: simple_store('user.settings.disenfranchised', {validate: validate.boolean_no})
+	},
+	incompetent: {
+		process: simple_store('user.settings.incompetent', {validate: validate.boolean_no})
+	},
+	state_id: {
+		process: simple_store('user.settings.state_id', {validate: validate.state_id})
+	},
+	state_id_issue_date: {
+		process: simple_store('user.settings.state_id_issue_date', {validate: validate.date})
+	},
+	ssn: {
+		process: simple_store('user.settings.ssn', {validate: validate.ssn})
+	},
+	ssn_last4: {
+		process: simple_store('user.settings.ssn_last4', {validate: validate.ssn_last_4})
+	},
+	state_id_or_ssn_last4: {
+		process: simple_store('user.settings.state_id_or_ssn_last4')
+	},
+	gender: {
+		process: simple_store('user.settings.gender', {validate: validate.gender})
+	},
+	county: {
+		process: simple_store('user.settings.county')
+	},
+	consent_use_signature: {
+		process: simple_store('user.settings.consent_use_signature', {validate: validate.boolean_yes})
+	},
+	mail_in: {
+		process: simple_store('user.settings.mail_in', {validate: validate.boolean})
+	},
 };
+
+function get_chain(type) {
+	var vars = {type: type};
+	return db.query('SELECT * FROM chains WHERE name = {{type}}', vars).then(function(chain) {
+		console.log('chain: ', chain);
+
+		if (chain.length == 0)
+			return Promise.resolve(null);
+
+		chain = chain[0];
+		return Promise.resolve(chain);
+	});
+}
+
+function get_chain_step(type, step) {
+	var vars = {chain_name: type, step_name: step};
+	var qry = [
+		'SELECT',
+		'	cs.*',
+		'FROM',
+		'	chains_steps cs',
+		'INNER JOIN',
+		'	chains c',
+		'ON',
+		'	cs.chain_id = c.id',
+		'WHERE',
+		'	cs.name = {{step_name}}',
+		'AND',
+		'	c.name = {{chain_name}}'
+	];
+
+	return db.query(qry.join('\n'), vars).then(function(step) {
+		console.log('got step: ', step);
+
+		if (step.length == 0)
+			return Promise.resolve(null);
+
+		step = step[0];
+		var overridden_default = {};
+
+		if (typeof default_steps[step.name] !== 'undefined')
+			overridden_default = default_steps[step.name];
+
+		for (var key in step)
+			if (step.hasOwnProperty(key))
+				overridden_default[key] = step[key];
+
+		return Promise.resolve(overridden_default);
+	});
+}
 
 // a helper for very simple ask-and-store type questions.
 // can perform data validation as well.
@@ -429,30 +399,31 @@ var parse_step = function(step, body, user)
  */
 var find_next_step = function(action, conversation, user)
 {
+	var preserve_action = util.object.merge({}, action);
 	var state = conversation.state;
-	var next = action.next;
+	var next = preserve_action.next;
+	
+	return get_chain_step(state.type, next).then(function(nextstep) {
+		if(!nextstep) throw new Error('bot: could not load step: ', state.type, next);
 
-	var key = [state.type, next].join('.');
-	var nextstep = util.object.get(chains, key);
-	if(!nextstep) throw new Error('bot: could not load step: '+ key);
+		var default_step = {step: nextstep, name: next};
 
-	var default_step = {step: nextstep, name: next};
+		if(!nextstep.pre_process) return default_step;
 
-	if(!nextstep.pre_process) return default_step;
-	// call pre-process on our new step.
-	var res = nextstep.pre_process(action, conversation, user);
-	if(!res || !res.next) return default_step;
+		// call pre-process on our new step.
+		var res = nextstep.pre_process(preserve_action, conversation, user);
+		if(!res || !res.next) return default_step;
 
-	// if our pre_process returns a "msg" key, then we should send it immediately
-	// doesn't update state, it's just an extra prompt
-	if (res.msg) {
-		message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg)});
-	}
-
-	// if our pre_process returns a "next" key, then we know we should load
-	// another step. wicked. recurse and find that shit.
-	var action = util.object.merge({}, action, {next: res.next});
-	return find_next_step(action, conversation, user);
+		// if our pre_process returns a "msg" key, then we should send it immediately
+		// doesn't update state, it's just an extra prompt
+		if (res.msg)
+			message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg)});
+		
+		// if our pre_process returns a "next" key, then we know we should load
+		// another step. wicked. recurse and find that shit.
+		var action2 = util.object.merge({}, preserve_action, {next: res.next});
+		return find_next_step(action2, conversation, user);
+	});
 };
 
 /**
@@ -462,13 +433,20 @@ exports.start = function(type, to_user_id, options)
 {
 	options || (options = {});
 	var user;
-	return user_model.get(to_user_id)
-		.then(function(_user) {
-			user = _user;
-			if(!user) throw error('user '+to_user_id+' was not found');
-			var chain = chains[type];
-			var first_step_name = options.start || chain._start;
-			var step = chain[first_step_name];
+	var first_step_name;
+	return user_model.get(to_user_id).then(function(_user) {
+		user = _user;
+		if(!user) throw error('user '+to_user_id+' was not found');
+
+		return get_chain(type).then(function(chain) {
+			if(!chain) throw new Error('bot: error loading chain: '+type);
+
+			first_step_name = options.start || chain.start;
+
+			return get_chain_step(type, first_step_name);
+
+		}).then(function(step) {
+			
 			if(!step) throw new Error('bot: error loading step: '+type+'.'+step);
 
 			if (!options.existing_conversation_id) {
@@ -505,6 +483,7 @@ exports.start = function(type, to_user_id, options)
 					});
 			}
 		});
+	});
 };
 
 /**
@@ -514,15 +493,29 @@ exports.start = function(type, to_user_id, options)
  */
 exports.next = function(user_id, conversation, message)
 {
-	var user;
+	var user,
+	    step,
+		state;
+
 	return user_model.get(user_id)
 		.then(function(_user) {
 			user = _user;
 			if(!user) throw error('user '+user_id+' was not found');
-			var state = conversation.state;
-			var key = [state.type, state.step].join('.');
-			var step = util.object.get(chains, key);
-			if(!step) throw error('conversation chain missing: '+key);
+			state = conversation.state;
+			return get_chain_step(state.type, state.step);
+		})
+		.then(function(_step) {
+			if(!_step) throw error('conversation chain missing: ', state.step);
+
+			step = _step;
+
+			// only get the restart step if we're on the final step, lol
+			if (step.final)
+				return get_chain_step(state.type, 'restart');
+			else
+				return null;
+		})
+		.then(function(maybe_contains_restart_step_but_only_if_final_step_lol) {
 
 			var body = message.body;
 
@@ -532,8 +525,7 @@ exports.next = function(user_id, conversation, message)
 				log.info('bot: recv msg, but conversation finished');
 				if (validate.boolean(body)) {
 					log.info('bot: user wants to restart');
-					key = [state.type, 'restart'].join('.');
-					step = util.object.get(chains, key);
+					step = maybe_contains_restart_step_but_only_if_final_step_lol;
 				} else {
 					log.info('bot: prompt to restart');
 					var restart_msg = 'You are registered with HelloVote. Would you like to start again? (yes/no)'
@@ -606,7 +598,9 @@ exports.next = function(user_id, conversation, message)
 					promise = promise
 						.then(function() {
 							// get our next step from the conversation chain
-							var found = find_next_step(action, conversation, user);
+							return find_next_step(action, conversation, user);
+						})
+						.then(function(found) {
 							var nextstep = found.step;
 
 							// destructively modify our conversation state object,
