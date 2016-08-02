@@ -24,7 +24,7 @@ var schema = [
 	'create unique index if not exists chains_name on chains (name);',
 	'create index if not exists chains_steps_chain on chains_steps (chain_id, admin_order);',
 
-	// create our first user (VoterBot) and set our auto-inc user id
+	// create our first user (VoteBot) and set our auto-inc user id
 	'insert into users (id, username, type, first_name, last_name, created) values ('+config.bot.user_id+', \''+bot_number+'\', \'sms\', \'VoteBot\', \'\', now()) on conflict (id) do update set username = \''+bot_number+'\'',
 	'select setval(\'users_id_seq\', max(id)) from users'
 ];
@@ -41,7 +41,7 @@ var default_chain = {
 var default_chain_steps = [
 	{
 		name: 'intro',
-		msg: 'Hi! This is HelloVote! I\'m going to help you register to vote. I\'ll ask a few questions so I can fill out your registration form. All your answers are protected with encryption, for privacy.',
+		msg: "\u{1F64B} This is HelloVote! I\'m going to help you register to vote. I\'ll ask a few questions so I can fill out your form. Your answers are encrypted for privacy. \u{1F510}",
 		errormsg: '',
 		advance: true,
 		next: 'first_name',
@@ -49,22 +49,22 @@ var default_chain_steps = [
 	},
 	{
 		name: 'first_name',
-		msg: 'So, what’s your first name? (This is an official state form, so we need your official information.)',
+		msg: 'So, what’s your first name? (This is an official state form \u{1F4C4}, so we need your official information.)',
 		errormsg: 'Please enter your first name',
 		next: 'last_name',
 		admin_order: 1,
 	},	
 	{
 		name: 'last_name',
-		msg: 'Hi {{first_name}}, what\'s your last name?',
+		msg: 'Ok {{first_name}}, what\'s your last name? Again, this needs to be your official information.',
 		errormsg: 'Please enter your last name',
 		next: 'zip',
 		admin_order: 2,
 	},
 	{
 		name: 'zip',
-		msg: 'What\'s your zip code?',
-		errormsg: 'Please enter your zip code, or SKIP if you don\'t know it.',
+		msg: 'Got it. Now, what\'s your zip code?',
+		errormsg: 'Please enter your five-digit zip code, or SKIP if you don\'t know it.',
 		next: 'city',
 		admin_order: 3,
 	},
@@ -85,7 +85,7 @@ var default_chain_steps = [
 	{
 		name: 'address',
 		msg: 'What\'s your street address in {{settings.city}}, {{settings.state}}?',
-		errormsg: 'Please enter your street address',
+		errormsg: 'Please enter just your street address',
 		next: 'apartment',
 		admin_order: 6,
 	},
@@ -98,7 +98,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'date_of_birth',
-		msg: 'When were you born? (MM/DD/YYYY)',
+		msg: 'What day were you born? \u{1F4C5} (month/day/year)',
 		errormsg: 'Please enter your date of birth as month/day/year',
 		next: 'email',
 		admin_order: 8, 
@@ -154,7 +154,7 @@ var default_chain_steps = [
 		name: 'restart',
 		msg: 'This will restart your HelloVote registration! Reply (ok) to continue.',
 		errormsg: '',
-		next: 'intro_direct',
+		next: 'intro',
 		admin_special: true,
 		admin_order: 14,
 	},

@@ -94,8 +94,8 @@ var default_steps = {
 			// if today is their birthday, send a cake
 			var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
 			if (moment().isSame(date_of_birth, 'day')) {
-				return Promise.resolve({msg: 'Happy birthday! :cake:'});
-			}	
+				return Promise.resolve({msg: 'Happy birthday! \u{1F382}:'});
+			}
 		}
 	},
 	email: {
