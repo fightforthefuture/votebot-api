@@ -228,8 +228,11 @@ var default_steps = {
 				'3. Forward the following text message to as many friends as you can. Focus on friends who are young, just moved, or might not be registered.',
 				'Hey, I just registered to vote. You should too! This made it really easy: '+share_url
 			];
-			share_messages.map(function(msg) {
-				message_model.create(config.bot.user_id, conversation.id, {body: language.template(msg)});
+			var msgDelay = 250; // ms delay between sending messages, so they appear in order to user
+			share_messages.forEach(function(msg, index) {
+				setTimeout(function () {
+				    message_model.create(config.bot.user_id, conversation.id, {body: language.template(msg)});
+			    }, msgDelay * index);
 			});
 			return {'end': true};
 		},
