@@ -3,7 +3,7 @@ var config = require('../config');
 var Promise = require('bluebird');
 var user_model = require('../models/user');
 
-var bot_number = user_model.parse_username(config.twilio.from_number).username;
+var bot_number = user_model.parse_username(config.twilio.from_number);
 var schema = [
 	// create user types
 	// 'CREATE TYPE user_type AS ENUM (\'sms\', \'facebook-messenger\');',
