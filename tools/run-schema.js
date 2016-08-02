@@ -232,7 +232,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'ssn',
-		msg: 'What\'s your SSN? Your information is safe with us, and we don\'t store it after submitting to your state.',
+		msg: 'Alright, last thing - in order to finish your registration, your state wants to know your SSN. (We don\'t store this info either!)',
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
@@ -240,7 +240,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'ssn_last4',
-		msg: 'What are the last 4 digits of your SSN? Your information is safe with us, and we don\'t store it after submitting to your state.',
+		msg: 'Alright, last thing - in order to finish your registration, your state wants to know the last 4 of your SSN. (We don\'t store this info either!)',
 		errormsg: 'Please enter the last 4 digits of your SSN.',
 		next: 'per_state',
 		admin_special: true,
