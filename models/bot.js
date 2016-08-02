@@ -173,7 +173,7 @@ var default_steps = {
 							user_model.update(user.id, {'submit': body.status});
 					    })
 					    .catch(function (err) {
-					        log.error(error);
+					        log.error('error submitting', error);
 							return {next: 'incomplete'};
 					    });
 				} else {
