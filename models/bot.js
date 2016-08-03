@@ -417,17 +417,22 @@ var find_next_step = function(action, conversation, user)
 
 		// call pre-process on our new step.
 		var res = nextstep.pre_process(preserve_action, conversation, user);
-		if(!res || !res.next) return default_step;
+		if(!res) return default_step;
 
 		// if our pre_process returns a "msg" key, then we should send it immediately
 		// doesn't update state, it's just an extra prompt
-		if (res.msg) 
-			message_model.create(user.id, conversation.id, {body: language.template(res.msg)});
-		
-		// if our pre_process returns a "next" key, then we know we should load
-		// another step. wicked. recurse and find that shit.
-		var action2 = util.object.merge({}, preserve_action, {next: res.next});
-		return find_next_step(action2, conversation, user);
+		if (res.msg) {
+			message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg)});
+		}
+
+		if(res.next) {
+			// if our pre_process returns a "next" key, then we know we should load
+			// another step. wicked. recurse and find that shit.
+			var next_action = util.object.merge({}, preserve_action, {next: res.next});
+			return find_next_step(next_action, conversation, user);
+		} else {
+			return default_step;
+		}
 	});
 };
 
