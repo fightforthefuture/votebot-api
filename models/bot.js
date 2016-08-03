@@ -37,7 +37,7 @@ var default_steps = {
 	
 	intro: {
 		msg: "Hi, this is HelloVote! I'm going to help you register to vote. I'll ask a few questions to fill out your registration form. Your answers are private and secure.",
-		process: function() { return Promise.resolve({'next': 'first_name', advance: true})}
+		process: function() { return Promise.resolve({'next': 'first_name'})}
 	},
 	first_name: {
 		process: simple_store('user.first_name')

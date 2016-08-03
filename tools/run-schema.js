@@ -43,8 +43,8 @@ var default_chain_steps = [
 		name: 'intro',
 		msg: "Hi, this is HelloVote! I'm going to help you register to vote. I'll ask a few questions to fill out your registration form. Your answers are private and secure.",
 		errormsg: '',
+		next: 'first_name',
 		advance: true,
-		next: 'privacy',
 		admin_order: 0,
 	},
 	{
@@ -98,7 +98,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'date_of_birth',
-		msg: "What day were you born? \u{1F4C5} (month/day/year)",
+		msg: "What day were you born? (month/day/year)",
 		errormsg: "Please enter your date of birth as month/day/year",
 		next: 'email',
 		admin_order: 8, 
