@@ -231,7 +231,7 @@ var default_steps = {
 				'3. Forward the following text message to as many friends as you can. Focus on friends who are young, just moved, or might not be registered.',
 				'Hey, I just registered to vote. You should too! This made it really easy: '+share_url
 			];
-			var msgDelay = 250; // ms delay between sending messages, so they appear in order to user
+			var msgDelay = 500; // ms delay between sending messages, so they appear in order to user
 			share_messages.forEach(function(msg, index) {
 				setTimeout(function () {
 				    message_model.create(config.bot.user_id, conversation.id, {body: language.template(msg)});
@@ -467,26 +467,23 @@ exports.start = function(type, to_user_id, options)
 					state: {type: type, step: first_step_name},
 				}).then(function(conversation) {
 					log.info('about to send first message! conversation: ', conversation.id);
-					return message_model.create(
+					message_model.create(
 						config.bot.user_id,
 						conversation.id,
 						{ body: step.msg }
 					)
-				}).then(function() {
+					return conversation;
+				}).then(function(conversation) {
 					if (step.advance) {
-						// need to re-query for conversation to get updated result
-						convo_model.get(options.existing_conversation_id)
-							.then(function(conversation) {
-								// advance conversation to next step, without waiting for a new message
-								return exports.next(user.id, conversation, {
-									user_id: user.id,
-									conversation_id: conversation.id,
-									body: '', // empty body, because it's a fake message
-									created: db.now()
-								});	
-							});
-						}
-					});
+						// advance conversation to next step, without waiting for a new message
+						return exports.next(user.id, conversation, {
+							user_id: user.id,
+							conversation_id: conversation.id,
+							body: '', // empty body, because it's a fake message
+							created: db.now()
+						});
+					}
+				});
 			}
 		});
 	});
