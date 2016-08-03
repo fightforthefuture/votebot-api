@@ -480,12 +480,15 @@ exports.start = function(type, to_user_id, options)
 					return conversation;
 				}).then(function(conversation) {
 					if (step.advance) {
-						// advance conversation to next step, without waiting for a new message
-						return exports.next(user.id, conversation, {
-							user_id: user.id,
-							conversation_id: conversation.id,
-							body: '', // empty body, because it's a fake message
-							created: db.now()
+						// advance conversation to next step, without waiting for user
+						// delay slightly, to avoid intro messages sending out of order
+						setTimeout(function() {
+							exports.next(user.id, conversation, {
+								user_id: user.id,
+								conversation_id: conversation.id,
+								body: '', // empty body, because it's a fake message
+								created: db.now()
+							}, 500);
 						});
 					}
 				});
