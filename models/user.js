@@ -57,7 +57,9 @@ exports.update = function(user_id, userdata)
 exports.batch_create = function(usernames)
 {
 	return Promise.all((usernames || []).map(function(username) {
-		return exports.upsert(exports.parse_username(username));
+		var new_user = exports.parse_username(username);
+		new_user.created = db.now();
+		return exports.upsert(new_user);
 	}));
 };
 
