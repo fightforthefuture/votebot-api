@@ -17,7 +17,7 @@ var log = require('./lib/logger');
 app.enable('trust proxy');
 if (config.app.force_ssl) {
 	// trust x-forwarded-proto header on Heroku
-	console.log('LOO');
+	log.info('enforcing SSL');
 	app.use(enforce.HTTPS({ trustProtoHeader: true }));
 }
 

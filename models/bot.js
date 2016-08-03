@@ -166,6 +166,8 @@ var default_steps = {
 					};
 					request(form_submit)
 					    .then(function (parsedBody) {
+					    	console.log('submit parsedBody', parsedBody);
+
 					        // store response from in user.submit
 							if (body.status === 'error') {
 								return {next: 'incomplete', 'errors': body.errors};
@@ -202,6 +204,7 @@ var default_steps = {
 				return {msg: "Great! In a moment, we’ll email you a completed voter registration form to print, sign, and mail."};
 			}
 		},
+		msg: '', // blank message to override default
 		process: simple_store('user.settings.complete', {validate: validate.always_true}),
 	},
 	incomplete: {

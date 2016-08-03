@@ -21,7 +21,7 @@ exports.hook = function(app)
 
 var create = function(req, res)
 {
-	var user_id = 1;
+	var user_id = config.bot.user_id;
 	var data = req.body;
 	model.create(user_id, data)
 		.then(function(convo) {
@@ -34,7 +34,7 @@ var create = function(req, res)
 
 var new_message = function(req, res)
 {
-	var user_id = 1;
+	var user_id = config.bot.user_id;
 	var data = req.body;
 	var conversation;
 	var conversation_id = req.params.id;
@@ -73,7 +73,7 @@ var incoming = function(req, res)
 
 var poll = function(req, res)
 {
-	var user_id = 1;
+	var user_id = config.bot.user_id;
 	var conversation_id = req.params.id;
 	var last_id = req.query.last_id || 0;
 	var username = req.query.username || '';
