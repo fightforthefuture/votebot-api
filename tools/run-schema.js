@@ -41,18 +41,10 @@ var default_chain = {
 var default_chain_steps = [
 	{
 		name: 'intro',
-		msg: "\u{1F64B} This is HelloVote! I'm going to help you register to vote.",
+		msg: "Hi, this is HelloVote! I'm going to help you register to vote. I'll ask a few questions to fill out your registration form. Your answers are private and secure.",
 		errormsg: '',
 		advance: true,
 		next: 'privacy',
-		admin_order: 0,
-	},
-	{
-		name: 'privacy',
-		msg: "I'll ask questions to fill out your state form. Your answers are private and secure. \u{1F510}",
-		errormsg: '',
-		advance: true,
-		next: 'first_name',
 		admin_order: 0,
 	},
 	{

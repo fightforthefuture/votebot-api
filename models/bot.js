@@ -36,12 +36,8 @@ var notify = require('./notify.js');
 var default_steps = {
 	
 	intro: {
-		msg: "\u{1F64B} This is HelloVote! I'm going to help you register to vote.",
-		process: function() { return Promise.resolve({'next': 'privacy', advance: true})}
-	},
-	privacy: {
-		msg: "I'll ask questions to fill out your state form. Your answers are private and secure. \u{1F510}",
-		process: function() { return Promise.resolve({'next': 'first_name'})}
+		msg: "Hi, this is HelloVote! I'm going to help you register to vote. I'll ask a few questions to fill out your registration form. Your answers are private and secure.",
+		process: function() { return Promise.resolve({'next': 'first_name', advance: true})}
 	},
 	first_name: {
 		process: simple_store('user.first_name')
