@@ -37,7 +37,7 @@ var default_steps = {
 	
 	intro: {
 		msg: "Hi, this is HelloVote! I'm going to help you register to vote. I'll ask a few questions to fill out your registration form. Your answers are private and secure.",
-		process: function() { return Promise.resolve({'next': 'first_name'})}
+		process: function() { return Promise.delay(config.bot.advance_delay, {'next': 'first_name'})}
 	},
 	first_name: {
 		process: simple_store('user.first_name')
@@ -235,11 +235,10 @@ var default_steps = {
 				'3. Forward the following text message to as many friends as you can. Focus on friends who are young, just moved, or might not be registered.',
 				share_text+share_url
 			];
-			var msgDelay = 500; // ms delay between sending messages, so they appear in order to user
 			share_messages.forEach(function(msg, index) {
 				setTimeout(function () {
 				    message_model.create(config.bot.user_id, conversation.id, {body: language.template(msg)});
-			    }, msgDelay * index);
+			    }, config.bot.advance_delay * index);
 			});
 			return {'end': true};
 		},
@@ -488,7 +487,7 @@ exports.start = function(type, to_user_id, options)
 								conversation_id: conversation.id,
 								body: '', // empty body, because it's a fake message
 								created: db.now()
-							}, 500);
+							}, config.bot.advance_delay);
 						});
 					}
 				});
@@ -633,9 +632,18 @@ exports.next = function(user_id, conversation, message)
 
 					if(action.advance) {
 						// advance to next step, without waiting for user response
+						// delay slightly 
 						promise = promise
 							.then(function() {
-								// construct empty message
+								setTimeout(function() {
+									// construct empty message
+									exports.next(user.id, conversation, {
+										user_id: user.id,
+										conversation_id: conversation.id,
+										body: '', // empty body, because it's a fake message
+										created: db.now()
+									}, config.bot.advance_delay);
+								});
 								return exports.next(user.id, conversation, {
 									user_id: user.id,
 									conversation_id: conversation.id,
