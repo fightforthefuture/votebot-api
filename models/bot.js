@@ -36,10 +36,12 @@ var notify = require('./notify.js');
 var default_steps = {
 	
 	intro: {
-		process: function() {
-			// advance directly next step
-			return Promise.resolve({next: 'first_name'});
-		},
+		msg: "\u{1F64B} This is HelloVote! I'm going to help you register to vote.",
+		process: function() { return Promise.resolve({'next': 'privacy', advance: true})}
+	},
+	privacy: {
+		msg: "I'll ask questions to fill out your state form. Your answers are private and secure. \u{1F510}",
+		process: function() { return Promise.resolve({'next': 'first_name'})}
 	},
 	first_name: {
 		process: simple_store('user.first_name')
@@ -202,21 +204,23 @@ var default_steps = {
 			// send confirmation prompt dependent on user state
 			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
 			if (us_states.required_questions[state]) {
-				return {msg: "We are processing your registration! In a moment, we’ll email you a receipt for your voter registration."};
+				// registration complete online, no extra instructions
+				return {next: 'share'};
 			} else {
-				return {msg: "Great! In a moment, we’ll email you a completed voter registration form to print, sign, and mail."};
+				// they'll get a PDF, special instructions
+				return {msg: "Great! In a moment, we’ll email you a completed voter registration form to print, sign, and mail.", next: 'share'};
 			}
 		},
-		msg: '', // blank message to override default
+		advance: true,
 		process: simple_store('user.settings.complete', {validate: validate.always_true}),
 	},
 	incomplete: {
-		// msg: 'Sorry, your registration is incomplete. (fix/restart)?',
+		// msg: 'Sorry, your registration is incomplete. Restart?',
 		process: function(body, user) {
 			// TODO, re-query missing fields
 			log.error('missing fields', util.object.get(user, 'settings.missing_fields'));
 			var next = 'incomplete';
-			if (body.trim().toUpperCase() === 'RESTART') {
+			if (language.is_yes(body) || body.trim().toUpperCase() === 'RESTART') {
 				next = 'restart';
 			}
 			return Promise.resolve({next: next});
@@ -224,15 +228,16 @@ var default_steps = {
 	},
 	share: {
 		pre_process: function(action, conversation, user) {
+			var share_text = 'Hey, I just registered to vote. You should too! This made it really easy: ';
 			var share_url = 'http://hellovote.org/?u=ASDF';
 			// TODO, should hash user.id and append to share_url
 			// TODO, send app-scheme url to share if user is on SMS?
 			var share_messages = [
 				'Now, there\'s one last important thing. We need you to pass on the <3 and register some friends.',
-				'1. Share this on Facebook: http://facebook.com/sharer.php?u='+encodeURI(share_url),
-				'2. Share this on Twitter: http://twitter.com/message?u='+encodeURI(share_url),
+				'1. Share this on Facebook: http://facebook.com/sharer.php?u='+encodeURIComponent(share_url),
+				'2. Share this on Twitter: http://twitter.com/intent/tweet/?text='+encodeURIComponent(share_url),
 				'3. Forward the following text message to as many friends as you can. Focus on friends who are young, just moved, or might not be registered.',
-				'Hey, I just registered to vote. You should too! This made it really easy: '+share_url
+				share_text+share_url
 			];
 			var msgDelay = 500; // ms delay between sending messages, so they appear in order to user
 			share_messages.forEach(function(msg, index) {
@@ -422,7 +427,7 @@ var find_next_step = function(action, conversation, user)
 		// if our pre_process returns a "msg" key, then we should send it immediately
 		// doesn't update state, it's just an extra prompt
 		if (res.msg) {
-			message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg)});
+			message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
 		}
 
 		if(res.next) {

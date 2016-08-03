@@ -41,7 +41,15 @@ var default_chain = {
 var default_chain_steps = [
 	{
 		name: 'intro',
-		msg: "\u{1F64B} This is HelloVote! I'm going to help you register to vote. I'll ask a few questions so I can fill out your form. Your answers are encrypted for privacy. \u{1F510}",
+		msg: "\u{1F64B} This is HelloVote! I'm going to help you register to vote.",
+		errormsg: '',
+		advance: true,
+		next: 'privacy',
+		admin_order: 0,
+	},
+	{
+		name: 'privacy',
+		msg: "I'll ask questions to fill out your state form. Your answers are private and secure. \u{1F510}",
 		errormsg: '',
 		advance: true,
 		next: 'first_name',
@@ -49,7 +57,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'first_name',
-		msg: "So, what's your first name? (This is an official state form \u{1F4C4}, so we need your official information.)",
+		msg: "So, what's your first name? This is a legal document, so I need your official information.",
 		errormsg: "Please enter your first name",
 		next: 'last_name',
 		admin_order: 1,
@@ -85,13 +93,13 @@ var default_chain_steps = [
 	{
 		name: 'address',
 		msg: "What's your street address in {{settings.city}}, {{settings.state}}?",
-		errormsg: "Please enter just your street address",
+		errormsg: "Please enter just your street address, not the city or state.",
 		next: 'apartment',
 		admin_order: 6,
 	},
 	{
 		name: 'apartment',
-		msg: "Is there an apartment number? If not, say \"no\". Otherwise, say the number!",
+		msg: "Is there an apartment number? If none, reply (none). Otherwise, say the number!",
 		errormsg: "Please enter an apartment number",
 		next: 'date_of_birth',
 		admin_order: 7,
@@ -128,7 +136,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'complete',
-		msg: "We are processing your registration! Check your email for further instructions.",
+		msg: "We are processing your registration! In a moment, we’ll email you a receipt for your voter registration.",
 		errormsg: '',
 		next: 'share', 
 		advance: true,
@@ -136,7 +144,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'incomplete',
-		msg: "Sorry, your registration is incomplete. (fix/restart)?",
+		msg: "Sorry, your registration is incomplete. Restart?",
 		errormsg: '',
 		next: 'restart', 
 		admin_special: true,
@@ -185,7 +193,7 @@ var default_chain_steps = [
 	{
 		name: 'ethnicity',
 		msg: "What is your ethnicity or race? (asian-pacific/black/hispanic/native-american/white/multi-racial/other)",
-		errormsg: "Please let us know your ethnicity or race.",
+		errormsg: "Please let me know your ethnicity or race.",
 		next: 'per_state',
 		admin_special: true,
 		admin_order: 18,
@@ -193,7 +201,7 @@ var default_chain_steps = [
 	{
 		name: 'party',
 		msg: "What's your party preference? (democrat/republican/libertarian/green/other/none)",
-		errormsg: "Please let us know your party preference, so we can ensure you are registered correctly.",
+		errormsg: "Please let me know your party preference, so I can ensure you are registered correctly.",
 		next: 'per_state',
 		admin_special: true,
 		admin_order: 19,
@@ -216,7 +224,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'state_id',
-		msg: "What's your {{settings.state}} driver's license (or state ID) number?",
+		msg: "Alright, last thing - in order to finish your registration, your state wants to know your {{settings.state}} id number. (I don't store this info!)",
 		errormsg: "Please enter your state ID number",
 		next: 'per_state',
 		admin_special: true,
@@ -232,7 +240,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'ssn',
-		msg: "Alright, last thing - in order to finish your registration, your state wants to know your SSN. (We don't store this info either!)",
+		msg: "Alright, last thing - in order to finish your registration, your state wants to know your social security number. (I don't store this info!)",
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
@@ -240,7 +248,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'ssn_last4',
-		msg: "Alright, last thing - in order to finish your registration, your state wants to know the last 4 of your SSN. (We don't store this info either!)",
+		msg: "Your state also wants to know the last 4 of your SSN. (I don't store this info either!)",
 		errormsg: "Please enter the last 4 digits of your SSN.",
 		next: 'per_state',
 		admin_special: true,
@@ -248,7 +256,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'state_id_or_ssn_last4',
-		msg: 'What\'s your {{settings.state}} ID number? If you don\'t have one, enter the last 4 digits of your SSN. Your info is safe with us.',
+		msg: "Alright, last thing - in order to finish your registration, your state wants to know your social security or {{settings.state}} id number. (I don't store this info either!)",
 		errormsg: "Please enter your state ID number or last 4 of your SSN",
 		next: 'per_state',
 		admin_special: true,
@@ -272,8 +280,8 @@ var default_chain_steps = [
 	},
 	{
 		name: 'consent_use_signature',
-		msg: "May we use your signature on file with the DMV to complete the form with your state? (yes/no)",
-		errormsg: "Please reply YES to let us request your signature from the DMV. We do not store this information.",
+		msg: "To submit your registration directly with the state, I can use your signature on file with the DMV. Reply (yes) to submit.",
+		errormsg: "Please reply YES to let us submit your registration using your signature from the DMV. I do not store this information.",
 		next: 'per_state',
 		admin_special: true,
 		admin_order: 29,
