@@ -56,7 +56,6 @@ var default_steps = {
 	},
 	city: {
 		pre_process: function(action, conversation, user) {
-			console.log('city.pre_process:', action, conversation, user);
 			if(util.object.get(user, 'settings.city')) return {next: 'state'};
 		},
 		process: simple_store('user.settings.city')
@@ -165,31 +164,35 @@ var default_steps = {
 					    json: true 
 					};
 					request(form_submit)
-					    .then(function (parsedBody) {
-					    	console.log('submit parsedBody', parsedBody);
+					    .then(function (response) {
+					        // store response from votebot-forms in user.settings.submit
+					        user_model.update(user.id, {settings: {'submit': response.status}});
 
-					        // store response from in user.submit
-							if (body.status === 'error') {
-								return {next: 'incomplete', 'errors': body.errors};
+							if (response.status === 'error') {
+								return {next: 'incomplete', 'errors': response.errors};
 							}
-							user_model.update(user.id, {'submit': body.status});
 					    })
-					    .catch(function (err) {
+					    .catch(function (error) {
 					        log.error('error submitting', error);
-							return {next: 'incomplete'};
+							return {next: 'incomplete', 'errors': error};
 					    });
 				} else {
-					log.info('bot: no submit_url in config, skipping...');
-					user_model.update(user.id, {'submit': {status: 'skipped'}});
+					log.info('bot: no submit_url in config, skipping submit...');
 				}
 
 				// finally, remove SSN or state ID from our data
-				user_model.update(user.id, {'settings.ssn': 'cleared', 'settings.state_id': 'cleared'});
-
-				return {next: 'complete'};
-			} 
+				// and advance to complete step
+				return {
+					store: {
+					  settings: {
+						'ssn': 'cleared',
+						'state_id': 'cleared'
+					   }
+					},
+					next: 'complete', 
+				}
+			};
 		},
-		// next: 'complete',
 		process: simple_store('user.submit', {validate: validate.submit_response}),
 	},
 	complete: {
@@ -211,7 +214,7 @@ var default_steps = {
 		// msg: 'Sorry, your registration is incomplete. (fix/restart)?',
 		process: function(body, user) {
 			// TODO, re-query missing fields
-			console.log('missing fields', util.object.get(user, 'settings.missing_fields'));
+			log.error('missing fields', util.object.get(user, 'settings.missing_fields'));
 			var next = 'incomplete';
 			if (body.trim().toUpperCase() === 'RESTART') {
 				next = 'restart';
@@ -316,8 +319,6 @@ var default_steps = {
 function get_chain(type) {
 	var vars = {type: type};
 	return db.query('SELECT * FROM chains WHERE name = {{type}}', vars).then(function(chain) {
-		console.log('chain: ', chain);
-
 		if (chain.length == 0)
 			return Promise.resolve(null);
 
@@ -344,8 +345,6 @@ function get_chain_step(type, step) {
 	];
 
 	return db.query(qry.join('\n'), vars).then(function(step) {
-		console.log('got step: ', step);
-
 		if (step.length == 0)
 			return Promise.resolve(null);
 
@@ -422,8 +421,8 @@ var find_next_step = function(action, conversation, user)
 
 		// if our pre_process returns a "msg" key, then we should send it immediately
 		// doesn't update state, it's just an extra prompt
-		if (res.msg)
-			message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg)});
+		if (res.msg) 
+			message_model.create(user.id, conversation.id, {body: language.template(res.msg)});
 		
 		// if our pre_process returns a "next" key, then we know we should load
 		// another step. wicked. recurse and find that shit.
