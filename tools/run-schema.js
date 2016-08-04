@@ -148,6 +148,7 @@ var default_chain_steps = [
 		msg: "Now, there’s one last important thing. We need you to pass on the <3 and register some friends. Share this on Facebook http://hellovote.org/share",
 		errormsg: '',
 		next: 'fftf_opt_in',
+		advance: true,
 		admin_order: 13,
 	},
 	{

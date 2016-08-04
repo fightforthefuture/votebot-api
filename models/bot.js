@@ -224,8 +224,7 @@ var default_steps = {
 		}
 	},
 	share: {
-		msg: 'Now, there’s one last important thing. We need you to pass on the <3 and register some friends. Share this on Facebook http://hellovote.org/share',
-		process: function() {}, // no-op
+		process: function() { return Promise.resolve({})}, // no-op
 		advance: true,
 	},
 	fftf_opt_in: {
@@ -473,13 +472,13 @@ exports.start = function(type, to_user_id, options)
 					if (step.advance) {
 						// advance conversation to next step, without waiting for user
 						// delay slightly, to avoid intro messages sending out of order
-						setTimeout(function() {
-							exports.next(user.id, conversation, {
+						Promise.delay(config.bot.advance_delay).then(function() {
+							return exports.next(user.id, conversation, {
 								user_id: user.id,
 								conversation_id: conversation.id,
 								body: '', // empty body, because it's a fake message
 								created: db.now()
-							}, config.bot.advance_delay);
+							});
 						});
 					}
 				});
@@ -626,22 +625,15 @@ exports.next = function(user_id, conversation, message)
 						// advance to next step, without waiting for user response
 						// delay slightly 
 						promise = promise
+							.delay(config.bot.advance_delay)
 							.then(function() {
-								setTimeout(function() {
-									// construct empty message
-									exports.next(user.id, conversation, {
-										user_id: user.id,
-										conversation_id: conversation.id,
-										body: '', // empty body, because it's a fake message
-										created: db.now()
-									}, config.bot.advance_delay);
-								});
+								// construct empty message
 								return exports.next(user.id, conversation, {
 									user_id: user.id,
 									conversation_id: conversation.id,
 									body: '', // empty body, because it's a fake message
 									created: db.now()
-								})
+								});
 							});
 					}
 
