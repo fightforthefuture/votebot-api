@@ -12,6 +12,7 @@ var validate = require('../lib/validate');
 var us_states = require('../lib/us_states');
 var request = require('request-promise');
 var notify = require('./notify.js');
+var moment = require('moment');
 
 // holds default steps for conversation chains. essentially, each "step" in the chain defines a
 // part of the conversation (generally a question) and how to process the answer.
@@ -90,8 +91,9 @@ var default_steps = {
 		post_process: function(user) {
 			// if today is their birthday, send a cake
 			var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
-			if (moment().isSame(date_of_birth, 'day')) {
-				return Promise.resolve({msg: 'Happy birthday! \u{1F382}:'});
+			var today = moment();
+			if (today.format('MM/DD') === date_of_birth.format('MM/DD')) {
+				return {msg: 'Happy birthday! \u{1F382}:'};
 			}
 		}
 	},
@@ -583,12 +585,12 @@ exports.next = function(user_id, conversation, message)
 						}
 					}
 
-					if (action.post_process) {
+					if (step.post_process) {
 						// send post-process message for user
 						promise = promise
 							.then(function() {
-								var res = action.post_process(user);
-								if (res.msg) {
+								var res = step.post_process(user);
+								if (res && res.msg) {
 									message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
 								}
 							});
