@@ -68,7 +68,7 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			if (config.twilio) notify.add_tags(user, [user.settings.state]);
 		},
-		process: simple_store('user.settings.address')
+		process: simple_store('user.settings.address', {validate: validate.address})
 	},
 	apartment: {
 		pre_process: function(action, conversation, user) {
@@ -100,11 +100,12 @@ var default_steps = {
 			// send email prompt dependent on user state
 			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
 			if (us_states.required_questions[state]) {
-				return {msg: "Almost done! Now, {{settings.state}} requires an email for online registration. We'll also send you crucial voting information."};
+				return {msg: "Almost done! Now, {{settings.state}} requires an email for online registration. We'll also send you crucial voting information. What's your email?"};
 			} else {
-				return {msg: "Almost done! Now, {{settings.state}} requires you to print, sign, and mail a form. We’ll email it to you, along with crucial voting information."};
+				return {msg: "Almost done! Now, {{settings.state}} requires you to print, sign, and mail a form. We’ll email it to you, along with crucial voting information. What's your email?"};
 			}
 		},
+		no_msg: true,
 		process: simple_store('user.settings.email', {validate: validate.email})
 	},
 	// this is a MAGICAL step. it never actually runs, but instead just
@@ -201,7 +202,7 @@ var default_steps = {
 			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
 			if (us_states.required_questions[state]) {
 				// registration complete online, no extra instructions
-				return {next: 'share'};
+				return {msg: 'Congratulations! You’ve been registered to vote in {{settings.state}}! We just emailed you a receipt.', next: 'share'};
 			} else {
 				// they'll get a PDF, special instructions
 				return {msg: "Great! In a moment, we’ll email you a completed voter registration form to print, sign, and mail.", next: 'share'};
@@ -223,26 +224,17 @@ var default_steps = {
 		}
 	},
 	share: {
+		msg: 'Now, there’s one last important thing. We need you to pass on the <3 and register some friends. Share this on Facebook http://hellovote.org/share',
+		process: function() {}, // no-op
+		advance: true,
+	},
+	fftf_opt_in: {
 		pre_process: function(action, conversation, user) {
-			var share_text = 'Hey, I just registered to vote. You should too! This made it really easy: ';
-			var share_url = 'http://hellovote.org/?u=ASDF';
-			// TODO, should hash user.id and append to share_url
-			// TODO, send app-scheme url to share if user is on SMS?
-			var share_messages = [
-				'Now, there\'s one last important thing. We need you to pass on the <3 and register some friends.',
-				'1. Share this on Facebook: http://facebook.com/sharer.php?u='+encodeURIComponent(share_url),
-				'2. Share this on Twitter: http://twitter.com/intent/tweet/?text='+encodeURIComponent(share_url),
-				'3. Forward the following text message to as many friends as you can. Focus on friends who are young, just moved, or might not be registered.',
-				share_text+share_url
-			];
-			share_messages.forEach(function(msg, index) {
-				setTimeout(function () {
-				    message_model.create(config.bot.user_id, conversation.id, {body: language.template(msg)});
-			    }, config.bot.advance_delay * index);
-			});
-			return {'end': true};
+			// delay sending by a few minutes
+			var opt_in_delay = 3*60*1000; // ms
+			return Promise.delay(opt_in_delay, {next: 'fftf_opt_in_thanks'});
 		},
-		final: true
+		process: simple_store('user.settings.fftf_opt_in', {validate: validate.boolean}),
 	},
 	restart: {
 		process: simple_store('user.settings', {validate: validate.empty_object}),
@@ -619,7 +611,7 @@ exports.next = function(user_id, conversation, message)
 							state.step = found.name;
 
 							// create/send the message from the next step in the convo chain
-							if (nextstep.msg) {
+							if (nextstep.msg && !nextstep.no_msg) {
 								return message_model.create(config.bot.user_id, conversation.id, {body: language.template(nextstep.msg, user)});
 							}
 						})

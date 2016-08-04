@@ -41,7 +41,7 @@ var default_chain = {
 var default_chain_steps = [
 	{
 		name: 'intro',
-		msg: "Hi, this is HelloVote! I'm going to help you register to vote. I'll ask a few questions to fill out your registration form. Your answers are private and secure.",
+		msg: "Hi this is HelloVote! I'm going to help you register to vote. I'll ask a few questions to fill out your registration form. Your answers are private and secure.",
 		errormsg: '',
 		next: 'first_name',
 		advance: true,
@@ -49,14 +49,14 @@ var default_chain_steps = [
 	},
 	{
 		name: 'first_name',
-		msg: "So, what's your first name? This is a legal document, so I need your official information.",
+		msg: "So, what's your first name? (Should match your government ID)",
 		errormsg: "Please enter your first name",
 		next: 'last_name',
 		admin_order: 1,
 	},	
 	{
 		name: 'last_name',
-		msg: "Ok {{first_name}}, what's your last name? Again, this needs to be your official information.",
+		msg: "Ok {{first_name}}, what's your last name? Again, this needs to match your official information.",
 		errormsg: "Please enter your last name",
 		next: 'zip',
 		admin_order: 2,
@@ -91,7 +91,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'apartment',
-		msg: "Is there an apartment number? If none, reply (none). Otherwise, say the number!",
+		msg: "Apartment number? (If you don't have one, reply: none)",
 		errormsg: "Please enter an apartment number",
 		next: 'date_of_birth',
 		admin_order: 7,
@@ -105,7 +105,8 @@ var default_chain_steps = [
 	},
 	{
 		name: 'email',
-		msg: "What's your email address?",
+		msg: "Almost done! We'll now send your registration form and crucial voting information. What's your email?",
+		// actual email prompt is sent in pre_process
 		errormsg: "Please enter your email address. If you don't have one, reply SKIP",
 		next: 'per_state',
 		admin_order: 9,
@@ -128,7 +129,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'complete',
-		msg: "We are processing your registration! In a moment, we’ll email you a receipt for your voter registration.",
+		msg: "Congratulations! You’ve been registered to vote in {{settings.state}}! We just emailed you a receipt.",
 		errormsg: '',
 		next: 'share', 
 		advance: true,
@@ -144,10 +145,9 @@ var default_chain_steps = [
 	},
 	{
 		name: 'share',
-		msg: "Thanks for registering with HelloVote! Share with your friends to get them registered too: http://hellovote.org/share",
+		msg: "Now, there’s one last important thing. We need you to pass on the <3 and register some friends. Share this on Facebook http://hellovote.org/share",
 		errormsg: '',
-		next: '(final)',
-		final: true,
+		next: 'fftf_opt_in',
 		admin_order: 13,
 	},
 	{
@@ -286,6 +286,21 @@ var default_chain_steps = [
 		admin_special: true,
 		admin_order: 30,
 	},
+	{
+		name: 'fftf_opt_in',
+		msg: "Oh, I almost forgot. HelloVote is made by FightForTheFuture.org which protects the world-changing power of the Internet. Join us for campaign updates? (yes/no)",
+		errormsg: '',
+		next: 'fftf_opt_in_thanks',
+		admin_order: 31,
+	},
+	{
+		name: 'fftf_opt_in_thanks',
+		msg: "Thanks for joining us to the Fight for the Future!",
+		errormsg: '',
+		next: '(final)',
+		final: true,
+		admin_order: 32,
+	}
 ];
 
 function run()
