@@ -68,7 +68,7 @@ exports.broadcast = function(conversation_id, message)
 			log.info('messages: broadcast to: ', JSON.stringify(users.map(function(u) { return u.id; })));
 			return Promise.all(users.map(function(user) {
 				if (user.type == 'web') {
-					console.info('user ' + user.id + ' is web-only. skip twilio');
+					log.info('user ' + user.id + ' is web-only. skip twilio');
 					return false;
 				}
 				

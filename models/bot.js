@@ -109,7 +109,7 @@ var default_steps = {
 			var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
 			var today = moment();
 			if (today.format('MM/DD') === date_of_birth.format('MM/DD')) {
-				return {msg: 'Happy birthday! \u{1F382}:'};
+				return {msg: 'Happy birthday! \u{1F382}'};
 			} else {
 				return {}
 			}
@@ -281,7 +281,6 @@ var default_steps = {
 				var cutoff_date = next_election.setFullYear(next_election.getFullYear() - 18);
 				user.settings.will_be_18 = (cutoff_date >= date_of_birth);
 				return {next: 'per_state'};
-				// TODO, echo parsed date of birth back to user to confirm?
 			}
 		},
 		process: simple_store('user.settings.will_be_18', {validate: validate.boolean_yes})
