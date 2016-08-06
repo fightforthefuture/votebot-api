@@ -63,7 +63,23 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			if(util.object.get(user, 'settings.state')) return {next: 'address'};
 		},
-		process: simple_store('user.settings.state', {validate: validate.state})
+		process: simple_store('user.settings.state', {validate: validate.state}),
+		post_process: function(user) {
+			var state = util.object.get(user, 'settings.state');
+			if (state === "NH")
+				var end_msg = 'NH prefers that voters register in person. You must visit your town clerk to get a registration form. Find them at http://app.sos.nh.gov/Public/ClerkDetails.aspx'; 
+			if (state === "ND")
+				var end_msg = 'ND does not require voter registration. You do not need to fill out this form.';
+			if (state === "WY")
+				var end_msg = 'WY requires voter registration forms be notarized. Call (307) 777-5860 to have one mailed to you.'
+
+			if (end_msg) {
+				if (config.twilio) notify.replace_tags(user, ['votebot-started'], ['votebot-completed']);
+				return {msg: end_msg, next: 'share'}
+			} else {
+				return {}
+			}
+		}
 	},
 	address: {
 		pre_process: function(action, conversation, user) {
@@ -94,6 +110,8 @@ var default_steps = {
 			var today = moment();
 			if (today.format('MM/DD') === date_of_birth.format('MM/DD')) {
 				return {msg: 'Happy birthday! \u{1F382}:'};
+			} else {
+				return {}
 			}
 		}
 	},
@@ -405,23 +423,33 @@ var find_next_step = function(action, conversation, user)
 		if(!nextstep) throw new Error('bot: could not load step: ', state.type, next);
 
 		var default_step = {step: nextstep, name: next};
-
-		if(!nextstep.pre_process) return default_step;
-
-		// call pre-process on our new step.
-		var res = nextstep.pre_process(preserve_action, conversation, user);
-		if(!res) return default_step;
-
-		// if our pre_process returns a "msg" key, then we should send it immediately
-		// doesn't update state, it's just an extra prompt
-		if (res.msg) {
-			message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
+		
+		// check nextstep for pre_process
+		if (nextstep.pre_process) {
+			var res = nextstep.pre_process(preserve_action, conversation, user);
+			// if our pre_process returns a "msg" key, then we should send it immediately
+			if (res && res.msg) {
+				message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
+			}
+			if (res && res.next)
+				var processed_next = res.next;
 		}
 
-		if(res.next) {
-			// if our pre_process returns a "next" key, then we know we should load
+		// same for post_process
+		if (nextstep.post_process) {
+			var res = nextstep.post_process(user);
+			if (res && res.msg) {
+				message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
+			}
+			// note that if post_process returns a next key it will override the pre_process function's
+			if (res && res.next)
+				var processed_next = res.next;
+		}
+
+		if(processed_next) {
+			// if either processing function returned a "next" key, then we know we should load
 			// another step. wicked. recurse and find that shit.
-			var next_action = util.object.merge({}, preserve_action, {next: res.next});
+			var next_action = util.object.merge({}, preserve_action, {next: processed_next});
 			return find_next_step(next_action, conversation, user);
 		} else {
 			return default_step;
@@ -518,7 +546,7 @@ exports.next = function(user_id, conversation, message)
 			else
 				return null;
 		})
-		.then(function(maybe_contains_restart_step_but_only_if_final_step_lol) {
+		.then(function(_restart) {
 
 			var body = message.body;
 
@@ -528,7 +556,7 @@ exports.next = function(user_id, conversation, message)
 				log.info('bot: recv msg, but conversation finished');
 				if (validate.boolean(body)) {
 					log.info('bot: user wants to restart');
-					step = maybe_contains_restart_step_but_only_if_final_step_lol;
+					step = _restart;
 				} else {
 					log.info('bot: prompt to restart');
 					var restart_msg = 'You are registered with HelloVote. Would you like to start again? (yes/no)'
@@ -592,6 +620,9 @@ exports.next = function(user_id, conversation, message)
 								var res = step.post_process(user);
 								if (res && res.msg) {
 									message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
+								}
+								if (res && res.next) {
+									action.next = res.next;
 								}
 							});
 					}
