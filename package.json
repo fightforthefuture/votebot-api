@@ -27,10 +27,12 @@
     "morgan": "^1.7.0",
     "pg": "^4.5.5",
     "phone": "^1.0.6",
+    "raven": "^0.12.1",
     "request": "^2.73.0",
     "request-promise": "^4.0.2",
     "sha256": "^0.2.0",
     "twilio": "3.0.0-rc.5",
-    "winston": "^2.2.0"
+    "winston": "^2.2.0",
+    "winston-sentry": "^0.1.4"
   }
 }

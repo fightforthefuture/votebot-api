@@ -28,6 +28,9 @@ app.use(body_parser.urlencoded({extended: false, limit: '4mb'}));
 
 app.use(morgan(':remote-addr ":method :url" :status :res[content-length]'));
 app.use(method_override('_method'));
+
+if (config.sentry)
+	app.use(raven.middleware.express.requestHandler(config.sentry));
 app.use(function(err, req, res, next) {
 	console.error('Express error: ', err.stack);
 	resutil.error(res, 'App error', err.stack);

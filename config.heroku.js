@@ -1,6 +1,7 @@
 var config = {
 	// app-wide logging
-	loglevel: 'info',
+	loglevel: 'error',
+	sentry: process.env.SENTRY_DSN,
 	port: process.env.PORT,
 
 	// the app website for votebot
@@ -14,7 +15,7 @@ var config = {
 	// sends detailed error information back with failed requests
 	//
 	// true when developing, false in prod
-	error_responses: true,
+	error_responses: false,
 
 	// parameters for next election
 	election: {
