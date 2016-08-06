@@ -403,8 +403,8 @@ var parse_step = function(step, body, user)
 {
 	// if the user is canceling, don't bother parsing anything
 	if(language.is_cancel(body)) return Promise.resolve({next: '_cancel'});
+	if(language.is_help(body)) return Promise.resolve({next: '_help', prev: step.name});
 
-	// TODO, let user correct previous step
 	return step.process(body, user, step.next, step.errormsg);
 };
 
@@ -568,7 +568,18 @@ exports.next = function(user_id, conversation, message)
 					log.info('bot: action: ', JSON.stringify(action));
 
 					// if user wants out, let them
-					if(action.next == '_cancel') return convo_model.close(conversation.id);
+					if(action.next == '_cancel') {
+						var stop_msg = 'You are unsubscribed from FightForTheFuture. No more messages will be sent. Reply HELP for help or 844-344-3556.';
+						message_model.create(config.bot.user_id, conversation.id, {body: stop_msg});
+						if (config.twilio) { notify.delete_binding(user); }
+						return convo_model.close(conversation.id);
+					}
+					if(action.next == '_help') {
+						var help_msg = 'FightForTheFuture: Help at hellovote.org or 844-344-3556. Msg&data rates may apply. Text STOP to cancel.'
+						message_model.create(config.bot.user_id, conversation.id, {body: help_msg});
+						// let user continue
+						action.next = action.prev; 
+					}
 
 					var promise = Promise.resolve();
 

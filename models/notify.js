@@ -143,3 +143,25 @@ exports.replace_tags = function(user, tags_to_remove, tags_to_add) {
 		});
 	});
 }
+
+exports.delete_binding = function(user) {
+	return new Promise(function(fulfill, reject){
+		service.bindings.delete({
+			endpoint: 'votebot-api',
+			address: user.username
+		}).then(function(response) {
+			log.info('notify: deleted binding for', user.username, 'with tags:', JSON.stringify(tags));
+			// store the binding SID with the user object
+			if (!user.settings) {
+				user.settings = {};
+			}
+			user.settings.notify_binding_sid = null;
+			user_model.update(user.id, user);
+			fulfill(response.sid);
+		}).catch(function(error) {
+			log.error('notify: failed to delete binding:', error);
+			reject(error);
+		});
+	});
+}
+
