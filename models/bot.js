@@ -9,7 +9,7 @@ var util = require('../lib/util');
 var language = require('../lib/language');
 var log = require('../lib/logger');
 var validate = require('../lib/validate');
-var us_deadlines = require('../libr/us_deadlines');
+var us_election = require('../lib/us_election');
 var us_states = require('../lib/us_states');
 var request = require('request-promise');
 var notify = require('./notify.js');
@@ -69,20 +69,19 @@ var default_steps = {
 			var state = util.object.get(user, 'settings.state');
 
 			// check state eligibility requirements
-			if (end_msg = us_states.do_not_allow_ovr[state]) {
+			if (end_msg = us_election.states_without_ovr[state]) {
 				if (config.twilio) notify.replace_tags(user, ['votebot-started'], ['votebot-completed']);
 				return {msg: end_msg, next: 'share'}
 			}
 
 			// and online registration deadlines
-			var state_name = us_states.state_hash[state.toUpperCase()];
-			if (deadline_str = us_deadlines[state]) 
-				var ovr_deadline = moment(deadline_str, 'YYYY-MM-DD');	
+			if (deadline_str = us_election.get_ovr_deadline(state)) {
+				var ovr_deadline = moment(deadline_str, 'YYYY-MM-DD');
 				var today = moment();
 				if (today.isAfter(ovr_deadline, 'day')) {
 					return {msg: 'Sorry, the online voter registration deadline for {{settings.state}} has passed. You may still be eligible to register to vote in person', next: 'share'}
 				}
-
+			}
 			return {}
 		}
 	},
@@ -123,8 +122,8 @@ var default_steps = {
 	email: {
 		pre_process: function(action, conversation, user) {
 			// send email prompt dependent on user state
-			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
-			if (us_states.required_questions[state]) {
+			var state = util.object.get(user, 'settings.state');
+			if (us_election.state_required_questions[state]) {
 				return {msg: "Almost done! Now, {{settings.state}} requires an email for online registration. We'll also send you crucial voting information. What's your email?"};
 			} else {
 				return {msg: "Almost done! Now, {{settings.state}} requires you to print, sign, and mail a form. We’ll email it to you, along with crucial voting information. What's your email?"};
@@ -138,8 +137,8 @@ var default_steps = {
 	// ask. then it parties.
 	per_state: {
 		pre_process: function(action, conversation, user) {
-			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
-			var state_questions = us_states.required_questions[state] || us_states.required_questions_default;
+			var state = util.object.get(user, 'settings.state');
+			var state_questions = us_election.state_required_questions[state] || us_election.required_questions_default;
 			var next_default = {next: 'submit'};
 
 			// no per-state questions? skip!!
@@ -224,8 +223,8 @@ var default_steps = {
 			if (config.twilio) notify.replace_tags(user, ['votebot-started'], ['votebot-completed']);
 
 			// send confirmation prompt dependent on user state
-			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
-			if (us_states.required_questions[state]) {
+			var state = util.object.get(user, 'settings.state');
+			if (us_election.state_required_questions[state]) {
 				// registration complete online, no extra instructions
 				return {msg: 'Congratulations! You’ve been registered to vote in {{settings.state}}! We just emailed you a receipt.', next: 'share'};
 			} else {
