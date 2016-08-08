@@ -208,7 +208,15 @@ var default_chain_steps = [
 	},
 	{
 		name: 'disenfranchised',
-		msg: "Are you currently disenfranchised from voting (for instance due to a felony conviction)? (yes/no)",
+		msg: "Have you been disenfranchised from voting, or are you currently imprisoned or on parole for the conviction of a felony? (yes/no)",
+		errormsg: '',
+		next: 'per_state',
+		admin_special: true,
+		admin_order: 21,
+	},
+		{
+		name: 'disqualified',
+		msg: "Are you under guardianship which prohibits your registering to vote, or are you disqualified because of corrupt practices in respect to elections? (yes/no)",
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
