@@ -38,6 +38,7 @@ var new_message = function(req, res)
 	var data = req.body.message;
 	var conversation;
 	var conversation_id = req.params.id;
+	var user_id = null;
 	user_model.get_by_username(user_details.username).then(function(user) {
 		user_id = user.id;
 		return model.get(conversation_id)
