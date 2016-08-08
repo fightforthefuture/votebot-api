@@ -34,25 +34,28 @@ var create = function(req, res)
 
 var new_message = function(req, res)
 {
-	var user_id = config.bot.user_id;
-	var data = req.body;
+	var user_details = req.body.user;
+	var data = req.body.message;
 	var conversation;
 	var conversation_id = req.params.id;
-	model.get(conversation_id)
-		.then(function(_conversation) {
-			conversation = _conversation;
+	user_model.get_by_username(user_details.username).then(function(user) {
+		user_id = user.id;
+		return model.get(conversation_id)
+	})
+	.then(function(_conversation) {
+		conversation = _conversation;
 
-			if(!conversation) throw error('Conversation '+conversation_id+' not found', {code: 404});
-			
-			return message_model.create(user_id, conversation_id, data)
-		})
-		.then(function(message) {
-			bot_model.next(user_id, conversation, message)
-			resutil.send(res, message);
-		})
-		.catch(function(err) {
-            resutil.error(res, 'Problem sending message', err);
-		});
+		if(!conversation) throw error('Conversation '+conversation_id+' not found', {code: 404});
+		
+		return message_model.create(user_id, conversation_id, data)
+	})
+	.then(function(message) {
+		bot_model.next(user_id, conversation, message)
+		resutil.send(res, message);
+	})
+	.catch(function(err) {
+        resutil.error(res, 'Problem sending message', err);
+	});
 };
 
 var incoming = function(req, res)
