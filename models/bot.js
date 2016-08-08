@@ -89,7 +89,8 @@ var default_steps = {
 	},
 	apartment: {
 		pre_process: function(action, conversation, user) {
-			// TODO skip this question if smarty streets indicates it's a single unit building
+			if (util.object.get(user, 'settings.address_needs_apt')) return {}
+			else return {next: 'date_of_birth', advance: true}
 		},
 		process: simple_store('user.settings.address_unit', {validate: validate.address_unit})
 	},
