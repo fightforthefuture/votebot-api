@@ -178,49 +178,50 @@ var default_steps = {
 				// incomplete, re-query missing fields
 				log.info('bot: missing fields!', missing_fields.length);
 				return {next: 'incomplete', errors: missing_fields};
-			} else {
-				if (config.submit_url) {
-					// send to votebot-forms
-					log.info('bot: registration is complete! submitting...');
-					
-					var form_submit = {
-					    method: 'POST',
-					    uri: config.submit_url,
-					    body: {
-					    	user: user,
-					    	callback_url: '' // TODO, define callback to notify user of form submit success
-					    },
-					    json: true 
-					};
-					request(form_submit)
-					    .then(function (response) {
-					        // store response from votebot-forms in user.settings.submit
-					        user_model.update(user.id, {settings: {'submit': response.status}});
+			} 
 
-							if (response.status === 'error') {
-								return {next: 'incomplete', 'errors': response.errors};
-							}
-					    })
-					    .catch(function (error) {
-					        log.error('error submitting', error);
-							return {next: 'incomplete', 'errors': error};
-					    });
-				} else {
-					log.info('bot: no submit_url in config, skipping submit...');
-				}
-
-				// finally, remove SSN or state ID from our data
-				// and advance to complete step
+			if (!config.submit_url) {
+				log.info('bot: no submit_url in config, skipping submit...');
+				var update_user = util.object.set(user, 'settings.submit', 	 'skipped');
+				var update_user = util.object.set(user, 'settings.ssn', 	 'cleared');
+				var update_user = util.object.set(user, 'settings.state_id', 'cleared');
+				user_model.update(user.id, update_user);
 				return {
-					store: {
-					  settings: {
-						'ssn': 'cleared',
-						'state_id': 'cleared'
-					   }
-					},
-					next: 'complete', 
+					'next': 'complete',
+					'msg': 'This system is in DEBUG mode, skipping form submission to state. Still clearing sensitive user fields.',
 				}
 			};
+
+			// send to votebot-forms
+			var form_submit = {
+			    method: 'POST',
+			    uri: config.submit_url,
+			    body: {
+			    	user: user,
+			    	callback_url: '' // TODO, define callback to notify user of form submit success
+			    },
+			    json: true 
+			};
+
+			request(form_submit)
+			    .then(function (response) {
+					if (response.status === 'error') {
+						return {next: 'incomplete', 'errors': response.errors};
+					} else {
+						// store submit response, remove SSN or state ID from our data
+						var update_user = util.object.set(user, 'settings.submit', 	 response.status);
+						var update_user = util.object.set(user, 'settings.ssn', 	 'cleared');
+						var update_user = util.object.set(user, 'settings.state_id', 'cleared');
+						user_model.update(user.id, update_user);
+						
+						// and advance to complete step
+						return { next: 'complete' }
+					}
+			    })
+			    .catch(function (error) {
+			        log.error('error submitting', error);
+					return {next: 'incomplete', 'errors': error};
+			    });
 		},
 		process: simple_store('user.submit', {validate: validate.submit_response}),
 	},
