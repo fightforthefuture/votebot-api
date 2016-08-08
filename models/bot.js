@@ -304,7 +304,7 @@ var default_steps = {
 	ethnicity: {
 		process: simple_store('user.settings.ethnicity')
 	},
-	party: {
+	political_party: {
 		process: simple_store('user.settings.political_party')
 	},
 	disenfranchised: {

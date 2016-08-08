@@ -199,7 +199,7 @@ var default_chain_steps = [
 		admin_order: 19,
 	},
 	{
-		name: 'party',
+		name: 'political_party',
 		msg: "What's your party preference? (democrat/republican/libertarian/green/other/none)",
 		errormsg: "Please let me know your party preference, so I can ensure you are registered correctly.",
 		next: 'per_state',
