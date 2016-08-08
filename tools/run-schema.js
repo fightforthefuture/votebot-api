@@ -129,7 +129,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'complete',
-		msg: "Congratulations! You’ve been registered to vote in {{settings.state}}! We just emailed you a receipt.",
+		msg: "Congratulations! We have submitted your voter registration in {{settings.state}}! We just emailed you a receipt.",
 		errormsg: '',
 		next: 'share', 
 		advance: true,

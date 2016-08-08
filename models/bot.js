@@ -222,7 +222,7 @@ var default_steps = {
 			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
 			if (us_states.required_questions[state]) {
 				// registration complete online, no extra instructions
-				return {msg: 'Congratulations! You’ve been registered to vote in {{settings.state}}! We just emailed you a receipt.', next: 'share'};
+				return {msg: 'Congratulations! We have submitted your voter registration in {{settings.state}}! We just emailed you a receipt.', next: 'share'};
 			} else {
 				// they'll get a PDF, special instructions
 				return {msg: "Great! In a moment, we’ll email you a completed voter registration form to print, sign, and mail.", next: 'share'};
