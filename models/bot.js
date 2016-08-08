@@ -286,10 +286,14 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			// if user has already told us their birthdate, calculate will_be_18 automatically
 			if( util.object.get(user, 'settings.date_of_birth') ) {
-				var date_of_birth = new Date(util.object.get(user, 'settings.date_of_birth'));
-				var next_election = new Date(config.election.date);
-				var cutoff_date = next_election.setFullYear(next_election.getFullYear() - 18);
-				user.settings.will_be_18 = (cutoff_date >= date_of_birth);
+				var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
+				var next_election = moment(config.election.date, 'YYYY-MM-DD');
+				var cutoff_date = moment(next_election).year(next_election.year() - 18);
+				var will_be_18 = cutoff_date.isAfter(date_of_birth);
+				// persist to user object
+				var update_user = util.object.set(user, 'settings.will_be_18', will_be_18);
+				// and database
+				user_model.update(user.id, update_user);
 				return {next: 'per_state'};
 			}
 		},
