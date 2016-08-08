@@ -9,6 +9,7 @@ var util = require('../lib/util');
 var language = require('../lib/language');
 var log = require('../lib/logger');
 var validate = require('../lib/validate');
+var us_deadlines = require('../libr/us_deadlines');
 var us_states = require('../lib/us_states');
 var request = require('request-promise');
 var notify = require('./notify.js');
@@ -66,19 +67,23 @@ var default_steps = {
 		process: simple_store('user.settings.state', {validate: validate.state}),
 		post_process: function(user) {
 			var state = util.object.get(user, 'settings.state');
-			if (state === "NH")
-				var end_msg = 'NH prefers that voters register in person. You must visit your town clerk to get a registration form. Find them at http://app.sos.nh.gov/Public/ClerkDetails.aspx'; 
-			if (state === "ND")
-				var end_msg = 'ND does not require voter registration. You do not need to fill out this form.';
-			if (state === "WY")
-				var end_msg = 'WY requires voter registration forms be notarized. Call (307) 777-5860 to have one mailed to you.'
 
-			if (end_msg) {
+			// check state eligibility requirements
+			if (end_msg = us_states.do_not_allow_ovr[state]) {
 				if (config.twilio) notify.replace_tags(user, ['votebot-started'], ['votebot-completed']);
 				return {msg: end_msg, next: 'share'}
-			} else {
-				return {}
 			}
+
+			// and online registration deadlines
+			var state_name = us_states.state_hash[state.toUpperCase()];
+			if (deadline_str = us_deadlines[state]) 
+				var ovr_deadline = moment(deadline_str, 'YYYY-MM-DD');	
+				var today = moment();
+				if (today.isAfter(ovr_deadline, 'day')) {
+					return {msg: 'Sorry, the online voter registration deadline for {{settings.state}} has passed. You may still be eligible to register to vote in person', next: 'share'}
+				}
+
+			return {}
 		}
 	},
 	address: {
