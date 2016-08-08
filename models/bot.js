@@ -206,6 +206,7 @@ var default_steps = {
 
 			request(form_submit)
 			    .then(function (response) {
+			    	log.info('form submit response', response);
 					if (response.status === 'error') {
 						return {next: 'incomplete', 'errors': response.errors};
 					} else {
@@ -221,7 +222,7 @@ var default_steps = {
 			    })
 			    .catch(function (error) {
 			        log.error('error submitting', error);
-					return {next: 'incomplete', 'errors': error};
+					return {next: 'incomplete', 'errors': [error]};
 			    });
 		},
 		process: simple_store('user.submit', {validate: validate.submit_response}),
