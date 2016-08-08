@@ -49,7 +49,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'first_name',
-		msg: "So, what's your first name? (Should match your government ID)",
+		msg: "So, what's your first name? (Should match your government ID. Please do not submit fraudulent information.)",
 		errormsg: "Please enter your first name",
 		next: 'last_name',
 		admin_order: 1,
@@ -115,9 +115,16 @@ var default_chain_steps = [
 		name: 'per_state',
 		msg: 'THIS IS THE STEP THAT ASKS ALL THE PER-STATE QUESTIONS.',
 		errormsg: '',
-		next: 'submit',
+		next: 'confirm',
 		admin_special: true,
 		admin_order: 9,
+	},
+	{
+		name: 'confirm',
+		msg: 'The name and address we have for you is:\n {{first_name}} {{last_name}}, {{settings.address}} {{settings.city}} {{settings.state}}\n Is this correct?',
+		errormsg: 'Please reply "yes" or "no" to confirm your information',
+		next: 'submit',
+		admin_order: 10,
 	},
 	{
 		name: 'submit',
@@ -125,7 +132,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'complete',
 		admin_special: true,
-		admin_order: 10,
+		admin_order: 11,
 	},
 	{
 		name: 'complete',
@@ -133,7 +140,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'share', 
 		advance: true,
-		admin_order: 11,
+		admin_order: 12,
 	},
 	{
 		name: 'incomplete',
@@ -141,7 +148,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'restart', 
 		admin_special: true,
-		admin_order: 12,
+		admin_order: 13,
 	},
 	{
 		name: 'share',
@@ -149,7 +156,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'fftf_opt_in',
 		advance: true,
-		admin_order: 13,
+		admin_order: 14,
 	},
 	{
 		name: 'restart',
@@ -157,7 +164,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'intro',
 		admin_special: true,
-		admin_order: 14,
+		admin_order: 15,
 	},
 	{
 		name: 'us_citizen',
@@ -165,7 +172,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 15,
+		admin_order: 16,
 	},
 	{
 		name: 'legal_resident',
@@ -181,7 +188,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 17,
+		admin_order: 18,
 	},
 	{
 		name: 'ethnicity',
@@ -189,7 +196,7 @@ var default_chain_steps = [
 		errormsg: "Please let me know your ethnicity or race.",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 18,
+		admin_order: 19,
 	},
 	{
 		name: 'party',
@@ -197,7 +204,7 @@ var default_chain_steps = [
 		errormsg: "Please let me know your party preference, so I can ensure you are registered correctly.",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 19,
+		admin_order: 20,
 	},
 	{
 		name: 'disenfranchised',
@@ -205,7 +212,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 20,
+		admin_order: 21,
 	},
 	{
 		name: 'incompetent',
@@ -213,7 +220,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 21,
+		admin_order: 22,
 	},
 	{
 		name: 'state_id',
@@ -221,7 +228,7 @@ var default_chain_steps = [
 		errormsg: "Please enter your state ID number",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 22,
+		admin_order: 23,
 	},
 	{
 		name: 'state_id_issue_date',
@@ -229,7 +236,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 23,
+		admin_order: 24,
 	},
 	{
 		name: 'ssn',
@@ -237,7 +244,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 24,
+		admin_order: 25,
 	},
 	{
 		name: 'ssn_last4',
@@ -245,7 +252,7 @@ var default_chain_steps = [
 		errormsg: "Please enter the last 4 digits of your SSN.",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 25,
+		admin_order: 26,
 	},
 	{
 		name: 'state_id_or_ssn_last4',
@@ -253,7 +260,7 @@ var default_chain_steps = [
 		errormsg: "Please enter your state ID number or last 4 of your SSN",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 26,
+		admin_order: 27,
 	},
 	{
 		name: 'gender',
@@ -261,7 +268,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 27,
+		admin_order: 28,
 	},
 	{
 		name: 'county',
@@ -269,7 +276,7 @@ var default_chain_steps = [
 		errormsg: "Please enter the name of the county you reside in",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 28,
+		admin_order: 29,
 	},
 	{
 		name: 'consent_use_signature',
@@ -277,7 +284,7 @@ var default_chain_steps = [
 		errormsg: "Please reply YES to let us submit your registration using your signature from the DMV. I do not store this information.",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 29,
+		admin_order: 30,
 	},
 	{
 		name: 'mail_in',
@@ -285,14 +292,14 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 30,
+		admin_order: 31,
 	},
 	{
 		name: 'fftf_opt_in',
 		msg: "Oh, I almost forgot. HelloVote is made by FightForTheFuture.org which protects the world-changing power of the Internet. Join us for campaign updates? (yes/no)",
 		errormsg: '',
 		next: 'fftf_opt_in_thanks',
-		admin_order: 31,
+		admin_order: 32,
 	},
 	{
 		name: 'fftf_opt_in_thanks',
@@ -300,7 +307,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: '(final)',
 		final: true,
-		admin_order: 32,
+		admin_order: 33,
 	}
 ];
 

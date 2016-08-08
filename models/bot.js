@@ -135,7 +135,7 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
 			var state_questions = us_states.required_questions[state] || us_states.required_questions_default;
-			var next_default = {next: 'submit'};
+			var next_default = {next: 'confirm'};
 
 			// no per-state questions? skip!!
 			if(!state_questions) return next_default;
@@ -157,6 +157,16 @@ var default_steps = {
 
 			// nothing left, submit to state
 			return next_default;
+		}
+	},
+	confirm: {
+		// msg: 'The name and address we have for you is:\n {{first_name}} {{last_name}}, {{settings.address}} {{settings.city}} {{settings.state}}\n Is this correct?',
+		process: function(body, user) {
+			var next = 'submit';
+			if (language.is_no(body)) {
+				next = 'incomplete';
+			}
+			return Promise.resolve({next: next});
 		}
 	},
 	submit: {
