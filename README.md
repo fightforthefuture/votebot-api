@@ -18,10 +18,10 @@ can be mailed to the users, so they don't have to deal with printing or postage.
 
 * **[Node.js 4.4+][4]**
 * **[npm][5]**
-* **[Postgresql][6]**
+* **[Postgresql 9.5+][6]**
 * **[Twilio API][1]**
 * **[a running Votebot-Forms instance][2]**
-* **[Vote.org API][3]
+* **[Vote.org API][3]**
 
 
 ## Installation and Setup
