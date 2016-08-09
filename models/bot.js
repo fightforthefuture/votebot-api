@@ -180,8 +180,10 @@ var default_steps = {
 			var missing_fields = validate.voter_registration_complete(user.settings);
 			if (missing_fields.length) {
 				// incomplete, re-query missing fields
-				log.info('bot: missing fields!', missing_fields.length);
-				return {next: 'incomplete', errors: missing_fields};
+				log.error('bot: missing fields!', user.username, missing_fields);
+				update_user = util.object.set(user, 'settings.missing_fields', response.errors);
+				user_model.update(user.id, update_user);
+				return {next: 'incomplete'};
 			}
 		},
 		process: function(body, user) {
@@ -213,7 +215,11 @@ var default_steps = {
 			      .then(function (response) {
 			    	log.info('form submit response', response);
 					if (response.status === 'error') {
-						return Promise.resolve({next: 'incomplete', errors: response.errors});
+						log.error('form-submit: error!', user.username, response.errors);
+						update_user = util.object.set(user, 'settings.missing_fields', response.errors);
+						user_model.update(user.id, update_user);
+
+						return Promise.resolve({next: 'incomplete'});
 					} else {
 						// store submit response, remove SSN or state ID from our data
 						return Promise.resolve({
