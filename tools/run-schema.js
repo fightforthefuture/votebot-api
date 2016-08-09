@@ -215,7 +215,7 @@ var default_chain_steps = [
 		admin_special: true,
 		admin_order: 21,
 	},
-		{
+	{
 		name: 'disqualified',
 		msg: "Are you under guardianship which prohibits your registering to vote, or are you disqualified because of corrupt practices in respect to elections? (yes/no)",
 		errormsg: '',

@@ -333,6 +333,9 @@ var default_steps = {
 	disenfranchised: {
 		process: simple_store('user.settings.disenfranchised', {validate: validate.boolean_no})
 	},
+	disqualified: {
+		process: simple_store('user.settings.disqualified', {validate: validate.boolean_no})
+	},
 	incompetent: {
 		process: simple_store('user.settings.incompetent', {validate: validate.boolean_no})
 	},
