@@ -124,11 +124,12 @@ var default_chain_steps = [
 		msg: 'The name and address we have for you is:\n {{first_name}} {{last_name}}, {{settings.address}} {{settings.city}} {{settings.state}}\n Is this correct?',
 		errormsg: 'Please reply "yes" or "no" to confirm your information',
 		next: 'submit',
+		advance: true,
 		admin_order: 10,
 	},
 	{
 		name: 'submit',
-		msg: ' ', // don't send message here, it will echo to user
+		msg: '', // don't send message here, it will echo to user
 		errormsg: '',
 		next: 'complete',
 		admin_special: true,
