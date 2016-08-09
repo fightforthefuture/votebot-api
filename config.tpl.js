@@ -1,6 +1,7 @@
 var config = {
 	// app-wide logging
 	loglevel: 'info',
+	sentry: null,
 
 	// the app website for votebot
 	app: {
