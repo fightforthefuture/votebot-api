@@ -34,6 +34,11 @@ var config = {
 							// adjust per twilio recommendation
 	},
 
+    smarty_streets: {
+        auth_id: process.env.SMARTY_STREETS_ID,
+        auth_token: process.env.SMARTY_STREETS_TOKEN,
+    },
+
 	twilio: {
 		account_sid: process.env.TWILIO_SID,
 		auth_token: process.env.TWILIO_AUTH_TOKEN,
@@ -51,7 +56,7 @@ var config = {
 	// (good for debugging)
 	sms_override: null,
 
-	submit_url: 'https://fftf-votebot-forms.herokuapp.com/registration'
+	submit_url: 'https://votebot-forms.herokuapp.com/registration'
 };
 
 module.exports = config;

@@ -2,6 +2,7 @@ var config = {
 	// app-wide logging
 	loglevel: 'info',
 	port: process.env.PORT,
+	sentry: null,
 
 	// the app website for votebot
 	app: {

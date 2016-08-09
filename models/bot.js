@@ -9,6 +9,7 @@ var util = require('../lib/util');
 var language = require('../lib/language');
 var log = require('../lib/logger');
 var validate = require('../lib/validate');
+var us_election = require('../lib/us_election');
 var us_states = require('../lib/us_states');
 var request = require('request-promise');
 var notify = require('./notify.js');
@@ -66,19 +67,22 @@ var default_steps = {
 		process: simple_store('user.settings.state', {validate: validate.state}),
 		post_process: function(user) {
 			var state = util.object.get(user, 'settings.state');
-			if (state === "NH")
-				var end_msg = 'NH prefers that voters register in person. You must visit your town clerk to get a registration form. Find them at http://app.sos.nh.gov/Public/ClerkDetails.aspx'; 
-			if (state === "ND")
-				var end_msg = 'ND does not require voter registration. You do not need to fill out this form.';
-			if (state === "WY")
-				var end_msg = 'WY requires voter registration forms be notarized. Call (307) 777-5860 to have one mailed to you.'
 
-			if (end_msg) {
+			// check state eligibility requirements
+			if (end_msg = us_election.states_without_ovr[state]) {
 				if (config.twilio) notify.replace_tags(user, ['votebot-started'], ['votebot-completed']);
 				return {msg: end_msg, next: 'share'}
-			} else {
-				return {}
 			}
+
+			// and online registration deadlines
+			if (deadline_str = us_election.get_ovr_deadline(state)) {
+				var ovr_deadline = moment(deadline_str, 'YYYY-MM-DD');
+				var today = moment();
+				if (today.isAfter(ovr_deadline, 'day')) {
+					return {msg: 'Sorry, the online voter registration deadline for {{settings.state}} has passed. You may still be eligible to register to vote in person', next: 'share'}
+				}
+			}
+			return {}
 		}
 	},
 	address: {
@@ -89,7 +93,8 @@ var default_steps = {
 	},
 	apartment: {
 		pre_process: function(action, conversation, user) {
-			// TODO skip this question if smarty streets indicates it's a single unit building
+			if (util.object.get(user, 'settings.address_needs_apt')) return {}
+			else return {next: 'date_of_birth', advance: true}
 		},
 		process: simple_store('user.settings.address_unit', {validate: validate.address_unit})
 	},
@@ -118,8 +123,8 @@ var default_steps = {
 	email: {
 		pre_process: function(action, conversation, user) {
 			// send email prompt dependent on user state
-			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
-			if (us_states.required_questions[state]) {
+			var state = util.object.get(user, 'settings.state');
+			if (us_election.state_required_questions[state]) {
 				return {msg: "Almost done! Now, {{settings.state}} requires an email for online registration. We'll also send you crucial voting information. What's your email?"};
 			} else {
 				return {msg: "Almost done! Now, {{settings.state}} requires you to print, sign, and mail a form. We’ll email it to you, along with crucial voting information. What's your email?"};
@@ -133,9 +138,9 @@ var default_steps = {
 	// ask. then it parties.
 	per_state: {
 		pre_process: function(action, conversation, user) {
-			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
-			var state_questions = us_states.required_questions[state] || us_states.required_questions_default;
-			var next_default = {next: 'submit'};
+			var state = util.object.get(user, 'settings.state');
+			var state_questions = us_election.state_required_questions[state] || us_election.required_questions_default;
+			var next_default = {next: 'confirm'};
 
 			// no per-state questions? skip!!
 			if(!state_questions) return next_default;
@@ -159,70 +164,89 @@ var default_steps = {
 			return next_default;
 		}
 	},
+	confirm: {
+		// msg: 'The name and address we have for you is:\n {{first_name}} {{last_name}}, {{settings.address}} {{settings.city}} {{settings.state}}\n Is this correct?',
+		process: function(body, user) {
+			var next = 'submit';
+			if (language.is_no(body)) {
+				next = 'incomplete';
+			}
+			return Promise.resolve({next: next, advance: true});
+		}
+	},
 	submit: {
 		pre_process: function(action, conversation, user) {
-			log.info('submit pre_process', user.settings);
-			// check to ensure user has all required fields
+			// check to ensure user has all required fields before submitting
 			var missing_fields = validate.voter_registration_complete(user.settings);
 			if (missing_fields.length) {
 				// incomplete, re-query missing fields
-				log.info('bot: missing fields!', missing_fields.length);
-				return {next: 'incomplete', errors: missing_fields};
-			} else {
-				if (config.submit_url) {
-					// send to votebot-forms
-					log.info('bot: registration is complete! submitting...');
-					
-					var form_submit = {
-					    method: 'POST',
-					    uri: config.submit_url,
-					    body: {
-					    	user: user,
-					    	callback_url: '' // TODO, define callback to notify user of form submit success
-					    },
-					    json: true 
-					};
-					request(form_submit)
-					    .then(function (response) {
-					        // store response from votebot-forms in user.settings.submit
-					        user_model.update(user.id, {settings: {'submit': response.status}});
-
-							if (response.status === 'error') {
-								return {next: 'incomplete', 'errors': response.errors};
-							}
-					    })
-					    .catch(function (error) {
-					        log.error('error submitting', error);
-							return {next: 'incomplete', 'errors': error};
-					    });
-				} else {
-					log.info('bot: no submit_url in config, skipping submit...');
-				}
-
-				// finally, remove SSN or state ID from our data
-				// and advance to complete step
-				return {
-					store: {
-					  settings: {
-						'ssn': 'cleared',
-						'state_id': 'cleared'
-					   }
-					},
-					next: 'complete', 
-				}
-			};
+				log.error('bot: missing fields!', user.username, missing_fields);
+				update_user = util.object.set(user, 'settings.missing_fields', response.errors);
+				user_model.update(user.id, update_user);
+				return {next: 'incomplete'};
+			}
 		},
-		process: simple_store('user.submit', {validate: validate.submit_response}),
+		process: function(body, user) {
+			if (!config.submit_url) {
+				log.info('bot: no submit_url in config, skipping submit...');
+				return Promise.resolve({
+					next: 'complete',
+					msg: 'This system is in DEBUG mode, skipping form submission to state. Still clearing sensitive user fields.',
+					store: {
+						'settings.submit': 'skipped',
+						'settings.ssn': 'cleared',
+						'settings.state_id_number': 'cleared'
+					}
+				});
+			};
+
+			// send to votebot-forms
+			var form_submit = {
+			    method: 'POST',
+			    uri: config.submit_url,
+			    body: {
+			    	user: user,
+			    	callback_url: '' // TODO, define callback to notify user of form submit success
+			    },
+			    json: true 
+			};
+
+			return request(form_submit)
+			      .then(function (response) {
+			    	log.info('form submit response', response);
+					if (response.status === 'error') {
+						log.error('form-submit: error!', user.username, response.errors);
+						update_user = util.object.set(user, 'settings.missing_fields', response.errors);
+						user_model.update(user.id, update_user);
+
+						return Promise.resolve({next: 'incomplete'});
+					} else {
+						// store submit response, remove SSN or state ID from our data
+						return Promise.resolve({
+								next: 'complete',
+								store: {
+									'settings.submit': response.status,
+									'settings.ssn': 'cleared',
+									'settings.state_id_number': 'cleared'
+								}
+						});
+					}
+			    })
+			    .catch(function (error) {
+			        log.error('error submitting', error);
+					return Promise.resolve({next: 'incomplete', 'errors': [error]});
+			    });
+		},
 	},
 	complete: {
 		pre_process: function(action, conversation, user) {
 			if (config.twilio) notify.replace_tags(user, ['votebot-started'], ['votebot-completed']);
 
 			// send confirmation prompt dependent on user state
-			var state = util.object.get(user, 'settings.state').trim().toLowerCase();
-			if (us_states.required_questions[state]) {
+			var state = util.object.get(user, 'settings.state');
+			if (us_election.state_required_questions[state]) {
 				// registration complete online, no extra instructions
-				return {msg: 'Congratulations! You’ve been registered to vote in {{settings.state}}! We just emailed you a receipt.', next: 'share'};
+				return {msg: 'Congratulations! We have submitted your voter registration in {{settings.state}}! We just emailed you a receipt.', next: 'share'};
 			} else {
 				// they'll get a PDF, special instructions
 				return {msg: "Great! In a moment, we’ll email you a completed voter registration form to print, sign, and mail.", next: 'share'};
@@ -276,10 +300,14 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			// if user has already told us their birthdate, calculate will_be_18 automatically
 			if( util.object.get(user, 'settings.date_of_birth') ) {
-				var date_of_birth = new Date(util.object.get(user, 'settings.date_of_birth'));
-				var next_election = new Date(config.election.date);
-				var cutoff_date = next_election.setFullYear(next_election.getFullYear() - 18);
-				user.settings.will_be_18 = (cutoff_date >= date_of_birth);
+				var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
+				var next_election = moment(config.election.date, 'YYYY-MM-DD');
+				var cutoff_date = moment(next_election).year(next_election.year() - 18);
+				var will_be_18 = cutoff_date.isAfter(date_of_birth);
+				// persist to user object
+				var update_user = util.object.set(user, 'settings.will_be_18', will_be_18);
+				// and database
+				user_model.update(user.id, update_user);
 				return {next: 'per_state'};
 			}
 		},
@@ -288,7 +316,7 @@ var default_steps = {
 	ethnicity: {
 		process: simple_store('user.settings.ethnicity')
 	},
-	party: {
+	political_party: {
 		process: simple_store('user.settings.political_party')
 	},
 	disenfranchised: {
@@ -297,8 +325,8 @@ var default_steps = {
 	incompetent: {
 		process: simple_store('user.settings.incompetent', {validate: validate.boolean_no})
 	},
-	state_id: {
-		process: simple_store('user.settings.state_id', {validate: validate.state_id})
+	state_id_number: {
+		process: simple_store('user.settings.state_id_number', {validate: validate.state_id_number})
 	},
 	state_id_issue_date: {
 		process: simple_store('user.settings.state_id_issue_date', {validate: validate.date})
@@ -705,7 +733,9 @@ exports.next = function(user_id, conversation, message)
 						log.error('bot: next: ', err, err.stack);
 						var message = 'I seem to have had a glitch. Please send your last message again.';
 					}
-					return message_model.create(config.bot.user_id, conversation.id, {body: message});
+
+					if(message)
+						return message_model.create(config.bot.user_id, conversation.id, {body: message});
 				})
 				// error catching errors. ABORT
 				.catch(function(err) {

@@ -10,6 +10,7 @@ var app = express();
 var router = express.Router();
 var fs = require('fs');
 var morgan = require('morgan');
+var raven = require('raven');
 var resutil = require('./lib/resutil');
 var log = require('./lib/logger');
 
