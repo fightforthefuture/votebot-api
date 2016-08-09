@@ -231,7 +231,7 @@ var default_chain_steps = [
 		admin_order: 22,
 	},
 	{
-		name: 'state_id',
+		name: 'state_id_number',
 		msg: "Alright, last thing - in order to finish your registration, your state wants to know your {{settings.state}} id number. (I don't store this info!)",
 		errormsg: "Please enter your state ID number",
 		next: 'per_state',

@@ -314,8 +314,8 @@ var default_steps = {
 	incompetent: {
 		process: simple_store('user.settings.incompetent', {validate: validate.boolean_no})
 	},
-	state_id: {
-		process: simple_store('user.settings.state_id', {validate: validate.state_id})
+	state_id_number: {
+		process: simple_store('user.settings.state_id_number', {validate: validate.state_id_number})
 	},
 	state_id_issue_date: {
 		process: simple_store('user.settings.state_id_issue_date', {validate: validate.date})
