@@ -414,6 +414,18 @@ function get_chain_step(type, step) {
 	});
 }
 
+function log_chain_step_entry(step_id) {
+	var vars = {id: step_id},
+	    qry = "UPDATE chains_steps SET entries = entries + 1 WHERE ID = {{id}}";
+	return db.query(qry, vars);
+}
+
+function log_chain_step_exit(step_id) {
+	var vars = {id: step_id},
+	    qry = "UPDATE chains_steps SET exits = exits + 1 WHERE ID = {{id}}";
+	return db.query(qry, vars);
+}
+
 // a helper for very simple ask-and-store type questions.
 // can perform data validation as well.
 function simple_store(store, options)
@@ -493,6 +505,10 @@ var find_next_step = function(action, conversation, user)
 			var next_action = util.object.merge({}, preserve_action, {next: processed_next});
 			return find_next_step(next_action, conversation, user);
 		} else {
+			
+			if (default_step.step && default_step.step.id)
+				log_chain_step_entry(default_step.step.id);
+
 			return default_step;
 		}
 	});
@@ -580,6 +596,8 @@ exports.next = function(user_id, conversation, message)
 			if(!_step) throw error('conversation chain missing: ', state.step);
 
 			step = _step;
+
+			log_chain_step_exit(step.id);
 
 			// only get the restart step if we're on the final step, lol
 			if (step.final)
