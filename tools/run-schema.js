@@ -128,7 +128,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'submit',
-		msg: 'THIS IS THE STEP THAT SUBMITS TO THE FORM STUFFER.',
+		msg: ' ', // don't send message here, it will echo to user
 		errormsg: '',
 		next: 'complete',
 		admin_special: true,

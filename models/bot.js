@@ -171,7 +171,7 @@ var default_steps = {
 			if (language.is_no(body)) {
 				next = 'incomplete';
 			}
-			return Promise.resolve({next: next});
+			return Promise.resolve({next: next, advance: true});
 		}
 	},
 	submit: {
@@ -184,7 +184,6 @@ var default_steps = {
 				return {next: 'incomplete', errors: missing_fields};
 			}
 		},
-		advance: true, // don't wait for user response
 		process: function(body, user) {
 			if (!config.submit_url) {
 				log.info('bot: no submit_url in config, skipping submit...');
@@ -217,7 +216,6 @@ var default_steps = {
 						return Promise.resolve({next: 'incomplete', errors: response.errors});
 					} else {
 						// store submit response, remove SSN or state ID from our data
-						// advance to complete step
 						return Promise.resolve({
 								next: 'complete',
 								store: {
@@ -729,7 +727,9 @@ exports.next = function(user_id, conversation, message)
 						log.error('bot: next: ', err, err.stack);
 						var message = 'I seem to have had a glitch. Please send your last message again.';
 					}
-					return message_model.create(config.bot.user_id, conversation.id, {body: message});
+
+					if(message)
+						return message_model.create(config.bot.user_id, conversation.id, {body: message});
 				})
 				// error catching errors. ABORT
 				.catch(function(err) {
