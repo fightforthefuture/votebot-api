@@ -1,20 +1,96 @@
 # Votebot API
 
-A node chatbot to guide users through a conversation to register them to vote. Signs them up for email alerts and election deadline notifications. Works over SMS and Facebook messenger (TBD). 
+### Voter Registration Chatbot for Everyone
 
-Works in tandem with [votebot-forms](https://github.com/fightforthefuture/votebot-forms) to submit registration data to their Secretary of State.
+Votebot is an SMS chatbot that uses text messages to guide users through a
+conversation and register them to vote. Text messages are sent and received
+using [Twilio API][1]. This works in tandem with the [Votebot-Forms][2] project
+to submit registration data to the Secretary of State in states that support
+online voter registration (OVR).
 
-## Requirements
-- node 4.4+
-- postgres 9.5+ running
+For states that do not support OVR, the [Vote.org][3] API is used to
+generate a pre-filled voter registration PDF that the user can then sign and
+mail to their Secretary of State. Optionally, a postage-paid return envelope
+can be mailed to the users, so they don't have to deal with printing or postage.
 
-## Development
+
+## Service dependencies
+
+* **[Node.js 4.4+][4]**
+* **[npm][5]**
+* **[Postgresql][6]**
+* **[Twilio API][1]**
+* **[a running Votebot-Forms instance][2]**
+* **[Vote.org API][3]
+
+
+## Installation and Setup
+
+
+### Install the dependencies
+
+Just cd to whatever directory you installed the code into and run `npm install`.
+
+
+### Configure the environment variables
+
+All settings for Free Progress are specified via environment variables. There's
+a template file with these variables stored in `env.sample`. Copy these into a
+file called `.env` (important to use that filename since it's in the
+`.gitignore` and you don't want to commit any of these private values into the
+repo). Then, edit the `.env` file and configure these to your liking.
+
+Here are the specific environment variables, and what they do:
+
+* **`ADMIN_PASSWORD`**: This will protect the admin interface from elite hackers
+
+* **`PORT`**: What port you want to run the server on
+
+* **`DATABASE_URL`**: PostgresSQL connection string for your database
+
+* **`SESSION_SECRET`**: A secret string used for session token hashing
+
+* **`NEXT_ELECTION_DATE`**: Date of next election in `mm/dd/yyyy` format
+
+* **`TWILIO_ACCOUNT_SID`**: Account string for Twilio
+
+* **`TWILIO_AUTH_TOKEN`**: Auth token for Twilio
+
+* **`TWILIO_FROM_NUMBER`**: From number for Twilio
+
+* **`TWILIO_MESSAGING_SID`**: Account string for Twilio Messaging service
+
+* **`TWILIO_NOTIFY_SID`**: Account string for Twilio Notify service (beta)
+
+
+### Create the config.js file
+
+Copy the `config.tpl.js` into a file called `config.js`. Since this file
+references the environment variables you just defined, there's no need for extra
+configuration. It's kind of an anachronism at this point.
+
+### Populate the database with initial schema
+
+To create the database tables and populate them with initial data, run:
+
 ```sh
-cd voterbot/
-npm install
-cp config.tpl.js config.js
-vim config.js   # update default db name & password
 node tools/run-schema.js
+```
+
+This command is safe to run multiple times and will ignore any existing data.
+
+
+### Run the server!
+
+Make sure your environment variables are loaded:
+
+```sh
+source .env
+```
+
+Then run the server:
+
+```sh
 node server.js
 ```
 
@@ -27,3 +103,11 @@ node server.js
 }``` to `/conversations`
 - connect Twilio number with POST to `/conversations/incoming`
 - wipe user by sending DELETE to `/users/:username` with basic auth admin:admin_password from config
+
+
+[1]: https://www.twilio.com
+[2]: https://github.com/fightforthefuture/votebot-forms
+[3]: https://www.vote.org
+[4]: https://nodejs.org/en/
+[5]: https://www.npmjs.com/
+[6]: https://www.postgresql.org/
