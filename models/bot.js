@@ -172,25 +172,27 @@ var default_steps = {
 	},
 	submit: {
 		pre_process: function(action, conversation, user) {
-			log.info('submit pre_process', user.settings);
-			// check to ensure user has all required fields
+			// check to ensure user has all required fields before submitting
 			var missing_fields = validate.voter_registration_complete(user.settings);
 			if (missing_fields.length) {
 				// incomplete, re-query missing fields
 				log.info('bot: missing fields!', missing_fields.length);
 				return {next: 'incomplete', errors: missing_fields};
-			} 
-
+			}
+		},
+		advance: true, // don't wait for user response
+		process: function(body, user) {
 			if (!config.submit_url) {
 				log.info('bot: no submit_url in config, skipping submit...');
-				var update_user = util.object.set(user, 'settings.submit', 	 'skipped');
-				var update_user = util.object.set(user, 'settings.ssn', 	 'cleared');
-				var update_user = util.object.set(user, 'settings.state_id', 'cleared');
-				user_model.update(user.id, update_user);
-				return {
-					'next': 'complete',
-					'msg': 'This system is in DEBUG mode, skipping form submission to state. Still clearing sensitive user fields.',
-				}
+				return Promise.resolve({
+					next: 'complete',
+					msg: 'This system is in DEBUG mode, skipping form submission to state. Still clearing sensitive user fields.',
+					store: {
+						'settings.submit': 'skipped',
+						'settings.ssn': 'cleared',
+						'settings.state_id_number': 'cleared'
+					}
+				});
 			};
 
 			// send to votebot-forms
@@ -204,28 +206,29 @@ var default_steps = {
 			    json: true 
 			};
 
-			request(form_submit)
-			    .then(function (response) {
+			return request(form_submit)
+			      .then(function (response) {
 			    	log.info('form submit response', response);
 					if (response.status === 'error') {
-						return {next: 'incomplete', 'errors': response.errors};
+						return Promise.resolve({next: 'incomplete', errors: response.errors});
 					} else {
 						// store submit response, remove SSN or state ID from our data
-						var update_user = util.object.set(user, 'settings.submit', 	 response.status);
-						var update_user = util.object.set(user, 'settings.ssn', 	 'cleared');
-						var update_user = util.object.set(user, 'settings.state_id', 'cleared');
-						user_model.update(user.id, update_user);
-						
-						// and advance to complete step
-						return { next: 'complete' }
+						// advance to complete step
+						return Promise.resolve({
+								next: 'complete',
+								store: {
+									'settings.submit': response.status,
+									'settings.ssn': 'cleared',
+									'settings.state_id_number': 'cleared'
+								}
+						});
 					}
 			    })
 			    .catch(function (error) {
 			        log.error('error submitting', error);
-					return {next: 'incomplete', 'errors': [error]};
+					return Promise.resolve({next: 'incomplete', 'errors': [error]});
 			    });
 		},
-		process: simple_store('user.submit', {validate: validate.submit_response}),
 	},
 	complete: {
 		pre_process: function(action, conversation, user) {
