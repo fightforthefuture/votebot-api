@@ -256,15 +256,26 @@ var default_steps = {
 		process: simple_store('user.settings.complete', {validate: validate.always_true}),
 	},
 	incomplete: {
+		pre_process: function(action, conversation, user) {
+			var missing_fields = util.object.get(user, 'settings.missing_fields');
+			if (missing_fields.message === 'missing_fields' && missing_fields.payload.length) {
+				var next = Object.keys(missing_fields.payload[0])[0]; // weird deserialize format from python...
+				return {msg: 'Sorry, your registration is missing a required field.', next: next};
+			} else {
+				return {}
+			}
+		},
 		// msg: 'Sorry, your registration is incomplete. Restart?',
 		process: function(body, user) {
 			// TODO, re-query missing fields
 			log.error('missing fields', util.object.get(user, 'settings.missing_fields'));
-			var next = 'incomplete';
 			if (language.is_yes(body) || body.trim().toUpperCase() === 'RESTART') {
-				next = 'restart';
+				return Promise.resolve({next: 'restart'});
 			}
-			return Promise.resolve({next: next});
+			if (body.trim().toUpperCase() === 'RETRY') {
+				return Promise.resolve({next: 'submit', msg: 'Sending your registration again.', advance: true});
+			}
+			return Promise.resolve({next: 'incomplete'});
 		}
 	},
 	share: {
@@ -447,7 +458,7 @@ var find_next_step = function(action, conversation, user)
 	var next = preserve_action.next;
 	
 	return get_chain_step(state.type, next).then(function(nextstep) {
-		if(!nextstep) throw new Error('bot: could not load step: ', state.type, next);
+		if(!nextstep) throw new Error('bot: could not load step: '+ next);
 
 		var default_step = {step: nextstep, name: next};
 		
