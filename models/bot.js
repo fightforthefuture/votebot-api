@@ -279,7 +279,7 @@ var default_steps = {
 		}
 	},
 	share: {
-		process: function() { return Promise.resolve({})}, // no-op
+		process: function() { return Promise.resolve({'next': 'fftf_opt_in'})},
 		advance: true,
 	},
 	fftf_opt_in: {
