@@ -56,7 +56,7 @@ var config = {
 	// (good for debugging)
 	sms_override: null,
 
-	submit_url: 'https://fftf-votebot-forms.herokuapp.com/registration'
+	submit_url: 'https://votebot-forms.herokuapp.com/registration'
 };
 
 module.exports = config;
