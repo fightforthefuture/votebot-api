@@ -34,7 +34,7 @@ Just cd to whatever directory you installed the code into and run `npm install`.
 
 ### Configure the environment variables
 
-All settings for Free Progress are specified via environment variables. There's
+All settings for Votebot are specified via environment variables. There's
 a template file with these variables stored in `env.sample`. Copy these into a
 file called `.env` (important to use that filename since it's in the
 `.gitignore` and you don't want to commit any of these private values into the
@@ -61,6 +61,12 @@ Here are the specific environment variables, and what they do:
 * **`TWILIO_MESSAGING_SID`**: Account string for Twilio Messaging service
 
 * **`TWILIO_NOTIFY_SID`**: Account string for Twilio Notify service (beta)
+
+* **`FACEBOOK_PAGE_ID`**: Page ID for connecting Facebook Messenger (beta)
+
+* **`SMARTY_STREETS_ID`**: Account string for SmartyStreets address verification
+
+* **`SMARTY_STREETS_TOKEN`**: Auth token for SmartyStreets address verification
 
 
 ### Create the config.js file
