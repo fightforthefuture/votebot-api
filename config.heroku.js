@@ -1,6 +1,6 @@
 var config = {
 	// app-wide logging
-	loglevel: 'error',
+	loglevel: process.env.LOGLEVEL || 'error',
 	sentry: process.env.SENTRY_DSN,
 	port: process.env.PORT,
 
