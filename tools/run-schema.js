@@ -153,7 +153,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'share',
-		msg: "Now, there's one last important thing. We need you to pass on the <3 and register some friends. Share this on Facebook http://fftf.io/hellovote",
+		msg: "Now, there's one last important thing. We need you to pass on the <3 and register some friends. Share this on Facebook https://fftf.io/hellovote",
 		errormsg: '',
 		next: 'fftf_opt_in',
 		advance: true,
