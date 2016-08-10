@@ -73,7 +73,7 @@ exports.broadcast = function(conversation_id, message)
 				}
 				
 				var to_user = config.sms_override || user.username;
-				if (user.type === 'facebook-messenger') {
+				if (user.type === 'fb') {
 					var from_number = 'Messenger:'+ config.twilio.facebook_page_id
 				} else {
 					var from_number = config.twilio.from_number;
@@ -85,6 +85,8 @@ exports.broadcast = function(conversation_id, message)
 					from: from_number,
 					messaging_service_sid: config.twilio.messaging_sid,
 					body: message.body
+				}).catch(function(error) {
+					log.error('message: failed to send to: '+ to_user, error);
 				});
 			}));
 		});
@@ -104,7 +106,7 @@ exports.incoming_message = function(data)
 		.then(function(conversation) {
 			if(conversation)
 			{
-				log.info('msg: incoming: continuing existing voter reg');
+				log.info('msg: incoming: continuing existing conversation');
 				return exports.create(user.id, conversation.id, {body: data.Body})
 					.tap(function(message) {
 						if(conversation.type == 'sms' || conversation.type == 'web')
@@ -115,8 +117,11 @@ exports.incoming_message = function(data)
 			}
 			else
 			{
-				log.info('msg: incoming: starting new voter reg');
-				return bot_model.start('vote_1', user.id, {start: 'intro'});
+				log.info('msg: incoming: starting new conversation');
+				return convo_model.create(config.bot.user_id, {
+					type: user.type,
+					recipients: [{username: user.username}]
+				});
 			}
 		});
 };

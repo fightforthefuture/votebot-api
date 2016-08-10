@@ -34,7 +34,7 @@ function create_binding(user, tags, identity) {
 			user_model.update(user.id, user);
 			fulfill(response.sid);
 		}).catch(function(error) {
-			log.error('notify: failed to create binding:', error);
+			log.error('notify: failed to create binding: '+ user.username, error);
 			reject(error);
 		});
 	});

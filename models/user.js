@@ -12,7 +12,7 @@ exports.parse_username = function(username, options)
 		//is a facebook messenger username
 		return {
 			username: username,
-			type: 'facebook-messenger'
+			type: 'fb'
 		};
 	} else if (username.startsWith('Web:')) {
 		//is a web username

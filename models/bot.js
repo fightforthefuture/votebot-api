@@ -539,7 +539,7 @@ exports.start = function(type, to_user_id, options)
 
 			if (!options.existing_conversation_id) {
 				return convo_model.create(config.bot.user_id, {
-					type: 'bot',
+					type: 'sms',
 					state: {type: type, step: first_step_name},
 					recipients: [user],
 					message: { body: step.msg }

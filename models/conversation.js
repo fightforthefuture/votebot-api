@@ -15,14 +15,19 @@ exports.create = function(user_id, data)
 {
 	var recipients = data.recipients || [];
 	var message = data.message || {};
-	
+	var valid_data_types = ['sms', 'web', 'fb', 'p2p'];
+	// sms means conversation was initiated by text message
+	// web means conversation was initiated by web call (from hellovote.org, or other client)
+	// fb means conversation was inititated by facebook messenger
+	// p2p means conversation was initiated by group chat (not yet implemented)
 
-	if(!data.type)
+	if(!data.type || valid_data_types.indexOf(data.type) < 0)
 	{
-		return Promise.reject(error('Please specify a conversation type (sms|web|p2p)', {code: 400}));
+		return Promise.reject(error('Please specify a conversation type '+valid_data_types.join('|'), {code: 400}));
 	}
 	else if (data.type == 'web' && recipients.length == 0)
 	{
+		// this is a web only conversation, Web:hash prefix used to init chat over javascript
 		recipients.push({username: 'Web:' + hasher.sort_of_unique_id(JSON.stringify(message))});
 	}
 
@@ -64,7 +69,12 @@ exports.create = function(user_id, data)
 					return conversation;
 				})
 				.tap(function(conversation) {
-					if (conversation.type === 'web') {
+					if(conversation.type === 'p2p') {
+						// if we're starting a p2p conversation, init multiple bots
+						return Promise.all(users.map(function(user) {
+							return bot_model.start('vote_1', user.id, {start: 'intro'});
+						}));
+					} else {
 						// start bot!
 						return bot_model.start(
 							'vote_1',
@@ -75,14 +85,6 @@ exports.create = function(user_id, data)
 							}
 						);
 					}
-
-					if(conversation.type === 'p2p') {
-						// if we're starting a p2p conversation, init a bot chat to
-						// each recipient as well
-						return Promise.all(users.map(function(user) {
-							return bot_model.start('vote_1', user.id, {start: 'intro'});
-						}));
-					} 
 				});
 		});
 };
