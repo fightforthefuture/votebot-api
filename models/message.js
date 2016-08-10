@@ -109,8 +109,9 @@ exports.incoming_message = function(data)
 				log.info('msg: incoming: continuing existing conversation');
 				return exports.create(user.id, conversation.id, {body: data.Body})
 					.tap(function(message) {
-						if(conversation.type == 'sms' || conversation.type == 'web')
-						{
+						if(conversation.type === 'p2p') {
+							// TODO, advance the bot for each user in turn?
+						} else {
 							return bot_model.next(user.id, conversation, message)
 						}
 					});
