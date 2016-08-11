@@ -180,14 +180,14 @@ var default_steps = {
 			var missing_fields = validate.voter_registration_complete(user.settings);
 			if (missing_fields.length) {
 				// incomplete, re-query missing fields
-				log.error('bot: missing fields!', user.username, missing_fields);
+				log.error('bot: submit: missing fields! ', missing_fields, {step: 'submit', username: user.username});
 				update_user = util.object.set(user, 'settings.missing_fields', response.errors);
 				user_model.update(user.id, update_user);
 				return {next: 'incomplete'};
 			}
 		},
 		process: function(body, user) {
-			if (!config.submit_url) {
+			if (!config.app.submit_url) {
 				log.info('bot: no submit_url in config, skipping submit...');
 				return Promise.resolve({
 					next: 'complete',
@@ -203,19 +203,19 @@ var default_steps = {
 			// send to votebot-forms
 			var form_submit = {
 			    method: 'POST',
-			    uri: config.submit_url,
+			    uri: config.app.submit_url,
 			    body: {
 			    	user: user,
-			    	callback_url: '' // TODO, define callback to notify user of form submit success
+			    	callback_url: config.app.url + '/form_callback'
 			    },
 			    json: true 
 			};
 
 			return request(form_submit)
 			      .then(function (response) {
-			    	log.info('form submit response', response);
+			    	log.info('form_submit: response', response);
 					if (response.status === 'error') {
-						log.error('form-submit: error!', user.username, response.errors);
+						log.error('bot: form-submit: error! ', response.errors, {step: 'submit', username: user.username});
 						update_user = util.object.set(user, 'settings.missing_fields', response.errors);
 						user_model.update(user.id, update_user);
 
@@ -233,7 +233,7 @@ var default_steps = {
 					}
 			    })
 			    .catch(function (error) {
-			        log.error('error submitting', error);
+			        log.error('bot: form_submit: unable to post ', {step: 'submit', error: error});
 					return Promise.resolve({next: 'incomplete', 'errors': [error]});
 			    });
 		},
@@ -268,7 +268,7 @@ var default_steps = {
 		// msg: 'Sorry, your registration is incomplete. Restart?',
 		process: function(body, user) {
 			// TODO, re-query missing fields
-			log.error('missing fields', util.object.get(user, 'settings.missing_fields'));
+			log.notice('bot: incomplete: missing_fields ', util.object.get(user, 'settings.missing_fields'), {username: user.username});
 			if (language.is_yes(body) || body.trim().toUpperCase() === 'RESTART') {
 				return Promise.resolve({next: 'restart'});
 			}
@@ -548,7 +548,7 @@ exports.start = function(type, to_user_id, options)
 				convo_model.update(options.existing_conversation_id, {
 					state: {type: type, step: first_step_name},
 				}).then(function(conversation) {
-					log.info('about to send first message! conversation: ', conversation.id);
+					log.info('about to send first message! conversation:', conversation.id);
 					message_model.create(
 						config.bot.user_id,
 						conversation.id,
@@ -625,7 +625,7 @@ exports.next = function(user_id, conversation, message)
 			
 			return parse_step(step, body, user)
 				.then(function(action) {
-					log.info('bot: action: ', JSON.stringify(action));
+					log.info('bot: action:', JSON.stringify(action));
 
 					// if user wants out, let them
 					if(action.next == '_cancel') {
@@ -747,7 +747,7 @@ exports.next = function(user_id, conversation, message)
 				.catch(function(err) {
 					if(err.data_error)
 					{
-						log.notice('bot: next: data error: ', err);
+						log.notice('bot: data_error:', step.name, {step: step.name, body: body, message: err.message});
 						if (err.message)
 						{
 							var message = err.message;
@@ -762,7 +762,7 @@ exports.next = function(user_id, conversation, message)
 					}
 					else
 					{
-						log.error('bot: next: ', err, err.stack);
+						log.error('bot: non data_error:', err.message, {step: step.name, stack: err.stack});
 						var message = 'I seem to have had a glitch. Please send your last message again.';
 					}
 
@@ -771,7 +771,7 @@ exports.next = function(user_id, conversation, message)
 				})
 				// error catching errors. ABORT
 				.catch(function(err) {
-					log.crit('bot: fatal (giving up): ', err, err.stack);
+					log.crit('bot: fatal (giving up): ', err.message, {step: step.name, stack: err.stack});
 				});
 		});
 };

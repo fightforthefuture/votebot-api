@@ -1,21 +1,23 @@
 var config = {
-	// app-wide logging
-	loglevel: 'info',
 	port: process.env.PORT,
-	sentry: null,
 
 	// the app website for votebot
 	app: {
-		url: 'http://api.hellovote.org',
-		share_url: 'http://hellovote.org',
+		url: 'http://localhost:3000',
+		submit_url: 'http://localhost:5000', // votebot-forms running on flask
 		admin_password: process.env.ADMIN_PASSWORD,
 		force_ssl: false
 	},
 
-	// sends detailed error information back with failed requests
-	//
-	// true when developing, false in prod
-	error_responses: true,
+	// app-wide logging
+	logging: {
+		level: process.env.LOGLEVEL || 'error',
+		sentry: process.env.SENTRY_DSN,
+
+		// sends detailed error information back with failed requests
+		// true when developing, false in prod
+		error_responses: false,
+	},
 
 	// parameters for next election
 	election: {
@@ -53,8 +55,6 @@ var config = {
 	// send all outgoing SMSs to this number instead of the actual user's number
 	// (good for debugging)
 	sms_override: null,
-
-	submit_url: null
 };
 
 module.exports = config;

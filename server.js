@@ -30,8 +30,9 @@ app.use(body_parser.urlencoded({extended: false, limit: '4mb'}));
 app.use(morgan(':remote-addr ":method :url" :status :res[content-length]'));
 app.use(method_override('_method'));
 
-if (config.sentry)
+if (config.logging.sentry) {
 	app.use(raven.middleware.express.requestHandler(config.sentry));
+}
 app.use(function(err, req, res, next) {
 	console.error('Express error: ', err.stack);
 	resutil.error(res, 'App error', err.stack);
@@ -48,7 +49,7 @@ app.all('*', function(req, res, next) {
 var controller_dir = './controllers';
 fs.readdirSync(controller_dir).forEach(function(file) {
 	if(file.match(/^\./) || !file.match(/\.js$/)) return;
-	log.notice('loading controller:', file);
+	log.info('loading controller:', file);
 	var controller = require(controller_dir+'/'+file);
 	if(!controller.hook) throw new Error('Controller: '+file+': missing `route()` function');
 	controller.hook(app);

@@ -1,21 +1,23 @@
 var config = {
-	// app-wide logging
-	loglevel: process.env.LOGLEVEL || 'error',
-	sentry: process.env.SENTRY_DSN,
 	port: process.env.PORT,
 
 	// the app website for votebot
 	app: {
-		url: 'http://api.hellovote.org',
-		share_url: 'http://hellovote.org',
+		url: 'https://votebot-api.herokuapp.com',
+		submit_url: 'https://votebot-forms.herokuapp.com/registration',
 		admin_password: process.env.ADMIN_PASSWORD,
 		force_ssl: true
 	},
 
-	// sends detailed error information back with failed requests
-	//
-	// true when developing, false in prod
-	error_responses: false,
+	// app-wide logging
+	logging: {
+		level: process.env.LOGLEVEL || 'error',
+		sentry: process.env.SENTRY_DSN,
+		validation_errors: true,
+		// sends detailed error information back with failed requests
+		// true when developing, false in prod
+		error_responses: false,
+	},
 
 	// parameters for next election
 	election: {
@@ -55,8 +57,6 @@ var config = {
 	// send all outgoing SMSs to this number instead of the actual user's number
 	// (good for debugging)
 	sms_override: null,
-
-	submit_url: 'https://votebot-forms.herokuapp.com/registration'
 };
 
 module.exports = config;
