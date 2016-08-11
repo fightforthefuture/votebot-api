@@ -50,7 +50,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'first_name',
-		msg: "So, what's your first name? (Should match your government ID. Please do not submit fraudulent information.)",
+		msg: "So, what's your first name? This is an official form, so it should match your government ID. If you ever need to go back, just say so.",
 		errormsg: "Please enter your first name",
 		next: 'last_name',
 		admin_order: 1,

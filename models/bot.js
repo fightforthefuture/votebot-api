@@ -458,6 +458,7 @@ var parse_step = function(step, body, user)
 	// if the user is canceling, don't bother parsing anything
 	if(language.is_cancel(body)) return Promise.resolve({next: '_cancel'});
 	if(language.is_help(body)) return Promise.resolve({next: '_help', prev: step.name});
+	if(language.is_back(body)) return Promise.resolve({next: '_back'});
 
 	return step.process(body, user, step.next, step.errormsg);
 };
@@ -640,6 +641,10 @@ exports.next = function(user_id, conversation, message)
 						// let user continue
 						action.next = action.prev; 
 					}
+					if(action.next == '_back') {
+						console.log('going back to '+state.back);
+						action.next = state.back;
+					}
 
 					var promise = Promise.resolve();
 
@@ -711,6 +716,8 @@ exports.next = function(user_id, conversation, message)
 							// replacing the "step" value with our new step's name.
 							// this will get saved once our message goes out
 							state.step = found.name;
+							// save current step, in case the user wants to go back
+							state.back = step.name;
 
 							// create/send the message from the next step in the convo chain
 							if (nextstep.msg && !nextstep.no_msg) {
