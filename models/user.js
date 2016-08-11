@@ -1,3 +1,4 @@
+var config = require('../config');
 var db = require('../lib/db');
 var phone = require('phone');
 
@@ -32,6 +33,13 @@ exports.parse_username = function(username, options)
 			return;
 		}
 	}
+};
+
+exports.use_notify = function(username) {
+	if (!config.twilio) { return false; }
+	var type = exports.parse_username(username).type;
+	if (type === 'fb' || type === 'sms') { return true; }
+	return false;
 };
 
 exports.get = function(id)

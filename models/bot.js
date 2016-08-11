@@ -50,7 +50,7 @@ var default_steps = {
 	zip: {
 		// create a binding for the user now that we have identity
 		pre_process: function(action, conversation, user) {
-			if (config.twilio) notify.add_tags(user, ['votebot-started']);
+			if (user_model.use_notify(user.username)) { notify.add_tags(user, ['votebot-started']); }
 		},
 		process: simple_store('user.settings.zip', {validate: validate.zip})
 	},
@@ -70,7 +70,7 @@ var default_steps = {
 
 			// check state eligibility requirements
 			if (end_msg = us_election.states_without_ovr[state]) {
-				if (config.twilio) notify.replace_tags(user, ['votebot-started'], ['votebot-completed']);
+				if (user_model.use_notify(user.username)) { notify.replace_tags(user, ['votebot-started'], ['votebot-completed']); }
 				return {msg: end_msg, next: 'share'}
 			}
 
@@ -87,7 +87,7 @@ var default_steps = {
 	},
 	address: {
 		pre_process: function(action, conversation, user) {
-			if (config.twilio) notify.add_tags(user, [user.settings.state]);
+			if (user_model.use_notify(user.username)) { notify.add_tags(user, [user.settings.state]); }
 		},
 		process: simple_store('user.settings.address', {validate: validate.address})
 	},
@@ -100,7 +100,7 @@ var default_steps = {
 	},
 	date_of_birth: {
 		pre_process: function(action, conversation, user) {
-			if (config.twilio) {
+			if (user_model.use_notify(user.username)) {
 				notify.add_identity(user, {
 					address: user.settings.address,
 					city: user.settings.city,
@@ -240,7 +240,7 @@ var default_steps = {
 	},
 	complete: {
 		pre_process: function(action, conversation, user) {
-			if (config.twilio) notify.replace_tags(user, ['votebot-started'], ['votebot-completed']);
+			if (user_model.use_notify(user.username)) { notify.replace_tags(user, ['votebot-started'], ['votebot-completed']); }
 
 			// send confirmation prompt dependent on user state
 			var state = util.object.get(user, 'settings.state');
@@ -631,7 +631,7 @@ exports.next = function(user_id, conversation, message)
 					if(action.next == '_cancel') {
 						var stop_msg = 'You are unsubscribed from FightForTheFuture. No more messages will be sent. Reply HELP for help or 844-344-3556.';
 						message_model.create(config.bot.user_id, conversation.id, {body: stop_msg});
-						if (config.twilio) { notify.delete_binding(user); }
+						if (user_model.use_notify(user.username)) { notify.delete_binding(user); }
 						return convo_model.close(conversation.id);
 					}
 					if(action.next == '_help') {
