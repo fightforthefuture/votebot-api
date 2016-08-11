@@ -122,7 +122,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'confirm',
-		msg: 'The name and address we have for you is:\n {{first_name}} {{last_name}}, {{settings.address}} {{settings.city}} {{settings.state}}\n Is this correct?',
+		msg: 'The name and address we have for you is:\n{{first_name}} {{last_name}}, {{settings.address}} {{settings.city}} {{settings.state}}\nIs this correct (yes/no)?',
 		errormsg: 'Please reply "yes" or "no" to confirm your information',
 		next: 'submit',
 		advance: true,
@@ -313,7 +313,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'fftf_opt_in_thanks',
-		msg: "Thanks for joining us to the Fight for the Future!",
+		msg: "Thanks for joining us at Fight for the Future!",
 		errormsg: '',
 		next: '(final)',
 		final: true,
