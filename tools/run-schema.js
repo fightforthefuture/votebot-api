@@ -101,8 +101,16 @@ var default_chain_steps = [
 		name: 'date_of_birth',
 		msg: "What day were you born? (month/day/year)",
 		errormsg: "Please enter your date of birth as month/day/year",
-		next: 'email',
+		next: 'will_be_18',
 		admin_order: 8, 
+	},
+	{
+		name: 'will_be_18',
+		msg: "Are you 18 or older, or will you be by the date of the election? (yes/no)",
+		errormsg: '',
+		next: 'email',
+		admin_special: true,
+		admin_order: 9,
 	},
 	{
 		name: 'email',
@@ -110,7 +118,7 @@ var default_chain_steps = [
 		// actual email prompt is sent in pre_process
 		errormsg: "Please enter your email address. If you don't have one, reply SKIP",
 		next: 'per_state',
-		admin_order: 9,
+		admin_order: 10,
 	},
 	{
 		name: 'per_state',
@@ -118,7 +126,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'confirm',
 		admin_special: true,
-		admin_order: 9,
+		admin_order: 11,
 	},
 	{
 		name: 'confirm',
@@ -126,7 +134,7 @@ var default_chain_steps = [
 		errormsg: 'Please reply "yes" or "no" to confirm your information',
 		next: 'submit',
 		advance: true,
-		admin_order: 10,
+		admin_order: 12,
 	},
 	{
 		name: 'submit',
@@ -134,7 +142,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'complete',
 		admin_special: true,
-		admin_order: 11,
+		admin_order: 13,
 	},
 	{
 		name: 'complete',
@@ -142,7 +150,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'share', 
 		advance: true,
-		admin_order: 12,
+		admin_order: 14,
 	},
 	{
 		name: 'incomplete',
@@ -150,7 +158,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'restart', 
 		admin_special: true,
-		admin_order: 13,
+		admin_order: 15,
 	},
 	{
 		name: 'share',
@@ -158,7 +166,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'fftf_opt_in',
 		advance: true,
-		admin_order: 14,
+		admin_order: 16,
 	},
 	{
 		name: 'restart',
@@ -166,7 +174,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'intro',
 		admin_special: true,
-		admin_order: 15,
+		admin_order: 17,
 	},
 	{
 		name: 'us_citizen',
@@ -174,7 +182,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 16,
+		admin_order: 18,
 	},
 	{
 		name: 'legal_resident',
@@ -182,15 +190,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 16,
-	},
-	{
-		name: 'will_be_18',
-		msg: "Are you 18 or older, or will you be by the date of the election? (yes/no)",
-		errormsg: '',
-		next: 'per_state',
-		admin_special: true,
-		admin_order: 18,
+		admin_order: 19,
 	},
 	{
 		name: 'ethnicity',
@@ -198,7 +198,7 @@ var default_chain_steps = [
 		errormsg: "Please let me know your ethnicity or race.",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 19,
+		admin_order: 20,
 	},
 	{
 		name: 'political_party',
@@ -206,7 +206,7 @@ var default_chain_steps = [
 		errormsg: "Please let me know your party preference, so I can ensure you are registered correctly.",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 20,
+		admin_order: 21,
 	},
 	{
 		name: 'disenfranchised',
@@ -214,7 +214,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 21,
+		admin_order: 22,
 	},
 	{
 		name: 'disqualified',
@@ -222,7 +222,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 21,
+		admin_order: 23,
 	},
 	{
 		name: 'incompetent',
@@ -230,7 +230,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 22,
+		admin_order: 24,
 	},
 	{
 		name: 'state_id_number',
@@ -238,7 +238,7 @@ var default_chain_steps = [
 		errormsg: "Please enter your state ID number",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 23,
+		admin_order: 25,
 	},
 	{
 		name: 'state_id_issue_date',
@@ -246,7 +246,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 24,
+		admin_order: 26,
 	},
 	{
 		name: 'ssn',
@@ -254,7 +254,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 25,
+		admin_order: 27,
 	},
 	{
 		name: 'ssn_last4',
@@ -262,7 +262,7 @@ var default_chain_steps = [
 		errormsg: "Please enter the last 4 digits of your SSN.",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 26,
+		admin_order: 28,
 	},
 	{
 		name: 'state_id_or_ssn_last4',
@@ -270,7 +270,7 @@ var default_chain_steps = [
 		errormsg: "Please enter your state ID number or last 4 of your SSN",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 27,
+		admin_order: 29,
 	},
 	{
 		name: 'gender',
@@ -278,7 +278,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 28,
+		admin_order: 30,
 	},
 	{
 		name: 'county',
@@ -286,7 +286,7 @@ var default_chain_steps = [
 		errormsg: "Please enter the name of the county you reside in",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 29,
+		admin_order: 31,
 	},
 	{
 		name: 'consent_use_signature',
@@ -294,7 +294,7 @@ var default_chain_steps = [
 		errormsg: "Please reply YES to let us submit your registration using your signature from the DMV. I do not store this information.",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 30,
+		admin_order: 32,
 	},
 	{
 		name: 'mail_in',
@@ -302,14 +302,14 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 31,
+		admin_order: 33,
 	},
 	{
 		name: 'fftf_opt_in',
 		msg: "Oh, I almost forgot. HelloVote is made by FightForTheFuture.org which protects the world-changing power of the Internet. Join us for campaign updates? (yes/no)",
 		errormsg: '',
 		next: 'fftf_opt_in_thanks',
-		admin_order: 32,
+		admin_order: 34,
 	},
 	{
 		name: 'fftf_opt_in_thanks',
@@ -317,8 +317,16 @@ var default_chain_steps = [
 		errormsg: '',
 		next: '(final)',
 		final: true,
-		admin_order: 33,
-	}
+		admin_order: 35,
+	},
+	{
+		name: 'ineligible',
+		msg: "Sorry, you are ineligible to register to vote with HelloVote. Restart?",
+		errormsg: '',
+		next: 'restart', 
+		admin_special: true,
+		admin_order: 36,
+	},
 ];
 
 function run()

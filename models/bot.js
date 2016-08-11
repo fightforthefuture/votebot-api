@@ -120,6 +120,29 @@ var default_steps = {
 			}
 		}
 	},
+	will_be_18: { 
+		pre_process: function(action, conversation, user) {
+			// if user has already told us their birthdate, calculate will_be_18 automatically
+			if( util.object.get(user, 'settings.date_of_birth') ) {
+				var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
+				var next_election = moment(config.election.date, 'YYYY-MM-DD');
+				var cutoff_date = moment(next_election).year(next_election.year() - 18);
+				var will_be_18 = cutoff_date.isAfter(date_of_birth);
+
+				if (!will_be_18) {
+					// sorry, you're inelgible
+					return {next: 'ineligible'};
+				}
+
+				// persist to user object
+				var update_user = util.object.set(user, 'settings.will_be_18', will_be_18);
+				// and database
+				user_model.update(user.id, update_user);
+				return {next: 'email'};
+			}
+		},
+		process: simple_store('user.settings.will_be_18', {validate: validate.boolean_yes})
+	},
 	email: {
 		pre_process: function(action, conversation, user) {
 			// send email prompt dependent on user state
@@ -307,23 +330,6 @@ var default_steps = {
 	legal_resident: {
 		process: simple_store('user.settings.legal_resident', {validate: validate.boolean_yes})
 	},
-	will_be_18: { 
-		pre_process: function(action, conversation, user) {
-			// if user has already told us their birthdate, calculate will_be_18 automatically
-			if( util.object.get(user, 'settings.date_of_birth') ) {
-				var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
-				var next_election = moment(config.election.date, 'YYYY-MM-DD');
-				var cutoff_date = moment(next_election).year(next_election.year() - 18);
-				var will_be_18 = cutoff_date.isAfter(date_of_birth);
-				// persist to user object
-				var update_user = util.object.set(user, 'settings.will_be_18', will_be_18);
-				// and database
-				user_model.update(user.id, update_user);
-				return {next: 'per_state'};
-			}
-		},
-		process: simple_store('user.settings.will_be_18', {validate: validate.boolean_yes})
-	},
 	ethnicity: {
 		process: simple_store('user.settings.ethnicity')
 	},
@@ -365,6 +371,9 @@ var default_steps = {
 	},
 	mail_in: {
 		process: simple_store('user.settings.mail_in', {validate: validate.boolean})
+	},
+	ineligible: {
+		process: simple_store('user.settings.ineligible', {validate: validate.always_true})
 	},
 };
 
@@ -764,7 +773,7 @@ exports.next = function(user_id, conversation, message)
 
 						if(err.end_conversation)
 						{
-							// TODO: actually end the conversation here
+							var message = 'Sorry, you are ineligible to register to vote with HelloVote. Restart?';
 						}
 					}
 					else
