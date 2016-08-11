@@ -229,7 +229,7 @@ var default_steps = {
 			    uri: config.app.submit_url,
 			    body: {
 			    	user: user,
-			    	callback_url: config.app.url + '/form_callback'
+			    	callback_url: config.app.url + '/receipt/'+user.id
 			    },
 			    json: true 
 			};

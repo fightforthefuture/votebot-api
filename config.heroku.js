@@ -20,6 +20,19 @@ var config = {
 		error_responses: false,
 	},
 
+	mail: {
+		smtp: {
+		    host: 'smtp.sendgrid.net',
+		    port: 465,
+		    secure: true,
+		    auth: {
+		        user: process.env.SENDGRID_USERNAME,
+		        pass: process.env.SENDGRID_PASSWORD
+		    },
+		},
+		from: 'info@hellovote.org',
+	},
+
 	// parameters for next election
 	election: {
 		date: process.env.NEXT_ELECTION_DATE || '11/08/2016',

@@ -21,6 +21,14 @@ var config = {
 		error_responses: false,
 	},
 
+	mail: {
+		smtp: {
+		    host: 'localhost',
+		    port: 1025, // python -m smtpd -n -c DebuggingServer localhost:1025
+		},
+		from: 'info@hellovote.org',
+	},
+
 	// parameters for next election
 	election: {
 		date: process.env.NEXT_ELECTION_DATE || '11/08/2016',
