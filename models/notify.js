@@ -19,7 +19,7 @@ function create_binding(user, tags, identity) {
 	identity.last_name = user.last_name;
 	return new Promise(function(fulfill, reject){
 		service.bindings.create({
-			endpoint: 'votebot-api',
+			endpoint: 'votebot-api:'+config.environment+':'+user.id,
 			identity: JSON.stringify(identity),
 			bindingType: user.type,
 			address: user.username,
@@ -147,7 +147,7 @@ exports.replace_tags = function(user, tags_to_remove, tags_to_add) {
 exports.delete_binding = function(user) {
 	return new Promise(function(fulfill, reject){
 		service.bindings.delete({
-			endpoint: 'votebot-api',
+			endpoint: 'votebot-api:'+config.environment+':'+user.id,
 			address: user.username
 		}).then(function(response) {
 			log.info('notify: deleted binding for', user.username, 'with tags:', JSON.stringify(tags));

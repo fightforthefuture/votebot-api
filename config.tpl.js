@@ -1,5 +1,7 @@
 var config = {
 	port: process.env.PORT,
+	environment: 'production' || 'dev', // used for switching notify endpoints
+	//make sure this is unique between deployments that share a Twilio account!
 
 	// the app website for votebot
 	app: {

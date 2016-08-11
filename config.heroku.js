@@ -1,4 +1,5 @@
 var config = {
+	environment: 'hellovote-production',
 	port: process.env.PORT,
 
 	// the app website for votebot
