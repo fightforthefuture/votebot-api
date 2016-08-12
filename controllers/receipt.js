@@ -18,7 +18,13 @@ exports.hook = function(app)
 var create = function(req, res)
 {
     var user_id = req.params.id;
-    // TODO verify req.data.status
+    log.info('receipt: create', req.body);
+    // check votebot-forms submit status
+    if (req.body.status !== 'success') {
+        resutil.error(res, 'Problem submitting voter registration form');
+        log.notice('Unable to submit user form', {user_id: user_id, votebot_forms: req.body});
+        return;
+    }
 
     user_model.get(user_id).then(function(user) {
 
@@ -47,6 +53,7 @@ var create = function(req, res)
             })
             .catch(function(err) {
                 resutil.error(res, 'Problem sending email receipt', err);
+                log.error('Unable to send email receipt', {user_email: [to_address]});
             });
     });
 };
