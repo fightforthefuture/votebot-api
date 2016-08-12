@@ -163,7 +163,7 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			var state = util.object.get(user, 'settings.state');
 			var state_questions = us_election.state_required_questions[state] || us_election.required_questions_default;
-			var next_default = {next: 'confirm'};
+			var next_default = {next: 'confirm_name_address'};
 
 			// no per-state questions? skip!!
 			if(!state_questions) return next_default;
@@ -187,12 +187,15 @@ var default_steps = {
 			return next_default;
 		}
 	},
-	confirm: {
+	confirm_name_address: {
 		// msg: 'The name and address we have for you is:\n {{first_name}} {{last_name}}, {{settings.address}} {{settings.city}} {{settings.state}}\n Is this correct?',
 		process: function(body, user) {
 			var next = 'submit';
 			if (language.is_no(body)) {
 				next = 'incomplete';
+			} else {
+				update_user = util.object.set(user, 'settings.confirm_name_address', true);
+				user_model.update(user.id, update_user);
 			}
 			return Promise.resolve({next: next, advance: true});
 		}
@@ -329,6 +332,9 @@ var default_steps = {
 	},
 	legal_resident: {
 		process: simple_store('user.settings.legal_resident', {validate: validate.boolean_yes})
+	},
+	military_or_overseas: {
+		process: simple_store('user.settings.military_or_overseas', {validate: validate.military_or_overseas})
 	},
 	ethnicity: {
 		process: simple_store('user.settings.ethnicity')
