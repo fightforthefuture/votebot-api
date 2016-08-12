@@ -351,6 +351,18 @@ var default_steps = {
 	incompetent: {
 		process: simple_store('user.settings.incompetent', {validate: validate.boolean_no})
 	},
+	phone: {
+		pre_process: function(action, conversation, user) {
+			// save phone from SMS
+			var username = user_model.parse_username(user.username);
+			if (username.type === 'sms') {
+				var update_user = util.object.set(user, 'settings.phone', username.username);
+				user_model.update(user.id, update_user);
+			}
+			return Promise.resolve({next: 'per_state'});
+		},
+		process: simple_store('user.settings.phone', {validate: validate.phone})
+	},
 	state_id_number: {
 		process: simple_store('user.settings.state_id_number', {validate: validate.state_id_number})
 	},
@@ -375,8 +387,8 @@ var default_steps = {
 	consent_use_signature: {
 		process: simple_store('user.settings.consent_use_signature', {validate: validate.boolean_yes})
 	},
-	mail_in: {
-		process: simple_store('user.settings.mail_in', {validate: validate.boolean})
+	vote_by_mail: {
+		process: simple_store('user.settings.vote_by_mail', {validate: validate.boolean})
 	},
 	ineligible: {
 		process: simple_store('user.settings.ineligible', {validate: validate.always_true})

@@ -206,7 +206,7 @@ var default_chain_steps = [
 		errormsg: "Please let me know your ethnicity or race.",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 20,
+		admin_order: 21,
 	},
 	{
 		name: 'political_party',
@@ -214,7 +214,7 @@ var default_chain_steps = [
 		errormsg: "Please let me know your party preference, so I can ensure you are registered correctly.",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 21,
+		admin_order: 22,
 	},
 	{
 		name: 'disenfranchised',
@@ -222,7 +222,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 22,
+		admin_order: 23,
 	},
 	{
 		name: 'disqualified',
@@ -230,7 +230,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 23,
+		admin_order: 24,
 	},
 	{
 		name: 'incompetent',
@@ -238,7 +238,15 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 24,
+		admin_order: 25,
+	},
+	{
+		name: 'phone',
+		msg: "What's your phone number?",
+		errormsg: 'Sorry, that wasn\'t a valid phone number. Please format like 510-555-1212',
+		next: 'per_state', 
+		admin_special: true,
+		admin_order: 26,
 	},
 	{
 		name: 'state_id_number',
@@ -246,7 +254,7 @@ var default_chain_steps = [
 		errormsg: "Please enter your state ID number",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 25,
+		admin_order: 27,
 	},
 	{
 		name: 'state_id_issue_date',
@@ -254,7 +262,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 26,
+		admin_order: 28,
 	},
 	{
 		name: 'ssn',
@@ -262,7 +270,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 27,
+		admin_order: 29,
 	},
 	{
 		name: 'ssn_last4',
@@ -270,7 +278,7 @@ var default_chain_steps = [
 		errormsg: "Please enter the last 4 digits of your SSN.",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 28,
+		admin_order: 30,
 	},
 	{
 		name: 'state_id_or_ssn_last4',
@@ -278,7 +286,7 @@ var default_chain_steps = [
 		errormsg: "Please enter your state ID number or last 4 of your SSN",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 29,
+		admin_order: 31,
 	},
 	{
 		name: 'gender',
@@ -286,7 +294,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 30,
+		admin_order: 32,
 	},
 	{
 		name: 'county',
@@ -294,7 +302,7 @@ var default_chain_steps = [
 		errormsg: "Please enter the name of the county you reside in",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 31,
+		admin_order: 33,
 	},
 	{
 		name: 'consent_use_signature',
@@ -302,22 +310,22 @@ var default_chain_steps = [
 		errormsg: "Please reply YES to let us submit your registration using your signature from the DMV. I do not store this information.",
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 32,
+		admin_order: 34,
 	},
 	{
-		name: 'mail_in',
+		name: 'vote_by_mail',
 		msg: "Would you like to vote by mail-in ballot?",
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
-		admin_order: 33,
+		admin_order: 35,
 	},
 	{
 		name: 'fftf_opt_in',
 		msg: "Oh, I almost forgot. HelloVote is made by FightForTheFuture.org which protects the world-changing power of the Internet. Join us for campaign updates? (yes/no)",
 		errormsg: '',
 		next: 'fftf_opt_in_thanks',
-		admin_order: 34,
+		admin_order: 36,
 	},
 	{
 		name: 'fftf_opt_in_thanks',
@@ -325,7 +333,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: '(final)',
 		final: true,
-		admin_order: 35,
+		admin_order: 37,
 	},
 	{
 		name: 'ineligible',
@@ -333,8 +341,8 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'restart', 
 		admin_special: true,
-		admin_order: 36,
-	},
+		admin_order: 38,
+	}
 ];
 
 function run()
