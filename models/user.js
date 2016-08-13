@@ -22,7 +22,7 @@ exports.parse_username = function(username, options)
 			type: 'web'
 		}
 	} else {
-		parsed_phone = validate.phone(username, options.country);
+		parsed_phone = validate.phone(username, options.country).value()[0];
 		if (parsed_phone) {
 			//is a phone number
 			return {
