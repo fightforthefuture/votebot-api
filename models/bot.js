@@ -279,7 +279,7 @@ var default_steps = {
 			}
 		},
 		advance: true,
-		process: simple_store('user.settings.complete', {validate: validate.always_true}),
+		process: simple_store('user.submit', {validate: validate.always_true}),
 	},
 	incomplete: {
 		pre_process: function(action, conversation, user) {
