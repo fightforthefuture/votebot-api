@@ -1,6 +1,6 @@
 var config = require('../config');
 var db = require('../lib/db');
-var validate = require('../lib/validate');
+var phone = require('phone');
 
 /**
  * takes a mobile number or chat username and turns it into a standard format
@@ -22,7 +22,7 @@ exports.parse_username = function(username, options)
 			type: 'web'
 		}
 	} else {
-		parsed_phone = validate.phone(username, options.country).value()[0];
+		parsed_phone = phone(username, options.country)[0];
 		if (parsed_phone) {
 			//is a phone number
 			return {
