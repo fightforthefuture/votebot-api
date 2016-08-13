@@ -781,7 +781,21 @@ exports.next = function(user_id, conversation, message)
 				.catch(function(err) {
 					if(err.data_error)
 					{
-						log.notice('bot: data_error:', step.name, {step: step.name, body: body, message: err.message});
+						var err_meta = {step: step.name, body: body, message: err.message};
+						// normally we try to separate validation errors from user context
+						// but some are easier to debug if we have a few related fields
+						if (step.name === 'state_id_number') { err_meta['state'] = user.settings.state; }
+						if (step.name === 'address') {
+							err_meta['city'] user.settings.city;
+							err_meta['state'] = user.settings.state;
+						}
+						if (step.name === 'apartment') {
+							err_meta['address'] = user.settings.address;
+						 	err_meta['city'] = user.settings.city;
+						 	err_meta['state'] = user.settings.state;
+						 }
+
+						log.notice('bot: data_error:', step.name, err_meta});
 						if (err.message)
 						{
 							var message = err.message;
