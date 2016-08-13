@@ -241,7 +241,7 @@ var default_steps = {
 			      .then(function (response) {
 			    	log.info('form_submit: response', response);
 					if (response.status === 'error') {
-						log.error('bot: form-submit: error! ', response.errors, {step: 'submit', username: user.username});
+						log.notice('bot: form-submit: error! ', response.errors, {step: 'submit', username: user.username});
 						update_user = util.object.set(user, 'settings.missing_fields', response.errors);
 						user_model.update(user.id, update_user);
 
