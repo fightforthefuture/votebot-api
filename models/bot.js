@@ -786,7 +786,7 @@ exports.next = function(user_id, conversation, message)
 						// but some are easier to debug if we have a few related fields
 						if (step.name === 'state_id_number') { err_meta['state'] = user.settings.state; }
 						if (step.name === 'address') {
-							err_meta['city'] user.settings.city;
+							err_meta['city'] = user.settings.city;
 							err_meta['state'] = user.settings.state;
 						}
 						if (step.name === 'apartment') {
@@ -795,7 +795,7 @@ exports.next = function(user_id, conversation, message)
 						 	err_meta['state'] = user.settings.state;
 						 }
 
-						log.notice('bot: data_error:', step.name, err_meta});
+						log.notice('bot: data_error:', step.name, err_meta);
 						if (err.message)
 						{
 							var message = err.message;
