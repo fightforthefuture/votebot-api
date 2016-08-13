@@ -250,15 +250,15 @@ var default_chain_steps = [
 	},
 	{
 		name: 'state_id_number',
-		msg: "Alright, last thing - in order to finish your registration, your state wants to know your {{settings.state}} id number. (I don't store this info!)",
-		errormsg: "Please enter your state ID number",
+		msg: "Alright, last thing - in order to finish your registration, {{settings.state}} wants to know your drivers license or state-issued ID number. (I don't store this info!)",
+		errormsg: "Please enter your state ID or drivers license number",
 		next: 'per_state',
 		admin_special: true,
 		admin_order: 27,
 	},
 	{
 		name: 'state_id_issue_date',
-		msg: "What date was your state id/driver's license issued? (mm/dd/yyyy)",
+		msg: "What date was your state ID/driver's license issued? (mm/dd/yyyy)",
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
