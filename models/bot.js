@@ -796,7 +796,7 @@ exports.next = function(user_id, conversation, message)
 					}
 					else
 					{
-						log.error('bot: non data_error:', err.message, {step: step.name, stack: err.stack});
+						log.error('bot: non data_error:', err, {step: step.name});
 						var message = 'I seem to have had a glitch. Please send your last message again.';
 					}
 

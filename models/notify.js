@@ -17,11 +17,14 @@ function create_binding(user, tags, identity) {
 	}
 	identity.first_name = user.first_name;
 	identity.last_name = user.last_name;
+	bindingType = user.type;
+	if (bindingType === 'fb') { bindingType = 'facebook-messenger'; }
+
 	return new Promise(function(fulfill, reject){
 		service.bindings.create({
 			endpoint: 'votebot-api:'+config.environment+':'+user.id,
 			identity: JSON.stringify(identity),
-			bindingType: user.type,
+			bindingType: bindingType,
 			address: user.username,
 			tag: tags
 		}).then(function(response) {
