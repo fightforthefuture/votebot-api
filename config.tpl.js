@@ -6,7 +6,7 @@ var config = {
 	// the app website for votebot
 	app: {
 		url: 'http://localhost:3000',
-		submit_url: 'http://localhost:5000', // votebot-forms running on flask
+		submit_url: 'http://localhost:5000/registration', // votebot-forms running on flask
 		admin_password: process.env.ADMIN_PASSWORD,
 		force_ssl: false
 	},
@@ -22,9 +22,9 @@ var config = {
 	},
 
 	mail: {
-		smtp: {
-		    host: 'localhost',
-		    port: 1025, // python -m smtpd -n -c DebuggingServer localhost:1025
+
+		sparkpost: {
+			api_key: process.env.SPARKPOST_API_KEY
 		},
 		from: 'info@hellovote.org',
 	},

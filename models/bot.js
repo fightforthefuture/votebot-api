@@ -236,6 +236,7 @@ var default_steps = {
 			    },
 			    json: true 
 			};
+			console.info('callback_url: ', form_submit.body.callback_url);
 
 			return request(form_submit)
 			      .then(function (response) {

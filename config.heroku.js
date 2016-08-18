@@ -21,14 +21,9 @@ var config = {
 	},
 
 	mail: {
-		smtp: {
-		    host: 'smtp.sendgrid.net',
-		    port: 465,
-		    secure: true,
-		    auth: {
-		        user: process.env.SENDGRID_USERNAME,
-		        pass: process.env.SENDGRID_PASSWORD
-		    },
+
+		sparkpost: {
+			api_key: process.env.SPARKPOST_API_KEY
 		},
 		from: 'info@hellovote.org',
 	},

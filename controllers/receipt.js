@@ -1,7 +1,7 @@
 var resutil = require('../lib/resutil');
 var express = require('express');
 var user_model = require('../models/user');
-var email_model = require('../models/email');
+var email = require('../lib/email');
 var auth = require('../lib/auth');
 var log = require('../lib/logger');
 var error = require('../lib/error');
@@ -44,12 +44,12 @@ var create = function(req, res)
         msg_parts.push("- Submitted: "+local_time);
         msg_parts.push("Make sure to tell your friends, share https://fftf.io/hellovote");
 
-        var templated_msg = language.template(msg_parts.join('\n'), user);
+        var templated_msg = language.template(msg_parts.join('<br/>'), user);
         return [user.settings.email, templated_msg];
     }).spread(function(to_address, msg) {
-        return email_model.create([to_address], 'Your HelloVote Registration Receipt', msg)
-            .then(function(email) {
-                resutil.send(res, email);
+        return email.create([to_address], 'Your HelloVote Registration Receipt', msg)
+            .then(function(emailResult) {
+                resutil.send(res, emailResult);
             })
             .catch(function(err) {
                 resutil.error(res, 'Problem sending email receipt', err);
