@@ -50,7 +50,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'first_name',
-		msg: "So, what's your first name? This is an official form, so it should match your government ID. If you ever need to go back, just say so.",
+		msg: "So, what's your first name? This is an official form, so it should match your government ID.",
 		errormsg: "Please enter your first name",
 		next: 'last_name',
 		admin_order: 1,
@@ -64,7 +64,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'zip',
-		msg: "Got it. Now, what's your zip code?",
+		msg: "Got it. Now, what's your zip code? (By the way, you can say \"go back\" if you ever need to go back a step, or \"help\" for more options!)",
 		errormsg: "Please enter your five-digit zip code, or SKIP if you don't know it.",
 		next: 'city',
 		admin_order: 3,
