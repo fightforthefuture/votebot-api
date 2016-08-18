@@ -266,7 +266,7 @@ var default_chain_steps = [
 	},
 	{
 		name: 'ssn',
-		msg: "Alright, last thing - in order to finish your registration, your state wants to know your social security number. (I don't store this info!)",
+		msg: "One more thing - in order to finish your registration, your state wants to know your social security number. (I don't store this info!)",
 		errormsg: '',
 		next: 'per_state',
 		admin_special: true,
