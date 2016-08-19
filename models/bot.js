@@ -14,6 +14,7 @@ var us_states = require('../lib/us_states');
 var request = require('request-promise');
 var notify = require('./notify.js');
 var moment = require('moment');
+var l10n = require('../lib/l10n');
 
 // holds default steps for conversation chains. essentially, each "step" in the chain defines a
 // part of the conversation (generally a question) and how to process the answer.
@@ -38,7 +39,6 @@ var moment = require('moment');
 var default_steps = {
 	
 	intro: {
-		msg: "Hi, this is HelloVote! I'm going to help you register to vote. I'll ask a few questions to fill out your registration form. Your answers are private and secure.",
 		process: function() { return Promise.delay(config.bot.advance_delay, {'next': 'first_name'})}
 	},
 	first_name: {
@@ -65,7 +65,7 @@ var default_steps = {
 			if(util.object.get(user, 'settings.state')) return {next: 'address'};
 		},
 		process: simple_store('user.settings.state', {validate: validate.state}),
-		post_process: function(user) {
+		post_process: function(user, conversation) {
 			var state = util.object.get(user, 'settings.state');
 
 			// check state eligibility requirements
@@ -79,7 +79,7 @@ var default_steps = {
 				var ovr_deadline = moment(deadline_str, 'YYYY-MM-DD');
 				var today = moment();
 				if (today.isAfter(ovr_deadline, 'day')) {
-					return {msg: 'Sorry, the online voter registration deadline for {{settings.state}} has passed. You may still be eligible to register to vote in person', next: 'share'}
+					return {msg: l10n('error_state_deadline_expired', conversation.locale), next: 'share'}
 				}
 			}
 			return {}
@@ -109,12 +109,12 @@ var default_steps = {
 			}
 		},
 		process: simple_store('user.settings.date_of_birth', {validate: validate.date}),
-		post_process: function(user) {
+		post_process: function(user, conversation) {
 			// if today is their birthday, send a cake
 			var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
 			var today = moment();
 			if (today.format('MM/DD') === date_of_birth.format('MM/DD')) {
-				return {msg: 'Happy birthday! \u{1F382}'};
+				return {msg: l10n('msg_happy_birthday', conversation.locale)};
 			} else {
 				return {}
 			}
@@ -148,9 +148,9 @@ var default_steps = {
 			// send email prompt dependent on user state
 			var state = util.object.get(user, 'settings.state');
 			if (us_election.state_required_questions[state]) {
-				return {msg: "Almost done! Now, {{settings.state}} requires an email for online registration. We'll also send you crucial voting information. What's your email?"};
+				return {msg: l10n('prompt_email_for_ovr', conversation.locale)};
 			} else {
-				return {msg: "Almost done! Now, {{settings.state}} requires you to print, sign, and mail a form. We’ll email it to you, along with crucial voting information. What's your email?"};
+				return {msg: l10n('prompt_email_for_pdf', conversation.locale)};
 			}
 		},
 		no_msg: true,
@@ -203,7 +203,7 @@ var default_steps = {
 	submit: {
 		pre_process: function(action, conversation, user) {
 			// check to ensure user has all required fields before submitting
-			var missing_fields = validate.voter_registration_complete(user.settings);
+			var missing_fields = validate.voter_registration_complete(user.settings, conversation.locale);
 			if (missing_fields.length) {
 				// incomplete, re-query missing fields
 				log.error('bot: submit: missing fields! ', missing_fields, {step: 'submit', username: user.username});
@@ -273,10 +273,10 @@ var default_steps = {
 			var state = util.object.get(user, 'settings.state');
 			if (us_election.state_required_questions[state]) {
 				// registration complete online, no extra instructions
-				return {msg: 'Congratulations! We have submitted your voter registration in {{settings.state}}! We just emailed you a receipt.', next: 'share'};
+				return {msg: l10n('msg_complete_ovr', conversation.locale), next: 'share'};
 			} else {
 				// they'll get a PDF, special instructions
-				return {msg: "Great! In a moment, we’ll email you a completed voter registration form to print, sign, and mail.", next: 'share'};
+				return {msg: l10n('msg_complete_pdf', conversation.locale), next: 'share'};
 			}
 		},
 		advance: true,
@@ -287,20 +287,20 @@ var default_steps = {
 			var missing_fields = util.object.get(user, 'settings.missing_fields');
 			if (missing_fields.message === 'missing_fields' && missing_fields.payload.length) {
 				var next = Object.keys(missing_fields.payload[0])[0]; // weird deserialize format from python...
-				return {msg: 'Sorry, your registration is missing a required field.', next: next};
+				return {msg: l10n('error_incomplete', conversation.locale), next: next};
 			} else {
 				return {}
 			}
 		},
 		// msg: 'Sorry, your registration is incomplete. Restart?',
-		process: function(body, user) {
+		process: function(body, user, step, locale) {
 			// TODO, re-query missing fields
 			log.notice('bot: incomplete: missing_fields ', util.object.get(user, 'settings.missing_fields'), {username: user.username});
 			if (language.is_yes(body) || body.trim().toUpperCase() === 'RESTART') {
 				return Promise.resolve({next: 'restart'});
 			}
 			if (body.trim().toUpperCase() === 'RETRY') {
-				return Promise.resolve({next: 'submit', msg: 'Sending your registration again.', advance: true});
+				return Promise.resolve({next: 'submit', msg: l10n('msg_trying_again', locale), advance: true});
 			}
 			return Promise.resolve({next: 'incomplete'});
 		}
@@ -460,35 +460,36 @@ function simple_store(store, options)
 {
 	options || (options = {});
 
-	return function(body, user, next, errormsg)
+	return function(body, user, step, locale)
 	{
+		console.info('USER: ', user);
 		// if we get an empty body, error
-		if(!body.trim()) return validate.data_error(errormsg, {promise: true});
+		if(!body.trim()) return validate.data_error(step.errormsg, {promise: true});
 
 		var obj = {};
 		obj[store] = body;
-		var promise = Promise.resolve({next: next, store: obj});
+		var promise = Promise.resolve({next: step.next, store: obj});
 		if(options.validate)
 		{
-			promise = options.validate(body, user)
+			promise = options.validate(body, user, locale)
 				.spread(function(body, extra_store) {
 					extra_store || (extra_store = {});
 					extra_store[store] = body;
-					return {next: next, store: extra_store};
+					return {next: step.next, store: extra_store};
 				});
 		}
 		return promise;
 	};
 }
 
-var parse_step = function(step, body, user)
+var parse_step = function(step, body, user, locale)
 {
 	// if the user is canceling, don't bother parsing anything
 	if(language.is_cancel(body)) return Promise.resolve({next: '_cancel'});
 	if(language.is_help(body)) return Promise.resolve({next: '_help', prev: step.name});
 	if(language.is_back(body)) return Promise.resolve({next: '_back'});
 
-	return step.process(body, user, step.next, step.errormsg);
+	return step.process(body, user, step, locale);
 };
 
 /**
@@ -519,7 +520,7 @@ var find_next_step = function(action, conversation, user)
 
 		// same for post_process
 		if (nextstep.post_process) {
-			var res = nextstep.post_process(user);
+			var res = nextstep.post_process(user, conversation);
 			if (res && res.msg) {
 				message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
 			}
@@ -647,24 +648,24 @@ exports.next = function(user_id, conversation, message)
 					step = _restart;
 				} else {
 					log.info('bot: prompt to restart');
-					var restart_msg = 'You are registered with HelloVote. Would you like to start again? (yes/no)'
+					var restart_msg = l10n('prompt_restart_after_complete', conversation.locale)
 					return message_model.create(config.bot.user_id, conversation.id, {body: language.template(restart_msg, user)});
 				}
 			}
 			
-			return parse_step(step, body, user)
+			return parse_step(step, body, user, conversation.locale)
 				.then(function(action) {
 					log.info('bot: action:', JSON.stringify(action));
 
 					// if user wants out, let them
 					if(action.next == '_cancel') {
-						var stop_msg = 'You are unsubscribed from FightForTheFuture. No more messages will be sent. Reply HELP for help or 844-344-3556.';
+						var stop_msg = l10n('msg_unsubscribed', conversation.locale);
 						message_model.create(config.bot.user_id, conversation.id, {body: stop_msg});
 						if (user_model.use_notify(user.username)) { notify.delete_binding(user); }
 						return convo_model.close(conversation.id);
 					}
 					if(action.next == '_help') {
-						var help_msg = 'FightForTheFuture: Help at hellovote.org or 844-344-3556. Msg&data rates may apply. Text STOP to cancel.'
+						var help_msg = l10n('msg_help', conversation.locale);
 						message_model.create(config.bot.user_id, conversation.id, {body: help_msg});
 						// let user continue
 						action.next = action.prev; 
@@ -720,7 +721,7 @@ exports.next = function(user_id, conversation, message)
 						// send post-process message for user
 						promise = promise
 							.then(function() {
-								var res = step.post_process(user);
+								var res = step.post_process(user, conversation);
 								if (res && res.msg) {
 									message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
 								}
@@ -801,18 +802,18 @@ exports.next = function(user_id, conversation, message)
 						{
 							var message = err.message;
 						} else {
-							var message = 'Please try again!';
+							var message = l10n('msg_try_again', conversation.locale);
 						}
 
 						if(err.end_conversation)
 						{
-							var message = 'Sorry, you are ineligible to register to vote with HelloVote. Restart?';
+							var message = l10n('prompt_ineligible', conversation.locale);
 						}
 					}
 					else
 					{
 						log.error('bot: non data_error:', err, {step: step.name});
-						var message = 'I seem to have had a glitch. Please send your last message again.';
+						var message = l10n('msg_error_unknown', conversation.locale);
 					}
 
 					if(message)
