@@ -203,6 +203,18 @@ var default_steps = {
 	submit: {
 		pre_process: function(action, conversation, user) {
 			// check to ensure user has all required fields before submitting
+			//
+			// JL NOTE ~ How would this ever work?
+			// The validate.voter_registration_complete method is not synchronous,
+			// but we are treating it as such.
+			//
+			// Also, it tries to update the user with a "response.errors" object.
+			// There is no such object in the scope of this method. It appears to
+			// be duplicate code from the submit.process step. Disabling because it
+			// does not pass my mental sanity check. Plus I'm changing the format
+			// of the missing_fields object anyway.
+			//
+			/*
 			var missing_fields = validate.voter_registration_complete(user.settings, conversation.locale);
 			if (missing_fields.length) {
 				// incomplete, re-query missing fields
@@ -211,67 +223,89 @@ var default_steps = {
 				user_model.update(user.id, update_user);
 				return {next: 'incomplete'};
 			}
+			*/
 		},
 		process: function(body, user) {
-			if (!config.app.submit_url) {
+			if (!config.app.submit_ovr_url || !config.app.submit_vote_dot_org_url) {
 				log.info('bot: no submit_url in config, skipping submit...');
 				return Promise.resolve({
 					next: 'complete',
 					msg: 'This system is in DEBUG mode, skipping form submission to state. Still clearing sensitive user fields.',
 					store: {
-						'settings.submit': 'skipped',
-						'settings.ssn': 'cleared',
-						'settings.state_id_number': 'cleared'
+						'user.settings.submit': 'skipped',
+						'user.settings.ssn': 'cleared',
+						'user.settings.state_id_number': 'cleared'
 					}
 				});
 			};
 
+			var state = util.object.get(user, 'settings.state');
+			var failed_ovr = util.object.get(user, 'settings.failed_ovr');
+			if (us_election.state_required_questions[state] && !failed_ovr) {
+				log.info('bot: sending OVR submission...');
+				var url = config.app.submit_ovr_url;
+			} else {
+				log.info('bot: sending Vote.org submission...');
+				var url = config.app.submit_vote_dot_org_url;
+			}
+
 			// send to votebot-forms
 			var form_submit = {
 			    method: 'POST',
-			    uri: config.app.submit_url,
+			    uri: url,
 			    body: {
 			    	user: user,
-			    	callback_url: config.app.url + '/receipt/'+user.id
+			    	callback_url: config.app.url + '/receipt/'+user.username
 			    },
 			    json: true 
 			};
-			console.info('callback_url: ', form_submit.body.callback_url);
 
 			return request(form_submit)
 			      .then(function (response) {
 			    	log.info('form_submit: response', response);
-					if (response.status === 'error') {
-						log.notice('bot: form-submit: error! ', response.errors, {step: 'submit', username: user.username});
-						update_user = util.object.set(user, 'settings.missing_fields', response.errors);
-						user_model.update(user.id, update_user);
-
-						return Promise.resolve({next: 'incomplete'});
-					} else {
-						// store submit response, remove SSN or state ID from our data
-						return Promise.resolve({
-								next: 'complete',
-								store: {
-									'settings.submit': response.status,
-									'settings.ssn': 'cleared',
-									'settings.state_id_number': 'cleared'
-								}
-						});
-					}
+			    	return Promise.resolve({
+							next: 'processing',
+					});
 			    })
 			    .catch(function (error) {
-			        log.error('bot: form_submit: unable to post ', {step: 'submit', error: error});
-					return Promise.resolve({next: 'incomplete', 'errors': [error]});
+			        log.error('bot: form_submit: unable to post ', {step: 'submit', error: error.error});
+					update_user = util.object.set(user, 'settings.submission_error', error.error);
+					user_model.update(user.id, update_user);
+
+					return Promise.resolve({next: 'incomplete'});
 			    });
 		},
+	},
+	processing: {
+		next: 'processing',
+		msg: l10n('msg_processing'),
+		process: function(body, user) {
+			return Promise.resolve({next: 'processing'});
+		}
+	},
+	processed: {
+		next: 'complete',
+		msg: '',
+		advance: true,
+		process: function(body, user) {
+			return Promise.resolve({
+				next: 'complete',
+				store: {
+					'user.settings.submit': true,
+					'user.settings.ssn': 'cleared',
+					'user.settings.state_id_number': 'cleared'
+				}
+			});
+		}
 	},
 	complete: {
 		pre_process: function(action, conversation, user) {
 			if (user_model.use_notify(user.username)) { notify.replace_tags(user, ['votebot-started'], ['votebot-completed']); }
 
 			// send confirmation prompt dependent on user state
-			var state = util.object.get(user, 'settings.state');
-			if (us_election.state_required_questions[state]) {
+			var form_type = util.object.get(user, 'settings.submit_form_type');
+
+			if (form_type != 'VoteDotOrg') {
 				// registration complete online, no extra instructions
 				return {msg: l10n('msg_complete_ovr', conversation.locale), next: 'share'};
 			} else {
@@ -280,14 +314,29 @@ var default_steps = {
 			}
 		},
 		advance: true,
-		process: simple_store('user.submit', {validate: validate.always_true}),
+		process: function(body, user) {
+			return Promise.resolve({next: 'share'});
+		}
 	},
 	incomplete: {
 		pre_process: function(action, conversation, user) {
-			var missing_fields = util.object.get(user, 'settings.missing_fields');
-			if (missing_fields.message === 'missing_fields' && missing_fields.payload.length) {
-				var next = Object.keys(missing_fields.payload[0])[0]; // weird deserialize format from python...
+			var failed = util.object.get(user, 'settings.failed_vote_dot_org');
+			if (failed) {
+				var ref = util.object.get(user, 'settings.failure_reference');
+				return {
+					msg: l10n('msg_error_failed', conversation.locale)+' '+ref
+				}
+			}
+
+			var submission_error = util.object.get(user, 'settings.submission_error');
+			if (!submission_error)
+				return {};
+
+			if (submission_error.error_type === 'missing_fields' && submission_error.payload.length) {
+				var next = Object.keys(submission_error.payload[0])[0]; // weird deserialize format from python...
 				return {msg: l10n('error_incomplete', conversation.locale), next: next};
+			} else if (submission_error.message === 'internal_error') {
+				return {msg: l10n('msg_error_failed', conversation.locale), next: 'incomplete'}
 			} else {
 				return {}
 			}
@@ -295,7 +344,7 @@ var default_steps = {
 		// msg: 'Sorry, your registration is incomplete. Restart?',
 		process: function(body, user, step, locale) {
 			// TODO, re-query missing fields
-			log.notice('bot: incomplete: missing_fields ', util.object.get(user, 'settings.missing_fields'), {username: user.username});
+			log.notice('bot: incomplete: submission_error ', util.object.get(user, 'settings.submission_error'), {username: user.username});
 			if (language.is_yes(body) || body.trim().toUpperCase() === 'RESTART') {
 				return Promise.resolve({next: 'restart'});
 			}
@@ -407,8 +456,8 @@ function get_chain(type) {
 	});
 }
 
-function get_chain_step(type, step) {
-	var vars = {chain_name: type, step_name: step};
+function get_chain_step(type, stepName) {
+	var vars = {chain_name: type, step_name: stepName};
 	var qry = [
 		'SELECT',
 		'	cs.*',
@@ -426,7 +475,10 @@ function get_chain_step(type, step) {
 
 	return db.query(qry.join('\n'), vars).then(function(step) {
 		if (step.length == 0)
-			return Promise.resolve(null);
+			if (typeof default_steps[stepName] !== 'undefined')
+				return Promise.resolve(default_steps[stepName]);
+			else
+				return Promise.resolve(null);
 
 		step = step[0];
 		var overridden_default = {};
@@ -443,12 +495,16 @@ function get_chain_step(type, step) {
 }
 
 function log_chain_step_entry(step_id) {
+	if (!step_id)
+		return Promise.resolve();
 	var vars = {id: step_id},
 	    qry = "UPDATE chains_steps SET entries = entries + 1 WHERE ID = {{id}}";
 	return db.query(qry, vars);
 }
 
 function log_chain_step_exit(step_id) {
+	if (!step_id)
+		return Promise.resolve();
 	var vars = {id: step_id},
 	    qry = "UPDATE chains_steps SET exits = exits + 1 WHERE ID = {{id}}";
 	return db.query(qry, vars);
@@ -462,7 +518,6 @@ function simple_store(store, options)
 
 	return function(body, user, step, locale)
 	{
-		console.info('USER: ', user);
 		// if we get an empty body, error
 		if(!body.trim()) return validate.data_error(step.errormsg, {promise: true});
 
@@ -590,12 +645,7 @@ exports.start = function(type, to_user_id, options)
 						// advance conversation to next step, without waiting for user
 						// delay slightly, to avoid intro messages sending out of order
 						Promise.delay(config.bot.advance_delay).then(function() {
-							return exports.next(user.id, conversation, {
-								user_id: user.id,
-								conversation_id: conversation.id,
-								body: '', // empty body, because it's a fake message
-								created: db.now()
-							});
+							return exports.next(user.id, conversation);
 						});
 					}
 				});
@@ -614,6 +664,14 @@ exports.next = function(user_id, conversation, message)
 	var user,
 	    step,
 		state;
+
+	if (!message)
+		message = {
+			user_id: user_id,
+			conversation_id: conversation.id,
+			body: '', // empty body, because it's a fake message
+			created: db.now()
+		};
 
 	return user_model.get(user_id)
 		.then(function(_user) {
@@ -671,7 +729,7 @@ exports.next = function(user_id, conversation, message)
 						action.next = action.prev; 
 					}
 					if(action.next == '_back') {
-						console.log('going back to '+state.back);
+						log.info('bot: going back to '+state.back);
 						action.next = state.back;
 					}
 
@@ -695,12 +753,14 @@ exports.next = function(user_id, conversation, message)
 							}
 						};
 						var keys = Object.keys(action.store);
+						
 						// grab the object we're setting data into based on
 						// the FIRST key in our setter object. as mentioned
 						// above, we currently only support setting data
 						// into one top-level object
 						var obj = keys[0].replace(/\..*/, '');
 						var setter = setters[obj];
+						
 						if(setter)
 						{
 							keys.forEach(function(place) {
@@ -767,12 +827,7 @@ exports.next = function(user_id, conversation, message)
 							.delay(config.bot.advance_delay)
 							.then(function() {
 								// construct empty message
-								return exports.next(user.id, conversation, {
-									user_id: user.id,
-									conversation_id: conversation.id,
-									body: '', // empty body, because it's a fake message
-									created: db.now()
-								});
+								return exports.next(user.id, conversation);
 							});
 					}
 

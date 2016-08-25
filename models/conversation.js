@@ -94,6 +94,15 @@ exports.update = function(conversation_id, data)
 	return db.update('conversations', conversation_id, data);
 };
 
+exports.goto_step = function(conversation_id, goto_step)
+{
+	return exports.get(conversation_id).then(function(conversation) {
+		var state = conversation.state;
+		state.step = goto_step;
+		return exports.update(conversation_id, {state: state});
+	});
+};
+
 /**
  * wipes and recreates all recipients for a conversation
  */

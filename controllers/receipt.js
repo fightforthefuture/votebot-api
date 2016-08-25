@@ -1,6 +1,9 @@
 var resutil = require('../lib/resutil');
+var util = require('../lib/util');
 var express = require('express');
 var user_model = require('../models/user');
+var conversation_model = require('../models/conversation');
+var bot_model = require('../models/bot');
 var email = require('../lib/email');
 var auth = require('../lib/auth');
 var log = require('../lib/logger');
@@ -12,24 +15,50 @@ var moment = require('moment-timezone');
 
 exports.hook = function(app)
 {
-    app.post('/receipt/:id', create); // TODO, secure with auth.key shared with votebot-forms
+    app.post('/receipt/:username', create); // TODO, secure with auth.key shared with votebot-forms
 };
 
 var create = function(req, res)
 {
-    var user_id = req.params.id;
+    var username = req.params.username;
+    var form_class = req.body.form_class ? req.body.form_class : 'unknown';
+    var status = req.body.status ? req.body.status : 'failure';
+    var reference = req.body.reference ? req.body.reference : -1;
+    var user;
+    var goto_step;
+    var conversation;
     log.info('receipt: create', req.body);
-    // check votebot-forms submit status
-    if (req.body.status !== 'success') {
-        resutil.error(res, 'Problem submitting voter registration form');
-        log.notice('Unable to submit user form', {user_id: user_id, votebot_forms: req.body});
-        return;
-    }
 
-    user_model.get(user_id).then(function(user) {
+    user_model.get_by_username(username).then(function(_user) {
+        user = _user;
+        return conversation_model.get_recent_by_user(user.id);
+    }).then(function(_conversation) {
+        conversation = _conversation;
 
-        // TODO, replace with handlebars?
-        // super simple text templating
+        if (status == "success") {
+            var update_user = util.object.set(user, 'settings.submit_success', true);
+            update_user = util.object.set(update_user, 'settings.submit_form_type', form_class);
+            goto_step = 'processed';
+        } else if (form_class == "VoteDotOrg") {
+            var update_user = util.object.set(user, 'settings.failed_vote_dot_org', true);
+            update_user = util.object.set(update_user, 'settings.failure_reference', reference);
+            goto_step = 'incomplete';
+        } else {
+            var update_user = util.object.set(user, 'settings.failed_ovr', true);
+            goto_step = 'submit';
+        }
+
+        return user_model.update(user.id, update_user);
+    }).then(function() {
+        return conversation_model.goto_step(conversation.id, goto_step);
+    }).then(function(updated_converstation) {
+        bot_model.next(user.id, updated_converstation);
+
+        if (status !== 'success') {
+            resutil.error(res, 'Oh no!');
+            return;
+        }
+
         var msg_parts = [
             "Thanks for registering to vote with HelloVote!",
             "Your receipt is attached:",
@@ -45,16 +74,16 @@ var create = function(req, res)
         msg_parts.push("Make sure to tell your friends, share https://fftf.io/hellovote");
 
         var templated_msg = language.template(msg_parts.join('<br/>'), user);
-        return [user.settings.email, templated_msg];
-    }).spread(function(to_address, msg) {
-        return email.create([to_address], 'Your HelloVote Registration Receipt', msg)
+
+        return email.create([user.settings.email], 'Your HelloVote Registration Receipt', templated_msg)
             .then(function(emailResult) {
                 resutil.send(res, emailResult);
             })
             .catch(function(err) {
                 resutil.error(res, 'Problem sending email receipt', err);
-                log.error('Unable to send email receipt', {user_email: [to_address]});
+                log.error('Unable to send email receipt', {user_email: [user.settings.email]});
             });
+
     });
 };
 

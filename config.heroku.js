@@ -5,7 +5,8 @@ var config = {
 	// the app website for votebot
 	app: {
 		url: 'https://votebot-api.herokuapp.com',
-		submit_url: 'https://votebot-forms.herokuapp.com/registration',
+		submit_vote_dot_org_url: 'https://votebot-forms.herokuapp.com/vote_dot_org',
+		submit_ovr_url: 'https://votebot-forms.herokuapp.com/ovr',
 		admin_password: process.env.ADMIN_PASSWORD,
 		force_ssl: true
 	},
