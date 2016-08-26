@@ -62,34 +62,44 @@ var default_steps = {
 	},
 	state: {
 		pre_process: function(action, conversation, user) {
-			if(util.object.get(user, 'settings.state')) return {next: 'address'};
-		},
-		process: simple_store('user.settings.state', {validate: validate.state}),
-		post_process: function(user, conversation) {
+			// if(util.object.get(user, 'settings.state')) return {next: 'address'};
 			var state = util.object.get(user, 'settings.state');
 
 			// check state eligibility requirements
-			if (end_msg = us_election.states_without_ovr[state]) {
-				if (user_model.use_notify(user.username)) { notify.replace_tags(user, ['votebot-started'], ['votebot-completed']); }
-				return {msg: end_msg, next: 'share'}
-			}
-
-			// and online registration deadlines
-			if (deadline_str = us_election.get_ovr_deadline(state)) {
-				var ovr_deadline = moment(deadline_str, 'YYYY-MM-DD');
-				var today = moment();
-				if (today.isAfter(ovr_deadline, 'day')) {
-					return {msg: l10n('error_state_deadline_expired', conversation.locale), next: 'share'}
+			if (state) {
+				if (end_msg = us_election.states_without_ovr[state]) {
+					if (user_model.use_notify(user.username)) { notify.replace_tags(user, ['votebot-started'], ['votebot-completed']); }
+					return {msg: end_msg, next: 'share'}
 				}
+
+				// and online registration deadlines
+				if (deadline_str = us_election.get_ovr_deadline(state)) {
+					var ovr_deadline = moment(deadline_str, 'YYYY-MM-DD');
+					var today = moment();
+					if (today.isAfter(ovr_deadline, 'day')) {
+						return {msg: l10n('error_state_deadline_expired', conversation.locale), next: 'share'}
+					}
+				}
+
+				return {next: 'address'}
 			}
 			return {}
-		}
+		},
+		process: simple_store('user.settings.state', {validate: validate.state})
 	},
 	address: {
 		pre_process: function(action, conversation, user) {
 			if (user_model.use_notify(user.username)) { notify.add_tags(user, [user.settings.state]); }
 		},
-		process: simple_store('user.settings.address', {validate: validate.address})
+		process: simple_store('user.settings.address', {validate: validate.address}),
+		post_process: function(user, conversation) {
+			log.info('bot: address post process:', user);
+			if (util.object.get(user, 'settings.address_appears_bogus')) {
+				return {msg: l10n('msg_address_appears_bogus', conversation.locale)};
+			} else {
+				return {}
+			}
+		}
 	},
 	apartment: {
 		pre_process: function(action, conversation, user) {
@@ -190,14 +200,13 @@ var default_steps = {
 	confirm_name_address: {
 		// msg: 'The name and address we have for you is:\n {{first_name}} {{last_name}}, {{settings.address}} {{settings.city}} {{settings.state}}\n Is this correct?',
 		process: function(body, user) {
-			var next = 'submit';
 			if (language.is_no(body)) {
-				next = 'incomplete';
+				return Promise.resolve({next: 'restart'});
 			} else {
-				update_user = util.object.set(user, 'settings.confirm_name_address', true);
+				var update_user = util.object.set(user, 'settings.confirm_name_address', true);
 				user_model.update(user.id, update_user);
 			}
-			return Promise.resolve({next: next, advance: true});
+			return Promise.resolve({next: 'submit', advance: true});
 		}
 	},
 	submit: {
@@ -528,6 +537,7 @@ function simple_store(store, options)
 		{
 			promise = options.validate(body, user, locale)
 				.spread(function(body, extra_store) {
+					log.info('bot: validated body: ', body, '; extra_store: ', extra_store);
 					extra_store || (extra_store = {});
 					extra_store[store] = body;
 					return {next: step.next, store: extra_store};
@@ -574,6 +584,8 @@ var find_next_step = function(action, conversation, user)
 		}
 
 		// same for post_process
+		// JL NOTE ~ this code is duplicated and was causing problems.
+		/*
 		if (nextstep.post_process) {
 			var res = nextstep.post_process(user, conversation);
 			if (res && res.msg) {
@@ -583,6 +595,7 @@ var find_next_step = function(action, conversation, user)
 			if (res && res.next)
 				var processed_next = res.next;
 		}
+		*/
 
 		if(processed_next) {
 			// if either processing function returned a "next" key, then we know we should load
@@ -795,6 +808,9 @@ exports.next = function(user_id, conversation, message)
 					// into the promise chain
 					promise = promise
 						.then(function() {
+
+							log.info('bot: user: ', user);
+
 							// get our next step from the conversation chain
 							return find_next_step(action, conversation, user);
 						})
