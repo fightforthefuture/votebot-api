@@ -16,7 +16,7 @@ var config = {
 	logging: {
 		level: process.env.LOGLEVEL || 'error',
 		sentry: process.env.SENTRY_DSN,
-
+		validation_errors: 'postgres',
 		// sends detailed error information back with failed requests
 		// true when developing, false in prod
 		error_responses: false,

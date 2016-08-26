@@ -93,8 +93,13 @@ var default_steps = {
 		},
 		process: simple_store('user.settings.address', {validate: validate.address}),
 		post_process: function(user, conversation) {
-			log.info('bot: address post process:', user);
+
 			if (util.object.get(user, 'settings.address_appears_bogus')) {
+				var err_meta = {
+					address: util.object.get(user, 'settings.address'),
+					zip: util.object.get(user, 'settings.zip')
+				}
+				log.notice('bot: ADDRESS WARNING', err_meta);
 				return {msg: l10n('msg_address_appears_bogus', conversation.locale)};
 			} else {
 				return {}
@@ -854,13 +859,19 @@ exports.next = function(user_id, conversation, message)
 				.catch(function(err) {
 					if(err.data_error)
 					{
-						var err_meta = {step: step.name, body: body, message: err.message};
+						var err_meta = {
+							step: step.name,
+							body: body,
+							message: err.message
+						};
+
 						// normally we try to separate validation errors from user context
 						// but some are easier to debug if we have a few related fields
 						if (step.name === 'state_id_number') { err_meta['state'] = user.settings.state; }
 						if (step.name === 'address') {
 							err_meta['city'] = user.settings.city;
 							err_meta['state'] = user.settings.state;
+							err_meta['zip'] = user.settings.zip;
 						}
 						if (step.name === 'apartment') {
 							err_meta['address'] = user.settings.address;
