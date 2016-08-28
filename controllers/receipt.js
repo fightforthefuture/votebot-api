@@ -3,6 +3,7 @@ var util = require('../lib/util');
 var express = require('express');
 var user_model = require('../models/user');
 var conversation_model = require('../models/conversation');
+var submission_model = require('../models/submission');
 var bot_model = require('../models/bot');
 var email = require('../lib/email');
 var auth = require('../lib/auth');
@@ -29,6 +30,8 @@ var create = function(req, res)
     var conversation;
     log.info('receipt: create', req.body);
 
+    submission_model.update_from_receipt(req.body);
+
     user_model.get_by_username(username).then(function(_user) {
         user = _user;
         return conversation_model.get_recent_by_user(user.id);
@@ -38,6 +41,7 @@ var create = function(req, res)
         if (status == "success") {
             var update_user = util.object.set(user, 'settings.submit_success', true);
             update_user = util.object.set(update_user, 'settings.submit_form_type', form_class);
+            update_user = util.object.set(update_user, 'complete', true);
             goto_step = 'processed';
         } else if (form_class == "VoteDotOrg") {
             var update_user = util.object.set(user, 'settings.failed_vote_dot_org', true);

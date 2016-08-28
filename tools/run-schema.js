@@ -10,13 +10,14 @@ var schema = [
 	// 'CREATE TYPE user_type AS ENUM (\'sms\', \'facebook-messenger\');',
 
 	// start with tables
-	'create table if not exists users (id serial primary key, username varchar(64) not null, type varchar(64), first_name varchar(255), last_name varchar(255), settings json, active boolean default true, submit boolean default false, created timestamp);',
+	'create table if not exists users (id serial primary key, username varchar(64) not null, type varchar(64), first_name varchar(255), last_name varchar(255), settings json, active boolean default true, submit boolean default false, complete boolean default false, created timestamp);',
 	'create table if not exists conversations (id serial primary key, user_id bigint not null, type varchar(64), locale varchar(64) not null default \'en\', state json, active boolean default true, created timestamp);',
 	'create table if not exists conversations_recipients (id serial primary key, conversation_id bigint not null, user_id bigint not null, created timestamp);',
 	'create table if not exists messages (id serial primary key, user_id bigint not null, conversation_id bigint not null, body varchar(255), created timestamp);',
 	'create table if not exists chains (id serial primary key, name varchar(64) not null, description text, default_start varchar(64) not null default \'intro_direct\', entries int default 0, exits int default 0, created timestamp);',
 	'create table if not exists chains_steps (id serial primary key, chain_id bigint not null, name varchar(64) not null, msg text not null, errormsg text not null, next varchar(64) not null, advance boolean default false, final boolean default false, entries int default 0, exits int default 0, admin_order int default 0, admin_special boolean default false, created timestamp);',
-	'create table if not exists validation_errors (ts timestamp default current_timestamp, level varchar, msg varchar, meta json);',
+	'create table if not exists validation_errors (ts timestamp default current_timestamp, level varchar, msg varchar, meta jsonb);',
+	'create table if not exists submissions (id serial primary key, user_id bigint not null, conversation_id bigint not null, form_stuffer_reference varchar(255), form_stuffer_response json, form_stuffer_log_id bigint, status varchar(64) not null default \'pending\', created timestamp, ended timestamp);',
 
 	// index our tables
 	'create unique index if not exists users_username on users (username);',
@@ -25,6 +26,14 @@ var schema = [
 	'create index if not exists conversations_recipients_convuser on conversations_recipients (conversation_id, user_id);',
 	'create unique index if not exists chains_name on chains (name);',
 	'create index if not exists chains_steps_chain on chains_steps (chain_id, admin_order);',
+	'create index if not exists submissions_user_id on submissions (user_id);',
+	'create index if not exists submissions_conversation_id on submissions (conversation_id);',
+	'create index if not exists submissions_status on submissions (status);',
+	'create index if not exists submissions_created on submissions (created desc);',
+	'create index if not exists submissions_form_stuffer_reference on submissions (form_stuffer_reference);',
+	'create index if not exists submissions_form_stuffer_log_id on submissions (form_stuffer_log_id);',
+	'create index if not exists validation_errors_meta_user_id on validation_errors ((meta->>\'user_id\'));',
+	'create index if not exists validation_errors_ts on validation_errors (ts desc);',
 
 	// create our first user (VoteBot) and set our auto-inc user id
 	'insert into users (id, username, type, first_name, last_name, created) values ('+config.bot.user_id+', \''+bot_number+'\', \'sms\', \'VoteBot\', \'\', now()) on conflict (id) do update set username = \''+bot_number+'\'',

@@ -2,6 +2,7 @@ var Promise = require('bluebird');
 var config = require('../config');
 var db = require('../lib/db');
 var convo_model = require('./conversation');
+var submission_model = require('./submission');
 var message_model = require('./message');
 var user_model = require('./user');
 var error = require('../lib/error');
@@ -97,7 +98,8 @@ var default_steps = {
 			if (util.object.get(user, 'settings.address_appears_bogus')) {
 				var err_meta = {
 					address: util.object.get(user, 'settings.address'),
-					zip: util.object.get(user, 'settings.zip')
+					zip: util.object.get(user, 'settings.zip'),
+					user_id: user.id.toString()
 				}
 				log.notice('bot: ADDRESS WARNING', err_meta);
 				return {msg: l10n('msg_address_appears_bogus', conversation.locale)};
@@ -239,7 +241,7 @@ var default_steps = {
 			}
 			*/
 		},
-		process: function(body, user) {
+		process: function(body, user, step, conversation) {
 			if (!config.app.submit_ovr_url || !config.app.submit_vote_dot_org_url) {
 				log.info('bot: no submit_url in config, skipping submit...');
 				return Promise.resolve({
@@ -263,27 +265,41 @@ var default_steps = {
 				var url = config.app.submit_vote_dot_org_url;
 			}
 
-			// send to votebot-forms
-			var form_submit = {
-			    method: 'POST',
-			    uri: url,
-			    body: {
-			    	user: user,
-			    	callback_url: config.app.url + '/receipt/'+user.username
-			    },
-			    json: true 
-			};
+			var submission;
 
-			return request(form_submit)
-			      .then(function (response) {
-			    	log.info('form_submit: response', response);
+			return submission_model.create(user.id, conversation.id)
+				.then(function(_submission) {
+					submission = _submission;
+
+					// send to votebot-forms
+					var form_submit = {
+					    method: 'POST',
+					    uri: url,
+					    body: {
+					    	user: user,
+					    	callback_url: config.app.url + '/receipt/'+user.username
+					    },
+					    json: true 
+					};
+					return request(form_submit);
+				}).then(function (response) {
+			    	log.info('bot: form_submit: response', response);
+			    	log.info('bot: saving response uid ', response.uid);
+
+			    	submission_model.update(submission.id, {
+			    		form_stuffer_reference: response.uid
+			    	});
+
+			    	var update_user = util.object.set(user, 'submit', true);
+			    	user_model.update(user.id, update_user);
+
 			    	return Promise.resolve({
-							next: 'processing',
+						next: 'processing',
 					});
 			    })
 			    .catch(function (error) {
 			        log.error('bot: form_submit: unable to post ', {step: 'submit', error: error.error});
-					update_user = util.object.set(user, 'settings.submission_error', error.error);
+					var update_user = util.object.set(user, 'settings.submission_error', error.error);
 					user_model.update(user.id, update_user);
 
 					return Promise.resolve({next: 'incomplete'});
@@ -356,14 +372,14 @@ var default_steps = {
 			}
 		},
 		// msg: 'Sorry, your registration is incomplete. Restart?',
-		process: function(body, user, step, locale) {
+		process: function(body, user, step, conversation) {
 			// TODO, re-query missing fields
-			log.notice('bot: incomplete: submission_error ', util.object.get(user, 'settings.submission_error'), {username: user.username});
+			log.notice('bot: incomplete: submission_error ', util.object.get(user, 'settings.submission_error'), {user_id: user.id.toString()});
 			if (language.is_yes(body) || body.trim().toUpperCase() === 'RESTART') {
 				return Promise.resolve({next: 'restart'});
 			}
 			if (body.trim().toUpperCase() === 'RETRY') {
-				return Promise.resolve({next: 'submit', msg: l10n('msg_trying_again', locale), advance: true});
+				return Promise.resolve({next: 'submit', msg: l10n('msg_trying_again', conversation.locale), advance: true});
 			}
 			return Promise.resolve({next: 'incomplete'});
 		}
@@ -530,7 +546,7 @@ function simple_store(store, options)
 {
 	options || (options = {});
 
-	return function(body, user, step, locale)
+	return function(body, user, step, conversation)
 	{
 		// if we get an empty body, error
 		if(!body.trim()) return validate.data_error(step.errormsg, {promise: true});
@@ -540,7 +556,7 @@ function simple_store(store, options)
 		var promise = Promise.resolve({next: step.next, store: obj});
 		if(options.validate)
 		{
-			promise = options.validate(body, user, locale)
+			promise = options.validate(body, user, conversation.locale)
 				.spread(function(body, extra_store) {
 					log.info('bot: validated body: ', body, '; extra_store: ', extra_store);
 					extra_store || (extra_store = {});
@@ -552,14 +568,14 @@ function simple_store(store, options)
 	};
 }
 
-var parse_step = function(step, body, user, locale)
+var parse_step = function(step, body, user, conversation)
 {
 	// if the user is canceling, don't bother parsing anything
 	if(language.is_cancel(body)) return Promise.resolve({next: '_cancel'});
 	if(language.is_help(body)) return Promise.resolve({next: '_help', prev: step.name});
 	if(language.is_back(body)) return Promise.resolve({next: '_back'});
 
-	return step.process(body, user, step, locale);
+	return step.process(body, user, step, conversation);
 };
 
 /**
@@ -729,7 +745,7 @@ exports.next = function(user_id, conversation, message)
 				}
 			}
 			
-			return parse_step(step, body, user, conversation.locale)
+			return parse_step(step, body, user, conversation)
 				.then(function(action) {
 					log.info('bot: action:', JSON.stringify(action));
 
@@ -877,7 +893,8 @@ exports.next = function(user_id, conversation, message)
 							err_meta['address'] = user.settings.address;
 						 	err_meta['city'] = user.settings.city;
 						 	err_meta['state'] = user.settings.state;
-						 }
+						}
+						err_meta['user_id'] = user.id.toString();
 
 						log.notice('bot: data_error:', step.name, err_meta);
 						if (err.message)
