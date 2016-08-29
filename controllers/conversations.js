@@ -24,7 +24,7 @@ var create = function(req, res)
 {
 	var user_id = config.bot.user_id;
 	var data = req.body;
-	console.log('JL DEBUG ~ ', JSON.encode(data));
+	console.log('JL DEBUG ~ ', JSON.stringify(data));
 	model.create(user_id, data)
 		.then(function(convo) {
 			resutil.send(res, convo);
