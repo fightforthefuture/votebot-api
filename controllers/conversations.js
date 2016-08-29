@@ -34,7 +34,11 @@ var create = function(req, res)
 };
 
 var fakeCreateEndpointForFacebookArg = function(req, res) {
-	resutil.send(res, 'kthxbai');
+	console.log('Got Facebook postback token: ', req.query);
+	if (req.query['hub.verify_token'] === config.facebook.verify_token) {
+		res.send(req.query['hub.challenge']);
+  	}
+	res.send('Error, wrong validation token');
 };
 
 var new_message = function(req, res)
