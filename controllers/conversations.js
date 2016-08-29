@@ -30,8 +30,7 @@ var create = function(req, res)
 		var sender = data.entry[0].messaging[0].sender.id;
 		data = {
 			type: 'fb',
-			recipients: [{username: 'Messenger:'+sender}],
-			message: {body: 'hello'}
+			recipients: [{username: 'Messenger:'+sender}]
 		}
 	}
 
