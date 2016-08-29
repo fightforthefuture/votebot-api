@@ -25,7 +25,7 @@ var create = function(req, res)
 	var user_id = config.bot.user_id;
 	var data = req.body;
 
-	// this was initiated by Facebook messenger, reformat the data
+	// if this was initiated by Facebook messenger, reformat the data
 	if (data.object && data.object == 'page') {
 		var sender = data.entry[0].messaging[0].sender.id;
 		data = {
