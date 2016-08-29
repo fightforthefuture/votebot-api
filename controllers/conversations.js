@@ -24,7 +24,17 @@ var create = function(req, res)
 {
 	var user_id = config.bot.user_id;
 	var data = req.body;
-	console.log('JL DEBUG ~ ', JSON.stringify(data));
+
+	// this was initiated by Facebook messenger, reformat the data
+	if (data.object && data.object == 'page') {
+		var sender = data.entry[0].messaging[0].sender.id;
+		data = {
+			type: 'fb',
+			recipients: [{username: 'Messenger:'+sender}],
+			message: {body: 'hello'}
+		}
+	}
+
 	model.create(user_id, data)
 		.then(function(convo) {
 			resutil.send(res, convo);
