@@ -12,6 +12,7 @@ var config = require('../config');
 exports.hook = function(app)
 {
 	app.post('/conversations', create);
+	app.get('/conversations', create);
 	app.post('/conversations/:id/messages', new_message);
 	app.post('/conversations/incoming', incoming);
 	app.get('/conversations/:id/new', poll);
