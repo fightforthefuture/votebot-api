@@ -20,7 +20,7 @@ exports.validate = function(street, city, state, zip)
                 if (address_data) {
                     return resolve(address_data);
 
-                // We didn't get any data. Fall back to a more aggressive API
+                // We didn't get any data. Fall back to a more relaxed API
                 } else {
 
                     var req_url = 'https://extract-beta.api.smartystreets.com/'
@@ -73,53 +73,3 @@ exports.validate = function(street, city, state, zip)
         });
     });
 };
-/*
-exports.aggressive_arbitrary_extraction = function(street, zip)
-{
-    
-    var req_url = 'https://extract-beta.api.smartystreets.com/'
-        +'?auth-id='+config.smarty_streets.auth_id
-        +'&auth-token='+config.smarty_streets.auth_token
-    request.post(
-        {
-            url: req_url,
-            body : street + (zip ? ' ' + zip : ''),
-            headers: {'Content-Type': 'text/plain'}
-        },
-        function (err, res, body) {        
-            if(err) return Promise.reject(err);
-            if(res.statusCode >= 400) return Promise.reject(new Error('not_found'));
-            try
-            {
-                var obj = JSON.parse(body) || {};
-                var address_data = null;
-
-                if (
-                    obj['addresses']
-                    &&
-                    obj['addresses'].length
-                    &&
-                    obj['addresses'][0]['api_output']
-                    &&
-                    obj['addresses'][0]['api_output'].length
-                )
-                {
-                    var address_data = obj['addresses'][0]['api_output'][0];
-                }
-
-                if (!address_data) {
-
-                    return Promise.reject(e);
-                }
-            }
-            catch(e)
-            {
-                return Promise.reject(new Error('not_found'));
-            }
-            console.log('TRYING TO RESOLVE');
-            return Promise.resolve(address_data);
-        }
-    );
-    
-}
-*/
