@@ -12,7 +12,7 @@ var config = require('../config');
 exports.hook = function(app)
 {
 	app.post('/conversations', create);
-	app.get('/conversations', create);
+	app.get('/conversations', fakeCreateEndpointForFacebookArg);
 	app.post('/conversations/:id/messages', new_message);
 	app.post('/conversations/incoming', incoming);
 	app.get('/conversations/:id/new', poll);
@@ -31,6 +31,10 @@ var create = function(req, res)
 		.catch(function(err) {
             resutil.error(res, 'Problem starting conversation', err);
 		});
+};
+
+var fakeCreateEndpointForFacebookArg = function(req, res) {
+	resutil.send(res, 'kthxbai');
 };
 
 var new_message = function(req, res)
