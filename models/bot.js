@@ -719,8 +719,6 @@ exports.next = function(user_id, conversation, message)
 
 			step = _step;
 
-			log_chain_step_exit(step.id);
-
 			// only get the restart step if we're on the final step, lol
 			if (step.final)
 				return get_chain_step(state.type, 'restart');
@@ -748,6 +746,8 @@ exports.next = function(user_id, conversation, message)
 			return parse_step(step, body, user, conversation)
 				.then(function(action) {
 					log.info('bot: action:', JSON.stringify(action));
+
+					log_chain_step_exit(step.id);
 
 					// if user wants out, let them
 					if(action.next == '_cancel') {

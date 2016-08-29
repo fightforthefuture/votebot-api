@@ -2,7 +2,7 @@ var Promise = require('bluebird');
 var request = require('request');
 var config = require('../config');
 
-exports.validate = function(street, city, state)
+exports.validate = function(street, city, state, zip)
 {
     return new Promise(function(resolve, reject) {
         var req_url = 'https://api.smartystreets.com/street-address'
@@ -17,16 +17,109 @@ exports.validate = function(street, city, state)
                 var obj = JSON.parse(body) || {};
                 var address_data = obj[0];
 
-                if (!address_data) {
-                    return reject(e);
+                if (address_data) {
+                    return resolve(address_data);
+
+                // We didn't get any data. Fall back to a more aggressive API
+                } else {
+
+                    var req_url = 'https://extract-beta.api.smartystreets.com/'
+                        +'?auth-id='+config.smarty_streets.auth_id
+                        +'&auth-token='+config.smarty_streets.auth_token
+
+                    request.post(
+                        {
+                            url: req_url,
+                            body : street + (zip ? ' ' + zip : ''),
+                            headers: {'Content-Type': 'text/plain'}
+                        },
+                        function (err, res, body) {    
+
+                            if(err)
+                                return reject(err);
+
+                            if(res.statusCode >= 400)
+                                return reject(new Error('not_found'));
+
+                            var obj = JSON.parse(body) || {};
+                            var address_data = null;
+
+                            if (
+                                obj['addresses']
+                                &&
+                                obj['addresses'].length
+                                &&
+                                obj['addresses'][0]['api_output']
+                                &&
+                                obj['addresses'][0]['api_output'].length
+                            )
+                            {
+                                var address_data = obj['addresses'][0]['api_output'][0];
+                            }
+
+                            if (address_data) {
+                                return resolve(address_data);
+                            } else {
+                                return reject(new Error('not_found'));
+                            }
+                        }
+                    );
                 }
             }
             catch(e)
             {
-                return reject(new Error('not_found'));
+                return reject(e);
             }
-            resolve(address_data);
         });
     });
 };
+/*
+exports.aggressive_arbitrary_extraction = function(street, zip)
+{
+    
+    var req_url = 'https://extract-beta.api.smartystreets.com/'
+        +'?auth-id='+config.smarty_streets.auth_id
+        +'&auth-token='+config.smarty_streets.auth_token
+    request.post(
+        {
+            url: req_url,
+            body : street + (zip ? ' ' + zip : ''),
+            headers: {'Content-Type': 'text/plain'}
+        },
+        function (err, res, body) {        
+            if(err) return Promise.reject(err);
+            if(res.statusCode >= 400) return Promise.reject(new Error('not_found'));
+            try
+            {
+                var obj = JSON.parse(body) || {};
+                var address_data = null;
 
+                if (
+                    obj['addresses']
+                    &&
+                    obj['addresses'].length
+                    &&
+                    obj['addresses'][0]['api_output']
+                    &&
+                    obj['addresses'][0]['api_output'].length
+                )
+                {
+                    var address_data = obj['addresses'][0]['api_output'][0];
+                }
+
+                if (!address_data) {
+
+                    return Promise.reject(e);
+                }
+            }
+            catch(e)
+            {
+                return Promise.reject(new Error('not_found'));
+            }
+            console.log('TRYING TO RESOLVE');
+            return Promise.resolve(address_data);
+        }
+    );
+    
+}
+*/
