@@ -204,6 +204,39 @@ var default_steps = {
 			return next_default;
 		}
 	},
+	ovr_disclosure: {
+		pre_process: function(action, conversation, user) {
+			var state = util.object.get(user, 'settings.state');
+			var disclosure = us_election.state_confirmation_disclosures[state].text;
+			return {
+				msg: l10n('prompt_ovr_disclosure', conversation.locale)+': "'+disclosure+'"',
+				next: 'confirm_ovr_disclosure',
+				advance: true,
+				delay: true
+			}
+		},
+		no_msg: true,
+	},
+	confirm_ovr_disclosure: {
+		pre_process: function(action, conversation, user) {
+			var state = util.object.get(user, 'settings.state');
+			var url = us_election.state_confirmation_disclosures[state].url;
+			return {
+				msg: l10n('prompt_confirm_ovr_disclosure', conversation.locale).replace('{url}', url),
+				next: 'submit'
+			}
+		},
+		process: function(body, user) {
+			if (language.is_no(body)) {
+				return Promise.resolve({next: 'restart'});
+			} else {
+				var update_user = util.object.set(user, 'settings.confirm_ovr_disclosure', true);
+				user_model.update(user.id, update_user);
+			}
+			return Promise.resolve({next: 'submit', advance: true});
+		},
+		no_msg: true,
+	},
 	confirm_name_address: {
 		// msg: 'The name and address we have for you is:\n {{first_name}} {{last_name}}, {{settings.address}} {{settings.city}} {{settings.state}}\n Is this correct?',
 		process: function(body, user) {
@@ -602,6 +635,8 @@ var find_next_step = function(action, conversation, user)
 			}
 			if (res && res.next)
 				var processed_next = res.next;
+			if (res && res.delay)
+				var processed_next_delay = true;
 		}
 
 		// same for post_process
@@ -622,7 +657,13 @@ var find_next_step = function(action, conversation, user)
 			// if either processing function returned a "next" key, then we know we should load
 			// another step. wicked. recurse and find that shit.
 			var next_action = util.object.merge({}, preserve_action, {next: processed_next});
-			return find_next_step(next_action, conversation, user);
+
+			if (!processed_next_delay)
+				return find_next_step(next_action, conversation, user);
+			else
+				return Promise.delay(config.bot.advance_delay).then(function() {
+					return find_next_step(next_action, conversation, user);
+				});
 		} else {
 			
 			if (default_step.step && default_step.step.id)
