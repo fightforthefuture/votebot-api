@@ -205,6 +205,7 @@ var default_steps = {
 		}
 	},
 	ovr_disclosure: {
+		name: 'ovr_disclosure',
 		pre_process: function(action, conversation, user) {
 			var state = util.object.get(user, 'settings.state');
 			var disclosure = us_election.state_confirmation_disclosures[state].text;
@@ -218,6 +219,7 @@ var default_steps = {
 		no_msg: true,
 	},
 	confirm_ovr_disclosure: {
+		name: 'ovr_disclosure', // JL HACK ~ override the name to go back to the previous
 		pre_process: function(action, conversation, user) {
 			var state = util.object.get(user, 'settings.state');
 			var url = us_election.state_confirmation_disclosures[state].url;
