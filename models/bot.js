@@ -222,18 +222,23 @@ var default_steps = {
 			var state = util.object.get(user, 'settings.state');
 			var url = us_election.state_confirmation_disclosures[state].url;
 			return {
-				msg: l10n('prompt_confirm_ovr_disclosure', conversation.locale).replace('{url}', url),
-				next: 'submit'
+				msg: l10n('prompt_confirm_ovr_disclosure', conversation.locale).replace('{url}', url)
 			}
 		},
 		process: function(body, user) {
+			var state = util.object.get(user, 'settings.state');
+			var store = us_election.state_confirmation_disclosures[state].store;
 			if (language.is_no(body)) {
 				return Promise.resolve({next: 'restart'});
 			} else {
 				var update_user = util.object.set(user, 'settings.confirm_ovr_disclosure', true);
 				user_model.update(user.id, update_user);
 			}
-			return Promise.resolve({next: 'submit', advance: true});
+			return Promise.resolve({
+				next: 'submit',
+				advance: true,
+				store: store
+			});
 		},
 		no_msg: true,
 	},
