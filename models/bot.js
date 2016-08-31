@@ -372,9 +372,12 @@ var default_steps = {
 			return Promise.resolve({
 				next: 'complete',
 				store: {
+					// JL NOTE ~ disabled for beta test
+					/*
 					'user.settings.submit': true,
 					'user.settings.ssn': 'cleared',
 					'user.settings.state_id_number': 'cleared'
+					*/
 				}
 			});
 		}
