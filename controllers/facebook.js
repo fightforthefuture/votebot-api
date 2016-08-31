@@ -62,12 +62,12 @@ var postback = function(req, res)
 								buttons: [
 									{
 										type: 'postback',
-										title: 'Register to vote!',
+										title: 'Register to vote',
 										payload: 'start'
 									},
 									{
 										type: 'postback',
-										title: 'Register my friends!',
+										title: 'Register my friends',
 										payload: 'register_friends',
 									},
 									{
