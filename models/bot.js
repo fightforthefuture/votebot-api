@@ -212,6 +212,7 @@ var default_steps = {
 			return next_default;
 		}
 	},
+	// JL NOTE ~ JL TODO ~ this step is not in any chain. Yet. It should be.
 	ovr_disclosure: {
 		name: 'ovr_disclosure',
 		pre_process: function(action, conversation, user) {
@@ -226,6 +227,7 @@ var default_steps = {
 		},
 		no_msg: true,
 	},
+	// JL NOTE ~ JL TODO ~ this step is not in any chain. Yet. It should be.
 	confirm_ovr_disclosure: {
 		name: 'ovr_disclosure', // JL HACK ~ override the name to go back to the previous
 		pre_process: function(action, conversation, user) {
@@ -354,6 +356,7 @@ var default_steps = {
 			    });
 		},
 	},
+	// JL NOTE ~ this step is not in any chain. It doesn't really need to be.
 	processing: {
 		next: 'processing',
 		msg: l10n('msg_processing'),
