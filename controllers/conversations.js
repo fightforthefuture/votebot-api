@@ -27,6 +27,7 @@ var create = function(req, res)
 
 	// if this was initiated by Facebook messenger, reformat the data
 	if (data.object && data.object == 'page') {
+		console.log('REQ.BODY: ', JSON.stringify(req.body));
 		var sender = data.entry[0].messaging[0].sender.id;
 		data = {
 			type: 'fb',
