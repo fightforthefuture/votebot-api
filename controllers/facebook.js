@@ -66,7 +66,7 @@ var postback = function(req, res)
 									{
 										type: 'web_url',
 										url: 'https://www.hellovote.org',
-										title: 'Get my friends registered!'
+										title: 'Register my friends!'
 									}
 								]
 							}
