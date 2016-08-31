@@ -79,6 +79,7 @@ var postback = function(req, res)
 					log.error('facebook: postback send error', error);
 					return resutil.error(res, 'Facebook postback error', error);
 				}
+				console.log('body:' ,body);
 				resutil.send(res, 'yay');
 			});
 			break;
