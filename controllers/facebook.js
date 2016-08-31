@@ -40,7 +40,7 @@ var postback = function(req, res)
 		data = {
 			type: 'fb',
 			recipients: [{username: 'Messenger:'+sender}],
-			start: 'intro_facebook'
+			options: {start: 'intro_facebook'}
 		};
 
 	switch (message.postback.payload) {
