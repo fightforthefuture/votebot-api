@@ -40,14 +40,15 @@ var l10n = require('../lib/l10n');
 var default_steps = {
 	
 	intro: {
-		process: function() { return Promise.delay(config.bot.advance_delay, {'next': 'first_name'})}
+		process: function() { return Promise.resolve({'next': 'first_name'})}
 	},
 	// JL NOTE ~ this step is not in any chain. It's initiated via Facebook messenger
 	intro_facebook: {
 		name: 'intro_facebook',
 		advance: true,
 		msg: l10n('msg_intro_facebook'),
-		next: 'first_name'
+		next: 'first_name',
+		process: function() { return Promise.resolve({'next': 'first_name'})}
 	},
 	first_name: {
 		process: simple_store('user.first_name')
