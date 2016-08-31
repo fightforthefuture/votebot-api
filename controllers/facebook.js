@@ -58,7 +58,7 @@ var postback = function(req, res)
 var fakePostbackEndpoint = function(req, res) {
 	console.log('Got Facebook postback token: ', req.query);
 	if (req.query['hub.verify_token'] === config.facebook.verify_token) {
-		res.send(req.query['hub.challenge']);
+		return res.send(req.query['hub.challenge']);
   	}
 	res.send('Error, wrong validation token');
 };
