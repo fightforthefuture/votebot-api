@@ -371,14 +371,15 @@ var default_steps = {
 		process: function(body, user) {
 			return Promise.resolve({
 				next: 'complete',
+				// JL NOTE ~ disabled for beta test
+				/*
 				store: {
-					// JL NOTE ~ disabled for beta test
-					/*
+
 					'user.settings.submit': true,
 					'user.settings.ssn': 'cleared',
 					'user.settings.state_id_number': 'cleared'
-					*/
 				}
+				*/
 			});
 		}
 	},
