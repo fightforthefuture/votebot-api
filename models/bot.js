@@ -230,11 +230,11 @@ var default_steps = {
 		process: function(body, user) {
 			var state = util.object.get(user, 'settings.state');
 			var store = us_election.state_confirmation_disclosures[state].store;
-			if (language.is_no(body)) {
-				return Promise.resolve({next: 'restart'});
-			} else {
+			if (language.is_yes(body)) {
 				var update_user = util.object.set(user, 'settings.confirm_ovr_disclosure', true);
 				user_model.update(user.id, update_user);
+			} else {
+				return Promise.resolve({next: 'restart'});				
 			}
 			return Promise.resolve({
 				next: 'submit',
@@ -247,11 +247,11 @@ var default_steps = {
 	confirm_name_address: {
 		// msg: 'The name and address we have for you is:\n {{first_name}} {{last_name}}, {{settings.address}} {{settings.city}} {{settings.state}}\n Is this correct?',
 		process: function(body, user) {
-			if (language.is_no(body)) {
-				return Promise.resolve({next: 'restart'});
-			} else {
+			if (language.is_yes(body)) {
 				var update_user = util.object.set(user, 'settings.confirm_name_address', true);
-				user_model.update(user.id, update_user);
+				user_model.update(user.id, update_user);				
+			} else {
+				return Promise.resolve({next: 'restart'});
 			}
 			return Promise.resolve({next: 'submit', advance: true});
 		}
