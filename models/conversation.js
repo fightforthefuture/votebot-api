@@ -15,6 +15,7 @@ exports.create = function(user_id, data)
 {
 	var recipients = data.recipients || [];
 	var message = data.message || {};
+	var options = data.options || {};
 	var valid_data_types = ['sms', 'web', 'fb', 'p2p'];
 	// sms means conversation was initiated by text message
 	// web means conversation was initiated by web call (from hellovote.org, or other client)
@@ -80,7 +81,7 @@ exports.create = function(user_id, data)
 							'vote_1',
 							users[0].id,
 							{
-								start: 'intro',
+								start: options.start ? options.start : 'intro',
 								existing_conversation_id: conversation.id
 							}
 						);

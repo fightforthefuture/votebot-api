@@ -39,7 +39,8 @@ var postback = function(req, res)
 	    sender = message.sender.id,
 		data = {
 			type: 'fb',
-			recipients: [{username: 'Messenger:'+sender}]
+			recipients: [{username: 'Messenger:'+sender}],
+			start: 'intro_facebook'
 		};
 
 	switch (message.postback.payload) {
@@ -67,6 +68,11 @@ var postback = function(req, res)
 										type: 'web_url',
 										url: 'https://www.hellovote.org',
 										title: 'Register my friends!'
+									},
+									{
+										type: 'web_url',
+										url: 'https://www.hellovote.org',
+										title: 'Learn more...'
 									}
 								]
 							}
@@ -79,7 +85,6 @@ var postback = function(req, res)
 					log.error('facebook: postback send error', error);
 					return resutil.error(res, 'Facebook postback error', error);
 				}
-				console.log('body:' ,body);
 				resutil.send(res, 'yay');
 			});
 			break;
