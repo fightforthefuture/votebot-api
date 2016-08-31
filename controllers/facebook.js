@@ -99,7 +99,7 @@ var postback = function(req, res)
 								buttons: [
 									{
 										type: 'web_url',
-										url: 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffftf.io%2Ff%2Fbad003',
+										url: 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffftf.io%2Ff%2F7a1836',
 										title: 'Share HelloVote!'
 									}
 								]
