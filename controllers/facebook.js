@@ -3,6 +3,7 @@ var convo_model = require('../models/conversation');
 var log = require('../lib/logger');
 var error = require('../lib/error');
 var config = require('../config');
+var request = require('request');
 
 exports.hook = function(app)
 {
@@ -35,16 +36,54 @@ var postback = function(req, res)
 	}
 
 	var message = data.entry[0].messaging[0],
-	    sender = message.sender.id;
+	    sender = message.sender.id,
+		data = {
+			type: 'fb',
+			recipients: [{username: 'Messenger:'+sender}]
+		};
 
 	switch (message.postback.payload) {
 		case 'hi':
-		case 'start':
-			data = {
-				type: 'fb',
-				recipients: [{username: 'Messenger:'+sender}]
+			var options = {
+				uri: 'https://graph.facebook.com/v2.6/me/messages?access_token='+config.facebook.access_token,
+				method: 'POST',
+				json: {
+					recipient: {
+						id: sender
+					},
+					message: {
+						attachment: {
+							type: 'template',
+							payload: {
+								template_type: 'button',
+								text: 'Hi, I\'m HelloVote! I can help you register to vote, or get your friends registered.',
+								buttons: [
+									{
+										type: 'postback',
+										title: 'Register to vote!',
+										payload: 'start'
+									},
+									{
+										type: 'web_url',
+										url: 'https://www.hellovote.org',
+										payload: 'Get my friends registered!'
+									}
+								]
+							}
+						}
+					}
+				}
 			}
-			convo_model.create(user_id, data)
+			request(options, function (error, response, body) {
+				if (error) {
+					log.error('facebook: postback send error', error);
+					return resutil.error(res, 'Facebook postback error', error);
+				}
+				resutil.send(res, 'yay');
+			});
+			break;
+		case 'start':
+			return convo_model.create(user_id, data)
 				.then(function(convo) {
 					resutil.send(res, convo);
 				})

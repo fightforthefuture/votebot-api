@@ -60,9 +60,10 @@ var config = {
 		facebook_page_id: process.env.FACEBOOK_PAGE_ID,
 	},
 
-        facebook: {
-		verify_token: '5orkGdKcTfXVTeWXfhsaY3pfYlNkjAJUYe'
-        },
+    facebook: {
+		verify_token: process.env.FACEBOOK_VERIFY_TOKEN,
+		access_token: process.env.FACEBOOK_ACCESS_TOKEN
+    },
 
 	session: {
 		secret: process.env.SESSION_SECRET

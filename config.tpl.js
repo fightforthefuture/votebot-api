@@ -59,6 +59,11 @@ var config = {
 		facebook_page_id: process.env.FACEBOOK_PAGE_ID,
 	},
 
+	facebook: {
+		verify_token: 'something secret',
+		access_token: 'your facebook page access token lol'
+    },
+
 	session: {
 		secret: process.env.SESSION_SECRET
 	},
