@@ -12,7 +12,6 @@ var config = require('../config');
 exports.hook = function(app)
 {
 	app.post('/conversations', create);
-	app.get('/conversations', fakeCreateEndpointForFacebookArg);
 	app.post('/conversations/:id/messages', new_message);
 	app.post('/conversations/incoming', incoming);
 	app.get('/conversations/:id/new', poll);
@@ -25,16 +24,6 @@ var create = function(req, res)
 	var user_id = config.bot.user_id;
 	var data = req.body;
 
-	// if this was initiated by Facebook messenger, reformat the data
-	if (data.object && data.object == 'page') {
-		console.log('REQ.BODY: ', JSON.stringify(req.body));
-		var sender = data.entry[0].messaging[0].sender.id;
-		data = {
-			type: 'fb',
-			recipients: [{username: 'Messenger:'+sender}]
-		}
-	}
-
 	model.create(user_id, data)
 		.then(function(convo) {
 			resutil.send(res, convo);
@@ -42,14 +31,6 @@ var create = function(req, res)
 		.catch(function(err) {
             resutil.error(res, 'Problem starting conversation', err);
 		});
-};
-
-var fakeCreateEndpointForFacebookArg = function(req, res) {
-	console.log('Got Facebook postback token: ', req.query);
-	if (req.query['hub.verify_token'] === config.facebook.verify_token) {
-		res.send(req.query['hub.challenge']);
-  	}
-	res.send('Error, wrong validation token');
 };
 
 var new_message = function(req, res)
