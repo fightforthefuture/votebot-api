@@ -45,7 +45,7 @@ var create = function(req, res)
             update_user = util.object.set(update_user, 'complete', true);
             goto_step = 'processed';
         } else if (form_class == "NVRA") {
-            var update_user = util.object.set(user, 'settings.failed_pdf, true);
+            var update_user = util.object.set(user, 'settings.failed_pdf', true);
             update_user = util.object.set(update_user, 'settings.failure_reference', reference);
             goto_step = 'incomplete';
         } else {
