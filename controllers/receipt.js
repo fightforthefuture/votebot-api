@@ -25,6 +25,7 @@ var create = function(req, res)
     var form_class = req.body.form_class ? req.body.form_class : 'unknown';
     var status = req.body.status ? req.body.status : 'failure';
     var reference = req.body.reference ? req.body.reference : -1;
+    var pdf_url = req.body.pdf_url ? req.body.pdf_url : null;
     var user;
     var goto_step;
     var conversation;
@@ -55,8 +56,8 @@ var create = function(req, res)
         return user_model.update(user.id, update_user);
     }).then(function() {
         return conversation_model.goto_step(conversation.id, goto_step);
-    }).then(function(updated_converstation) {
-        bot_model.next(user.id, updated_converstation);
+    }).then(function(updated_conversation) {
+        bot_model.next(user.id, updated_conversation);
 
         if (status !== 'success') {
             resutil.send(res, 'bummer');
@@ -65,12 +66,20 @@ var create = function(req, res)
 
         var msg_parts = [
             "Thanks for registering to vote with HelloVote!",
-            "Your receipt is attached:",
-            "- Name: {{first_name}} {{last_name}}",
-            "- Address: {{settings.address}} {{settings.city}} {{settings.state}}",
-        ];
-        if (user.settings.state_id_number) { msg_parts.push("- State ID: {{settings.state_id_number}}"); }
-        if (user.settings.ssn_last4) { msg_parts.push("- SSN: ****"); }
+        ]
+
+        if (user.settings.submit_form_type === 'NVRA') {
+            // include link to PDF download
+            msg_parts.push("Your voter registration form is attached. Make sure to print, sign and mail it today!");
+            msg_parts.push("<a href='"+pdf_url+"'>PRINT ME</a>");
+        } else {
+            // generic receipt
+            msg_parts.push("Your receipt is attached:");
+            msg_parts.push("- Name: {{first_name}} {{last_name}}");
+            msg_parts.push("- Address: {{settings.address}} {{settings.city}} {{settings.state}}");
+            if (user.settings.state_id_number) { msg_parts.push("- State ID: {{settings.state_id_number}}"); }
+            if (user.settings.ssn_last4) { msg_parts.push("- SSN: ****"); }
+        }
         
         local_time = moment.tz(user.settings.timezone).format('MM/DD/YYYY h:mm A z');
         // if timezone parsing doesn't work, they'll still get UTC, so show complete timezone
@@ -79,7 +88,7 @@ var create = function(req, res)
 
         var templated_msg = language.template(msg_parts.join('<br/>'), user);
 
-        return email.create([user.settings.email], 'Your HelloVote Registration Receipt', templated_msg)
+        return email.create([user.settings.email], 'Your HelloVote Registration', templated_msg)
             .then(function(emailResult) {
                 resutil.send(res, emailResult);
             })
