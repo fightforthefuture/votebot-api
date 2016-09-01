@@ -590,7 +590,31 @@ var default_steps = {
 		next: 'per_state'
 	},
 
+	has_separate_mailing_address: {
+		name: 'has_separate_mailing_address',
+		msg: l10n('prompt_has_separate_mailing_address'),
+		process: function(body, user) {
+			var next = 'per_state';
 
+			if (language.is_yes(body)) {
+				var update_user = util.object.set(user, 'settings.has_separate_mailing_address', true);
+				var next = 'separate_mailing_address';
+			} else {
+				var update_user = util.object.set(user, 'settings.has_separate_mailing_address', false);
+			}
+
+			return user_model.update(user.id, update_user).then(function() {;
+				return Promise.resolve({next: next})
+			});
+		},
+	},
+
+	separate_mailing_address: {
+		name: 'separate_mailing_address',
+		msg: l10n('prompt_separate_mailing_address'),
+		process: simple_store('user.settings.separate_mailing_address'),
+		next: 'per_state'
+	},
 
 
 };
