@@ -141,7 +141,12 @@ var default_steps = {
 			// if they are unreasonably old, make them try again
 			var age = today.diff(date_of_birth, 'years');
 			if (age > 120) {
-				return {msg: l10n('error_too_old', conversation.locale), next: 'date_of_birth'};
+				var err_meta = {
+					user_id: user.id.toString(),
+					date_of_birth: util.object.get(user, 'settings.date_of_birth')
+				}
+				log.notice('bot: DATE_OF_BIRTH WARNING', err_meta);
+				return {msg: l10n('msg_date_of_birth_appears_bogus', conversation.locale)};
 			}
 
 			// if today is their birthday, send a cake
