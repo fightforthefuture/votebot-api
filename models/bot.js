@@ -135,14 +135,21 @@ var default_steps = {
 		},
 		process: simple_store('user.settings.date_of_birth', {validate: validate.date}),
 		post_process: function(user, conversation) {
-			// if today is their birthday, send a cake
 			var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
 			var today = moment();
+			
+			// if they are unreasonably old, make them try again
+			var age = today.diff(date_of_birth, 'years');
+			if (age > 120) {
+				return {msg: l10n('error_too_old', conversation.locale), next: 'date_of_birth'};
+			}
+
+			// if today is their birthday, send a cake
 			if (today.format('MM/DD') === date_of_birth.format('MM/DD')) {
 				return {msg: l10n('msg_happy_birthday', conversation.locale)};
-			} else {
-				return {}
 			}
+
+			return {}
 		}
 	},
 	will_be_18: { 
