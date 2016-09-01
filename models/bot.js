@@ -304,7 +304,7 @@ var default_steps = {
 			*/
 		},
 		process: function(body, user, step, conversation) {
-			if (!config.app.submit_ovr_url || !config.app.submit_vote_dot_org_url) {
+			if (!config.app.submit_ovr_url || !config.app.submit_pdf_url) {
 				log.info('bot: no submit_url in config, skipping submit...');
 				return Promise.resolve({
 					next: 'complete',
@@ -323,8 +323,8 @@ var default_steps = {
 				log.info('bot: sending OVR submission...');
 				var url = config.app.submit_ovr_url;
 			} else {
-				log.info('bot: sending Vote.org submission...');
-				var url = config.app.submit_vote_dot_org_url;
+				log.info('bot: sending PDF submission...');
+				var url = config.app.submit_pdf_url;
 			}
 
 			var submission;
@@ -403,7 +403,7 @@ var default_steps = {
 			// send confirmation prompt dependent on user state
 			var form_type = util.object.get(user, 'settings.submit_form_type');
 
-			if (form_type != 'VoteDotOrg') {
+			if (form_type != 'NVRA') {
 				// registration complete online, no extra instructions
 				return {msg: l10n('msg_complete_ovr', conversation.locale), next: 'share'};
 			} else {
@@ -418,7 +418,7 @@ var default_steps = {
 	},
 	incomplete: {
 		pre_process: function(action, conversation, user) {
-			var failed = util.object.get(user, 'settings.failed_vote_dot_org');
+			var failed = util.object.get(user, 'settings.failed_pdf');
 			if (failed) {
 				var ref = util.object.get(user, 'settings.failure_reference');
 				return {

@@ -6,7 +6,7 @@ var config = {
 	// the app website for votebot
 	app: {
 		url: 'http://localhost:3000',
-		submit_vote_dot_org_url: 'http://localhost:5000/vote_dot_org',
+		submit_pdf_url: 'http://localhost:5000/pdf',
 		submit_ovr_url: 'http://localhost:5000/ovr',
 		admin_password: process.env.ADMIN_PASSWORD,
 		force_ssl: false

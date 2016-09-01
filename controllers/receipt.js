@@ -44,8 +44,8 @@ var create = function(req, res)
             update_user = util.object.set(update_user, 'settings.submit_form_type', form_class);
             update_user = util.object.set(update_user, 'complete', true);
             goto_step = 'processed';
-        } else if (form_class == "VoteDotOrg") {
-            var update_user = util.object.set(user, 'settings.failed_vote_dot_org', true);
+        } else if (form_class == "NVRA") {
+            var update_user = util.object.set(user, 'settings.failed_pdf, true);
             update_user = util.object.set(update_user, 'settings.failure_reference', reference);
             goto_step = 'incomplete';
         } else {

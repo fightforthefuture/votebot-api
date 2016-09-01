@@ -8,8 +8,8 @@ using [Twilio API][1]. This works in tandem with the [Votebot-Forms][2] project
 to submit registration data to the Secretary of State in states that support
 online voter registration (OVR).
 
-For states that do not support OVR, the [Vote.org][3] API is used to
-generate a pre-filled voter registration PDF that the user can then sign and
+For states that do not support OVR, Votebot-Forms generates a pre-filled
+National Mail Voter Registration PDF[3] that the user can then sign and
 mail to their Secretary of State. Optionally, a postage-paid return envelope
 can be mailed to the users, so they don't have to deal with printing or postage.
 
@@ -21,7 +21,6 @@ can be mailed to the users, so they don't have to deal with printing or postage.
 * **[Postgresql 9.5+][6]**
 * **[Twilio API][1]**
 * **[a running Votebot-Forms instance][2]**
-* **[Vote.org API][3]**
 
 
 ## Installation and Setup
@@ -113,7 +112,7 @@ node server.js
 
 [1]: https://www.twilio.com
 [2]: https://github.com/fightforthefuture/votebot-forms
-[3]: https://www.vote.org
+[3]: http://www.eac.gov/voter_resources/register_to_vote.aspx
 [4]: https://nodejs.org/en/
 [5]: https://www.npmjs.com/
 [6]: https://www.postgresql.org/
