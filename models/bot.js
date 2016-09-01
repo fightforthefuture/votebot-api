@@ -453,15 +453,10 @@ var default_steps = {
 		}
 	},
 	share: {
-		process: function() { return Promise.resolve({'next': 'fftf_opt_in'})},
+		process: function() { return Promise.resolve({'next': 'fftf_opt_in', delay: true})},
 		advance: true,
 	},
 	fftf_opt_in: {
-		pre_process: function(action, conversation, user) {
-			// delay sending by a few minutes
-			var opt_in_delay = 3*60*1000; // ms
-			return Promise.delay(opt_in_delay, {next: 'fftf_opt_in_thanks'});
-		},
 		process: simple_store('user.settings.fftf_opt_in', {validate: validate.boolean}),
 	},
 	restart: {
@@ -507,7 +502,7 @@ var default_steps = {
 				var update_user = util.object.set(user, 'settings.phone', username.username);
 				user_model.update(user.id, update_user);
 			}
-			return Promise.resolve({next: 'per_state'});
+			return {next: 'per_state'};
 		},
 		process: simple_store('user.settings.phone', {validate: validate.phone})
 	},
