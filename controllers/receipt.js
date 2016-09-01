@@ -59,7 +59,7 @@ var create = function(req, res)
         bot_model.next(user.id, updated_converstation);
 
         if (status !== 'success') {
-            resutil.error(res, 'Oh no!');
+            resutil.send(res, 'bummer');
             return;
         }
 
