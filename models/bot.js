@@ -316,8 +316,12 @@ var default_steps = {
 			}
 
 			var submission;
+			var body = {
+			    	user: user,
+			    	callback_url: config.app.url + '/receipt/'+user.username
+			    };
 
-			return submission_model.create(user.id, conversation.id)
+			return submission_model.create(user.id, conversation.id, url, body)
 				.then(function(_submission) {
 					submission = _submission;
 
@@ -325,10 +329,7 @@ var default_steps = {
 					var form_submit = {
 					    method: 'POST',
 					    uri: url,
-					    body: {
-					    	user: user,
-					    	callback_url: config.app.url + '/receipt/'+user.username
-					    },
+					    body: body,
 					    json: true 
 					};
 					return request(form_submit);
@@ -528,6 +529,63 @@ var default_steps = {
 	ineligible: {
 		process: simple_store('user.settings.ineligible', {validate: validate.always_true})
 	},
+
+	// JL NOTE ~ added per state questions for illinois but not yet to form
+	has_previous_address: {
+		name: 'has_previous_address',
+		msg: l10n('prompt_has_previous_address'),
+		process: function(body, user) {
+			var next = 'per_state';
+
+			if (language.is_yes(body)) {
+				var update_user = util.object.set(user, 'settings.has_previous_address', true);
+				var next = 'previous_address';
+			} else {
+				var update_user = util.object.set(user, 'settings.has_previous_address', false);
+			}
+
+			return user_model.update(user.id, update_user).then(function() {;
+				return Promise.resolve({next: next})
+			});
+		},
+	},
+
+	previous_address: {
+		name: 'previous_address',
+		msg: l10n('prompt_previous_address'),
+		process: simple_store('user.settings.previous_address'),
+		next: 'per_state'
+	},
+
+	has_previous_name: {
+		name: 'has_previous_name',
+		msg: l10n('prompt_has_previous_name'),
+		process: function(body, user) {
+			var next = 'per_state';
+
+			if (language.is_yes(body)) {
+				var update_user = util.object.set(user, 'settings.has_previous_name', true);
+				var next = 'previous_name';
+			} else {
+				var update_user = util.object.set(user, 'settings.has_previous_name', false);
+			}
+
+			return user_model.update(user.id, update_user).then(function() {;
+				return Promise.resolve({next: next})
+			});
+		},
+	},
+
+	previous_name: {
+		name: 'previous_name',
+		msg: l10n('prompt_previous_name'),
+		process: simple_store('user.settings.previous_name'),
+		next: 'per_state'
+	},
+
+
+
+
 };
 
 function get_chain(type) {
