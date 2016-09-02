@@ -4,6 +4,7 @@ var db = require('../lib/db');
 var convo_model = require('./conversation');
 var submission_model = require('./submission');
 var message_model = require('./message');
+var facebook_model = require('./facebook');
 var user_model = require('./user');
 var error = require('../lib/error');
 var util = require('../lib/util');
@@ -222,12 +223,41 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			var state = util.object.get(user, 'settings.state');
 			var disclosure = us_election.state_confirmation_disclosures[state].text;
-			return {
-				msg: l10n('prompt_ovr_disclosure', conversation.locale)+': "'+disclosure+'"',
+			var full_disclosure = l10n('prompt_ovr_disclosure', conversation.locale)+': "'+disclosure+'"';
+			var res = {
 				next: 'confirm_ovr_disclosure',
 				advance: true,
 				delay: true
 			}
+
+			if (conversation.type != 'fb') {
+				res.msg = full_disclosure;
+			} else {
+
+				// Facebook messenger doesn't support messages > 320 characters.
+				// We need to split this up into chunks and send separate messages
+				var chunks = util.splitter(full_disclosure, 318);
+
+				var sendChunk = function(chunk, delay) {
+					setTimeout(function() {
+						facebook_model.message(user.username, chunk);
+					}, delay);
+				}
+
+				for (var i=0; i<chunks.length; i++) {
+					var chunk = chunks[i];
+
+					if (i != 0)
+						chunk = '…' + chunk;
+
+					if (i < chunks.length - 1)
+						chunk = chunk + '…';
+
+					sendChunk(chunk, i*250);
+				}
+			}
+
+			return res;
 		}
 	},
 	confirm_ovr_disclosure: {
@@ -391,10 +421,10 @@ var default_steps = {
 
 			if (form_type != 'NVRA') {
 				// registration complete online, no extra instructions
-				return {msg: l10n('msg_complete_ovr', conversation.locale), next: 'share'};
+				return {msg: l10n('msg_complete_ovr', conversation.locale), next: 'share', delay: true};
 			} else {
 				// they'll get a PDF, special instructions
-				return {msg: l10n('msg_complete_pdf', conversation.locale), next: 'share'};
+				return {msg: l10n('msg_complete_pdf', conversation.locale), next: 'share', delay: true};
 			}
 		},
 		advance: true,
@@ -439,7 +469,29 @@ var default_steps = {
 		}
 	},
 	share: {
-		process: function() { return Promise.resolve({'next': 'fftf_opt_in', delay: true})},
+		pre_process: function(action, conversation, user) {
+
+			res = {'next': 'fftf_opt_in'};
+
+			// Send a pretty share button if this is a Facebook thread			
+			if (conversation.type == 'fb') {
+				facebook_model.buttons(
+					user.username,
+					l10n('msg_share_facebook_messenger', conversation.locale),
+					[
+						{
+							type: 'web_url',
+							url: 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffftf.io%2Ff%2F7a1836',
+							title: l10n('button_share', conversation.locale)
+						}
+					]
+				);
+			} else {
+				res.msg = l10n('msg_share', conversation.locale);				
+			}
+			return res;
+		},
+		process: function() { return Promise.resolve({'next': 'fftf_opt_in'})},
 		advance: true,
 	},
 	fftf_opt_in: {
