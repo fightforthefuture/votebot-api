@@ -4,6 +4,7 @@ var db = require('../lib/db');
 var convo_model = require('./conversation');
 var submission_model = require('./submission');
 var message_model = require('./message');
+var facebook_model = require('./facebook');
 var user_model = require('./user');
 var error = require('../lib/error');
 var util = require('../lib/util');
@@ -222,12 +223,34 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			var state = util.object.get(user, 'settings.state');
 			var disclosure = us_election.state_confirmation_disclosures[state].text;
-			return {
-				msg: l10n('prompt_ovr_disclosure', conversation.locale)+': "'+disclosure+'"',
+			var full_disclosure = l10n('prompt_ovr_disclosure', conversation.locale)+': "'+disclosure+'"';
+			var res = {
 				next: 'confirm_ovr_disclosure',
 				advance: true,
 				delay: true
 			}
+
+			if (conversation.type != 'fb') {
+				res.msg = full_disclosure;
+			} else {
+
+				// Facebook messenger doesn't support messages > 320 characters.
+				// We need to split this up into chunks and send separate messages
+				var chunks = full_disclosure.match(/(.|[\r\n]){1,319}/g);
+				
+				for (var i=0; i<chunks.length; i++) {
+					if (i == 0)
+						var chunk = chunks[i] + '…';
+					else
+						var chunk = '…' + chunks[i];
+
+					setTimeout(function() {
+						facebook_model.message(user.username, chunk);
+					}, i*250);
+				}
+			}
+
+			return res;
 		}
 	},
 	confirm_ovr_disclosure: {
