@@ -433,11 +433,19 @@ var default_chain_steps = [
 		admin_order: 47
 	},
 	{
+		name: 'change_state',
+		msg: '[[prompt_change_state]]',
+		next: 'per_state',
+		errormsg: '',
+		admin_special: true,
+		admin_order: 48
+	},
+	{
 		name: 'fftf_opt_in',
 		msg: '[[prompt_fftf_opt_in]]',
 		errormsg: '',
 		next: 'fftf_opt_in_thanks',
-		admin_order: 48,
+		admin_order: 49,
 	},
 	{
 		name: 'fftf_opt_in_thanks',
@@ -445,7 +453,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: '(final)',
 		final: true,
-		admin_order: 49,
+		admin_order: 50,
 	},
 	{
 		name: 'ineligible',
@@ -453,7 +461,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'restart', 
 		admin_special: true,
-		admin_order: 50,
+		admin_order: 51,
 	},
 	
 ];
