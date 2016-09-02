@@ -465,6 +465,28 @@ var default_steps = {
 		}
 	},
 	share: {
+		pre_process: function(action, conversation, user) {
+
+			res = {'next': 'fftf_opt_in'};
+
+			// Send a pretty share button if this is a Facebook thread			
+			if (conversation.type == 'fb') {
+				facebook_model.buttons(
+					user.username,
+					l10n('msg_share_facebook_messenger', conversation.locale),
+					[
+						{
+							type: 'web_url',
+							url: 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffftf.io%2Ff%2F7a1836',
+							title: l10n('button_share', conversation.locale)
+						}
+					]
+				);
+			} else {
+				res.msg = l10n('msg_share', conversation.locale);				
+			}
+			return res;
+		},
 		process: function() { return Promise.resolve({'next': 'fftf_opt_in'})},
 		advance: true,
 	},

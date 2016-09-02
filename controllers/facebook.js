@@ -4,6 +4,7 @@ var model = require('../models/facebook');
 var log = require('../lib/logger');
 var error = require('../lib/error');
 var config = require('../config');
+var l10n = require('../lib/l10n');
 
 exports.hook = function(app)
 {
@@ -49,22 +50,22 @@ var postback = function(req, res)
 		case 'hi':
 			model.buttons(
 				username, 
-				'Hi, I\'m HelloVote! I can get you registered to vote with just a few messages. If you\'re already registered, I can help your friends!',
+				l10n('msg_intro_facebook_get_started'),
 				[
 					{
 						type: 'postback',
-						title: 'Register to vote',
+						title: l10n('button_register_to_vote'),
 						payload: 'start'
 					},
 					{
 						type: 'postback',
-						title: 'Register my friends',
+						title: l10n('button_register_my_friends'),
 						payload: 'register_friends',
 					},
 					{
 						type: 'web_url',
 						url: 'https://www.hellovote.org',
-						title: 'Learn more...'
+						title: l10n('button_learn_more')
 					}
 				]
 			);
@@ -74,12 +75,12 @@ var postback = function(req, res)
 		case 'register_friends':
 			model.buttons(
 				username,
-				'OK! I can get your friends registered to vote right from Facebook Messenger. Please click the button below to share me with your friends!',
+				l10n('prompt_facebook_get_started_share'),
 				[
 					{
 						type: 'web_url',
 						url: 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffftf.io%2Ff%2F7a1836',
-						title: 'Share HelloVote!'
+						title: l10n('button_share')
 					}
 				]
 			);

@@ -226,7 +226,8 @@ var default_chain_steps = [
 	},
 	{
 		name: 'share',
-		msg: '[[msg_share]]',
+		msg: '',
+		no_msg: true,
 		errormsg: '',
 		next: 'fftf_opt_in',
 		advance: true,
