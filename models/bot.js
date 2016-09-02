@@ -236,7 +236,7 @@ var default_steps = {
 
 				// Facebook messenger doesn't support messages > 320 characters.
 				// We need to split this up into chunks and send separate messages
-				var chunks = full_disclosure.match(/(.|[\r\n]){1,318}/g);
+				var chunks = util.splitter(full_disclosure, 318);
 
 				var sendChunk = function(chunk, delay) {
 					setTimeout(function() {
