@@ -1,9 +1,9 @@
 var resutil = require('../lib/resutil');
 var convo_model = require('../models/conversation');
+var model = require('../models/facebook');
 var log = require('../lib/logger');
 var error = require('../lib/error');
 var config = require('../config');
-var request = require('request');
 
 exports.hook = function(app)
 {
@@ -37,78 +37,53 @@ var postback = function(req, res)
 
 	var message = data.entry[0].messaging[0],
 	    sender = message.sender.id,
+	    username = 'Messenger:'+sender,
 		data = {
 			type: 'fb',
-			recipients: [{username: 'Messenger:'+sender}],
+			recipients: [{username: username}],
 			options: {start: 'intro_facebook'}
 		};
 
 	switch (message.postback.payload) {
 
 		case 'hi':
-			var message = {
-				uri: 'https://graph.facebook.com/v2.6/me/messages?access_token='+config.facebook.access_token,
-				method: 'POST',
-				json: {
-					recipient: {
-						id: sender
+			model.buttons(
+				username, 
+				'Hi, I\'m HelloVote! I can get you registered to vote with just a few messages. If you\'re already registered, I can help your friends!',
+				[
+					{
+						type: 'postback',
+						title: 'Register to vote',
+						payload: 'start'
 					},
-					message: {
-						attachment: {
-							type: 'template',
-							payload: {
-								template_type: 'button',
-								text: 'Hi, I\'m HelloVote! I can get you registered to vote with just a few messages. If you\'re already registered, I can help your friends!',
-								buttons: [
-									{
-										type: 'postback',
-										title: 'Register to vote',
-										payload: 'start'
-									},
-									{
-										type: 'postback',
-										title: 'Register my friends',
-										payload: 'register_friends',
-									},
-									{
-										type: 'web_url',
-										url: 'https://www.hellovote.org',
-										title: 'Learn more...'
-									}
-								]
-							}
-						}
+					{
+						type: 'postback',
+						title: 'Register my friends',
+						payload: 'register_friends',
+					},
+					{
+						type: 'web_url',
+						url: 'https://www.hellovote.org',
+						title: 'Learn more...'
 					}
-				}
-			}
-			return facebookMessage(res, message);
+				]
+			);
+			return resutil.send(res, 'yay');
 			break;
 
 		case 'register_friends':
-			var message = {
-				json: {
-					recipient: {
-						id: sender
-					},
-					message: {
-						attachment: {
-							type: 'template',
-							payload: {
-								template_type: 'button',
-								text: 'OK! I can get your friends registered to vote right from Facebook Messenger. Please click the button below to share me with your friends!',
-								buttons: [
-									{
-										type: 'web_url',
-										url: 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffftf.io%2Ff%2F7a1836',
-										title: 'Share HelloVote!'
-									}
-								]
-							}
-						}
+			model.buttons(
+				username,
+				'OK! I can get your friends registered to vote right from Facebook Messenger. Please click the button below to share me with your friends!',
+				[
+					{
+						type: 'web_url',
+						url: 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffftf.io%2Ff%2F7a1836',
+						title: 'Share HelloVote!'
 					}
-				}
-			}
-			return facebookMessage(res, message);
+				]
+			);
+			return resutil.send(res, 'yay');
 			break;
 
 		case 'start':
@@ -141,6 +116,6 @@ var facebookMessage = function(res, options) {
 			log.error('facebook: postback send error', error);
 			return resutil.error(res, 'Facebook postback error', error);
 		}
-		resutil.send(res, 'yay');
+		
 	});
 }

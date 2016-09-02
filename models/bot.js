@@ -387,10 +387,10 @@ var default_steps = {
 
 			if (form_type != 'VoteDotOrg') {
 				// registration complete online, no extra instructions
-				return {msg: l10n('msg_complete_ovr', conversation.locale), next: 'share'};
+				return {msg: l10n('msg_complete_ovr', conversation.locale), next: 'share', delay: true};
 			} else {
 				// they'll get a PDF, special instructions
-				return {msg: l10n('msg_complete_pdf', conversation.locale), next: 'share'};
+				return {msg: l10n('msg_complete_pdf', conversation.locale), next: 'share', delay: true};
 			}
 		},
 		advance: true,
@@ -435,7 +435,7 @@ var default_steps = {
 		}
 	},
 	share: {
-		process: function() { return Promise.resolve({'next': 'fftf_opt_in', delay: true})},
+		process: function() { return Promise.resolve({'next': 'fftf_opt_in'})},
 		advance: true,
 	},
 	fftf_opt_in: {
