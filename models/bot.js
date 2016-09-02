@@ -82,7 +82,7 @@ var default_steps = {
 				}
 
 				// and online registration deadlines
-				if (deadline_str = us_election.get_ovr_deadline(state)) {
+				if (deadline_str = us_election.get_ovr_deadline(state)['online']) {
 					var ovr_deadline = moment(deadline_str, 'YYYY-MM-DD');
 					var today = moment();
 					if (today.isAfter(ovr_deadline, 'day')) {
@@ -318,8 +318,7 @@ var default_steps = {
 			};
 
 			var state = util.object.get(user, 'settings.state');
-			var state_requirements = us_election.registration_requirements[us_states.abbr_to_name(state)] || {};
-			var state_deadline = state_requirements['Deadlines'] || {};
+			var state_deadline = us_election.get_ovr_deadline(state);
 			var failed_ovr = util.object.get(user, 'settings.failed_ovr');
 			if (us_election.state_required_questions[state] && !failed_ovr) {
 				log.info('bot: sending OVR submission...');
