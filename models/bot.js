@@ -42,12 +42,7 @@ var default_steps = {
 	intro: {
 		process: function() { return Promise.resolve({'next': 'first_name'})}
 	},
-	// JL NOTE ~ this step is not in any chain. It's initiated via Facebook messenger
 	intro_facebook: {
-		name: 'intro_facebook',
-		advance: true,
-		msg: l10n('msg_intro_facebook'),
-		next: 'first_name',
 		process: function() { return Promise.resolve({'next': 'first_name'})}
 	},
 	first_name: {
@@ -190,7 +185,6 @@ var default_steps = {
 				return {msg: l10n('prompt_email_for_pdf', conversation.locale)};
 			}
 		},
-		no_msg: true,
 		process: simple_store('user.settings.email', {validate: validate.email})
 	},
 	// this is a MAGICAL step. it never actually runs, but instead just
@@ -224,9 +218,7 @@ var default_steps = {
 			return next_default;
 		}
 	},
-	// JL NOTE ~ JL TODO ~ this step is not in any chain. Yet. It should be.
 	ovr_disclosure: {
-		name: 'ovr_disclosure',
 		pre_process: function(action, conversation, user) {
 			var state = util.object.get(user, 'settings.state');
 			var disclosure = us_election.state_confirmation_disclosures[state].text;
@@ -236,12 +228,9 @@ var default_steps = {
 				advance: true,
 				delay: true
 			}
-		},
-		no_msg: true,
+		}
 	},
-	// JL NOTE ~ JL TODO ~ this step is not in any chain. Yet. It should be.
 	confirm_ovr_disclosure: {
-		name: 'ovr_disclosure', // JL HACK ~ override the name to go back to the previous
 		pre_process: function(action, conversation, user) {
 			var state = util.object.get(user, 'settings.state');
 			var url = us_election.state_confirmation_disclosures[state].url;
@@ -264,7 +253,6 @@ var default_steps = {
 				store: store
 			});
 		},
-		no_msg: true,
 	},
 	confirm_name_address: {
 		// msg: 'The name and address we have for you is:\n {{first_name}} {{last_name}}, {{settings.address}} {{settings.city}} {{settings.state}}\n Is this correct?',
@@ -369,18 +357,12 @@ var default_steps = {
 			    });
 		},
 	},
-	// JL NOTE ~ this step is not in any chain. It doesn't really need to be.
 	processing: {
-		next: 'processing',
-		msg: l10n('msg_processing'),
 		process: function(body, user) {
 			return Promise.resolve({next: 'processing'});
 		}
 	},
 	processed: {
-		next: 'complete',
-		msg: '',
-		advance: true,
 		process: function(body, user) {
 			return Promise.resolve({
 				next: 'complete',
@@ -537,10 +519,7 @@ var default_steps = {
 		process: simple_store('user.settings.ineligible', {validate: validate.always_true})
 	},
 
-	// JL NOTE ~ added per state questions for illinois but not yet to form
 	has_previous_address: {
-		name: 'has_previous_address',
-		msg: l10n('prompt_has_previous_address'),
 		process: function(body, user) {
 			var next = 'per_state';
 
@@ -558,15 +537,10 @@ var default_steps = {
 	},
 
 	previous_address: {
-		name: 'previous_address',
-		msg: l10n('prompt_previous_address'),
 		process: simple_store('user.settings.previous_address'),
-		next: 'per_state'
 	},
 
 	has_previous_name: {
-		name: 'has_previous_name',
-		msg: l10n('prompt_has_previous_name'),
 		process: function(body, user) {
 			var next = 'per_state';
 
@@ -584,10 +558,7 @@ var default_steps = {
 	},
 
 	previous_name: {
-		name: 'previous_name',
-		msg: l10n('prompt_previous_name'),
 		process: simple_store('user.settings.previous_name'),
-		next: 'per_state'
 	},
 
 	has_separate_mailing_address: {
@@ -663,6 +634,10 @@ function get_chain_step(type, stepName) {
 		for (var key in step)
 			if (step.hasOwnProperty(key))
 				overridden_default[key] = step[key];
+
+		// JL HACK ~
+		if (stepName == 'confirm_ovr_disclosure')
+			overridden_default.name = 'ovr_disclosure';
 
 		return Promise.resolve(overridden_default);
 	});
@@ -742,7 +717,7 @@ var find_next_step = function(action, conversation, user)
 			var res = nextstep.pre_process(preserve_action, conversation, user);
 			// if our pre_process returns a "msg" key, then we should send it immediately
 			if (res && res.msg) {
-				message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
+				message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user, conversation.locale)});
 			}
 			if (res && res.next)
 				var processed_next = res.next;
@@ -756,7 +731,7 @@ var find_next_step = function(action, conversation, user)
 		if (nextstep.post_process) {
 			var res = nextstep.post_process(user, conversation);
 			if (res && res.msg) {
-				message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
+				message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user, conversation.locale)});
 			}
 			// note that if post_process returns a next key it will override the pre_process function's
 			if (res && res.next)
@@ -823,7 +798,7 @@ exports.start = function(type, to_user_id, options)
 					message_model.create(
 						config.bot.user_id,
 						conversation.id,
-						{ body: step.msg }
+						{ body: language.template(step.msg, null, conversation.locale) }
 					)
 					return conversation;
 				}).then(function(conversation) {
@@ -891,7 +866,7 @@ exports.next = function(user_id, conversation, message)
 				} else {
 					log.info('bot: prompt to restart');
 					var restart_msg = l10n('prompt_restart_after_complete', conversation.locale)
-					return message_model.create(config.bot.user_id, conversation.id, {body: language.template(restart_msg, user)});
+					return message_model.create(config.bot.user_id, conversation.id, {body: language.template(restart_msg, user, conversation.locale)});
 				}
 			}
 			
@@ -904,13 +879,13 @@ exports.next = function(user_id, conversation, message)
 					// if user wants out, let them
 					if(action.next == '_cancel') {
 						var stop_msg = l10n('msg_unsubscribed', conversation.locale);
-						message_model.create(config.bot.user_id, conversation.id, {body: stop_msg});
+						message_model.create(config.bot.user_id, conversation.id, {body: language.template(stop_msg, null, conversation.locale)});
 						if (user_model.use_notify(user.username)) { notify.delete_binding(user); }
 						return convo_model.close(conversation.id);
 					}
 					if(action.next == '_help') {
 						var help_msg = l10n('msg_help', conversation.locale);
-						message_model.create(config.bot.user_id, conversation.id, {body: help_msg});
+						message_model.create(config.bot.user_id, conversation.id, {body: language.template(help_msg, null, conversation.locale)});
 						// let user continue
 						action.next = action.prev; 
 					}
@@ -969,7 +944,7 @@ exports.next = function(user_id, conversation, message)
 							.then(function() {
 								var res = step.post_process(user, conversation);
 								if (res && res.msg) {
-									message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user)});
+									message_model.create(config.bot.user_id, conversation.id, {body: language.template(res.msg, user, conversation.locale)});
 								}
 								if (res && res.next) {
 									action.next = res.next;
@@ -999,7 +974,7 @@ exports.next = function(user_id, conversation, message)
 
 							// create/send the message from the next step in the convo chain
 							if (nextstep.msg && !nextstep.no_msg) {
-								return message_model.create(config.bot.user_id, conversation.id, {body: language.template(nextstep.msg, user)});
+								return message_model.create(config.bot.user_id, conversation.id, {body: language.template(nextstep.msg, user, conversation.locale)});
 							}
 						})
 						.then(function() {
@@ -1068,7 +1043,7 @@ exports.next = function(user_id, conversation, message)
 					}
 
 					if(message)
-						return message_model.create(config.bot.user_id, conversation.id, {body: message});
+						return message_model.create(config.bot.user_id, conversation.id, {body: language.template(message, user, conversation.locale)});
 				})
 				// error catching errors. ABORT
 				.catch(function(err) {
