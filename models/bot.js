@@ -77,7 +77,7 @@ var default_steps = {
 				}
 
 				// and online registration deadlines
-				if (deadline_str = us_election.get_ovr_deadline(state)) {
+				if (deadline_str = us_election.get_ovr_deadline(state)['online']) {
 					var ovr_deadline = moment(deadline_str, 'YYYY-MM-DD');
 					var today = moment();
 					if (today.isAfter(ovr_deadline, 'day')) {
@@ -292,7 +292,7 @@ var default_steps = {
 			*/
 		},
 		process: function(body, user, step, conversation) {
-			if (!config.app.submit_ovr_url || !config.app.submit_vote_dot_org_url) {
+			if (!config.app.submit_ovr_url || !config.app.submit_pdf_url) {
 				log.info('bot: no submit_url in config, skipping submit...');
 				return Promise.resolve({
 					next: 'complete',
@@ -306,20 +306,24 @@ var default_steps = {
 			};
 
 			var state = util.object.get(user, 'settings.state');
+			var state_deadline = us_election.get_ovr_deadline(state);
 			var failed_ovr = util.object.get(user, 'settings.failed_ovr');
 			if (us_election.state_required_questions[state] && !failed_ovr) {
 				log.info('bot: sending OVR submission...');
 				var url = config.app.submit_ovr_url;
+				var registration_deadline = state_deadline['online'];
 			} else {
-				log.info('bot: sending Vote.org submission...');
-				var url = config.app.submit_vote_dot_org_url;
+				log.info('bot: sending PDF submission...');
+				var url = config.app.submit_pdf_url;
+				var registration_deadline = state_deadline['mail-by'];
 			}
 
 			var submission;
 			var body = {
-			    	user: user,
-			    	callback_url: config.app.url + '/receipt/'+user.username
-			    };
+					user: user,
+					registration_deadline: registration_deadline,
+					callback_url: config.app.url + '/receipt/'+user.username
+				};
 
 			return submission_model.create(user.id, conversation.id, url, body)
 				.then(function(_submission) {
@@ -385,7 +389,7 @@ var default_steps = {
 			// send confirmation prompt dependent on user state
 			var form_type = util.object.get(user, 'settings.submit_form_type');
 
-			if (form_type != 'VoteDotOrg') {
+			if (form_type != 'NVRA') {
 				// registration complete online, no extra instructions
 				return {msg: l10n('msg_complete_ovr', conversation.locale), next: 'share'};
 			} else {
@@ -400,7 +404,7 @@ var default_steps = {
 	},
 	incomplete: {
 		pre_process: function(action, conversation, user) {
-			var failed = util.object.get(user, 'settings.failed_vote_dot_org');
+			var failed = util.object.get(user, 'settings.failed_pdf');
 			if (failed) {
 				var ref = util.object.get(user, 'settings.failure_reference');
 				return {
