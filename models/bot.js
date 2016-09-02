@@ -318,20 +318,25 @@ var default_steps = {
 			};
 
 			var state = util.object.get(user, 'settings.state');
+			var state_requirements = us_election.registration_requirements[us_states.abbr_to_name(state)] || {};
+			var state_deadline = state_requirements['Deadlines'] || {};
 			var failed_ovr = util.object.get(user, 'settings.failed_ovr');
 			if (us_election.state_required_questions[state] && !failed_ovr) {
 				log.info('bot: sending OVR submission...');
 				var url = config.app.submit_ovr_url;
+				var registration_deadline = state_deadline['online'];
 			} else {
 				log.info('bot: sending PDF submission...');
 				var url = config.app.submit_pdf_url;
+				var registration_deadline = state_deadline['mail-by'];
 			}
 
 			var submission;
 			var body = {
-			    	user: user,
-			    	callback_url: config.app.url + '/receipt/'+user.username
-			    };
+					user: user,
+					registration_deadline: registration_deadline,
+					callback_url: config.app.url + '/receipt/'+user.username
+				};
 
 			return submission_model.create(user.id, conversation.id, url, body)
 				.then(function(_submission) {
