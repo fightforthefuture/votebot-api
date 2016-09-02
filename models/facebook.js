@@ -1,5 +1,6 @@
 var Promise = require('bluebird');
 var rp = require('request-promise');
+var config = require('../config');
 
 var sendMessage = function(payload) {
 	payload.uri = 'https://graph.facebook.com/v2.6/me/messages?access_token='+config.facebook.access_token;
