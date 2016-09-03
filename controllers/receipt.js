@@ -16,8 +16,14 @@ var moment = require('moment-timezone');
 
 exports.hook = function(app)
 {
-    app.post('/receipt/:username', create); // TODO, secure with auth.key shared with votebot-forms
+    app.post('/receipt/:username', createDelay); // TODO, secure with auth.key shared with votebot-forms
 };
+
+var createDelay = function(req, res) {
+    setTimeout(function() {
+        create(req, res);
+    }, config.bot.advance_delay);
+}
 
 var create = function(req, res)
 {

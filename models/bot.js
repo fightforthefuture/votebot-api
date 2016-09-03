@@ -480,7 +480,7 @@ var default_steps = {
 
 			res = {
 				'next': 'fftf_opt_in',
-				'delay': 60000 // one minute lol
+				'delay': 10000
 			};
 
 			// Send a pretty share button if this is a Facebook thread			
