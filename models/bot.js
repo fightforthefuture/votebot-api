@@ -509,7 +509,10 @@ var default_steps = {
 		process: simple_store('user.settings.fftf_opt_in', {validate: validate.boolean}),
 	},
 	restart: {
-		process: simple_store('user.settings', {validate: validate.empty_object}),
+		process: simple_store('user.settings', {
+			validate: validate.empty_object,
+			advance: true
+		}),
 	},
 
 	// per-state questions
@@ -747,7 +750,11 @@ function simple_store(store, options)
 					log.info('bot: validated body: ', body, '; extra_store: ', extra_store);
 					extra_store || (extra_store = {});
 					extra_store[store] = body;
-					return {next: step.next, store: extra_store};
+					return {
+						next: step.next,
+						store: extra_store,
+						advance: options.advance ? true : false
+					};
 				});
 		}
 		return promise;
@@ -927,7 +934,7 @@ exports.next = function(user_id, conversation, message)
 			if(step.final)
 			{
 				log.info('bot: recv msg, but conversation finished');
-				if (validate.boolean(body)) {
+				if (language.is_yes(body)) {
 					log.info('bot: user wants to restart');
 					step = _restart;
 				} else {
