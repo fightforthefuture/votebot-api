@@ -35,3 +35,13 @@ exports.buttons = function(username, text, buttons) {
 	}
 	return sendMessage(message);
 }
+
+exports.message = function(username, text) {
+	var message = {
+		json: {
+			recipient: { id: username.replace('Messenger:', '')	},
+			message: { text: text }
+		}
+	}
+	return sendMessage(message);
+}

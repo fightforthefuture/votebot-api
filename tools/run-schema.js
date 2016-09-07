@@ -55,7 +55,7 @@ var default_chain_steps = [
 		msg: '[[msg_intro]]',
 		errormsg: '',
 		next: 'first_name',
-		advance: true,
+		advance: true,	// this only makes any difference in bot.start!
 		admin_order: 0,
 	},
 	{
@@ -63,7 +63,7 @@ var default_chain_steps = [
 		msg: '[[msg_intro_facebook]]',
 		errormsg: '',
 		next: 'first_name',
-		advance: true,
+		advance: true,	// this only makes any difference in bot.start!
 		admin_order: 1
 	},
 	{
@@ -178,7 +178,7 @@ var default_chain_steps = [
 		msg: '[[prompt_confirm_name_address]]',
 		errormsg: '[[error_confirm_name_address]]',
 		next: 'submit',
-		advance: true,
+		advance: false,
 		admin_order: 16,
 	},
 	{
@@ -201,7 +201,7 @@ var default_chain_steps = [
 	{
 		name: 'processed',
 		next: 'complete',
-		advance: true,
+		advance: false,
 		errormsg: '',
 		msg: '',
 		no_msg: true,
@@ -213,7 +213,7 @@ var default_chain_steps = [
 		msg: '[[msg_complete]]',
 		errormsg: '',
 		next: 'share', 
-		advance: true,
+		advance: false,
 		admin_order: 20,
 	},
 	{
@@ -226,10 +226,11 @@ var default_chain_steps = [
 	},
 	{
 		name: 'share',
-		msg: '[[msg_share]]',
+		msg: '',
+		no_msg: true,
 		errormsg: '',
 		next: 'fftf_opt_in',
-		advance: true,
+		advance: false,
 		admin_order: 22,
 	},
 	{

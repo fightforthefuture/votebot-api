@@ -5,7 +5,7 @@ var config = {
 	// the app website for votebot
 	app: {
 		url: 'https://votebot-api.herokuapp.com',
-		submit_vote_dot_org_url: 'https://votebot-forms.herokuapp.com/vote_dot_org',
+		submit_pdf_url: 'https://votebot-forms.herokuapp.com/pdf',
 		submit_ovr_url: 'https://votebot-forms.herokuapp.com/ovr',
 		admin_password: process.env.ADMIN_PASSWORD,
 		force_ssl: true
@@ -42,7 +42,7 @@ var config = {
 
 	bot: {
 		user_id: 1,
-		advance_delay: 2000 // ms between automatic message sending
+		advance_delay: 1500 // ms between automatic message sending
 							// adjust per twilio recommendation
 	},
 

@@ -4,6 +4,7 @@ var db = require('../lib/db');
 var convo_model = require('./conversation');
 var submission_model = require('./submission');
 var message_model = require('./message');
+var facebook_model = require('./facebook');
 var user_model = require('./user');
 var error = require('../lib/error');
 var util = require('../lib/util');
@@ -77,7 +78,7 @@ var default_steps = {
 				}
 
 				// and online registration deadlines
-				if (deadline_str = us_election.get_ovr_deadline(state)) {
+				if (deadline_str = us_election.get_ovr_deadline(state)['online']) {
 					var ovr_deadline = moment(deadline_str, 'YYYY-MM-DD');
 					var today = moment();
 					if (today.isAfter(ovr_deadline, 'day')) {
@@ -222,12 +223,41 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			var state = util.object.get(user, 'settings.state');
 			var disclosure = us_election.state_confirmation_disclosures[state].text;
-			return {
-				msg: l10n('prompt_ovr_disclosure', conversation.locale)+': "'+disclosure+'"',
+			var full_disclosure = l10n('prompt_ovr_disclosure', conversation.locale)+': "'+disclosure+'"';
+			var res = {
 				next: 'confirm_ovr_disclosure',
 				advance: true,
-				delay: true
+				delay: config.bot.advance_delay
 			}
+
+			if (conversation.type != 'fb') {
+				res.msg = full_disclosure;
+			} else {
+
+				// Facebook messenger doesn't support messages > 320 characters.
+				// We need to split this up into chunks and send separate messages
+				var chunks = util.splitter(full_disclosure, 318);
+
+				var sendChunk = function(chunk, delay) {
+					setTimeout(function() {
+						facebook_model.message(user.username, chunk);
+					}, delay);
+				}
+
+				for (var i=0; i<chunks.length; i++) {
+					var chunk = chunks[i];
+
+					if (i != 0)
+						chunk = '…' + chunk;
+
+					if (i < chunks.length - 1)
+						chunk = chunk + '…';
+
+					sendChunk(chunk, i*250);
+				}
+			}
+
+			return res;
 		}
 	},
 	confirm_ovr_disclosure: {
@@ -292,7 +322,7 @@ var default_steps = {
 			*/
 		},
 		process: function(body, user, step, conversation) {
-			if (!config.app.submit_ovr_url || !config.app.submit_vote_dot_org_url) {
+			if (!config.app.submit_ovr_url || !config.app.submit_pdf_url) {
 				log.info('bot: no submit_url in config, skipping submit...');
 				return Promise.resolve({
 					next: 'complete',
@@ -306,20 +336,24 @@ var default_steps = {
 			};
 
 			var state = util.object.get(user, 'settings.state');
+			var state_deadline = us_election.get_ovr_deadline(state);
 			var failed_ovr = util.object.get(user, 'settings.failed_ovr');
 			if (us_election.state_required_questions[state] && !failed_ovr) {
 				log.info('bot: sending OVR submission...');
 				var url = config.app.submit_ovr_url;
+				var registration_deadline = state_deadline['online'];
 			} else {
-				log.info('bot: sending Vote.org submission...');
-				var url = config.app.submit_vote_dot_org_url;
+				log.info('bot: sending PDF submission...');
+				var url = config.app.submit_pdf_url;
+				var registration_deadline = state_deadline['mail-by'];
 			}
 
 			var submission;
 			var body = {
-			    	user: user,
-			    	callback_url: config.app.url + '/receipt/'+user.username
-			    };
+					user: user,
+					registration_deadline: registration_deadline,
+					callback_url: config.app.url + '/receipt/'+user.username
+				};
 
 			return submission_model.create(user.id, conversation.id, url, body)
 				.then(function(_submission) {
@@ -385,22 +419,29 @@ var default_steps = {
 			// send confirmation prompt dependent on user state
 			var form_type = util.object.get(user, 'settings.submit_form_type');
 
-			if (form_type != 'VoteDotOrg') {
+			if (form_type != 'NVRA') {
 				// registration complete online, no extra instructions
-				return {msg: l10n('msg_complete_ovr', conversation.locale), next: 'share', delay: true};
+				return {
+					msg: l10n('msg_complete_ovr', conversation.locale),
+					next: 'share',
+					delay: config.bot.advance_delay
+				};
 			} else {
 				// they'll get a PDF, special instructions
-				return {msg: l10n('msg_complete_pdf', conversation.locale), next: 'share', delay: true};
+				return {
+					msg: l10n('msg_complete_pdf', conversation.locale),
+					next: 'share',
+					delay: config.bot.advance_delay
+				};
 			}
 		},
-		advance: true,
 		process: function(body, user) {
 			return Promise.resolve({next: 'share'});
 		}
 	},
 	incomplete: {
 		pre_process: function(action, conversation, user) {
-			var failed = util.object.get(user, 'settings.failed_vote_dot_org');
+			var failed = util.object.get(user, 'settings.failed_pdf');
 			if (failed) {
 				var ref = util.object.get(user, 'settings.failure_reference');
 				return {
@@ -435,14 +476,43 @@ var default_steps = {
 		}
 	},
 	share: {
-		process: function() { return Promise.resolve({'next': 'fftf_opt_in'})},
-		advance: true,
+		pre_process: function(action, conversation, user) {
+
+			res = {
+				'next': 'fftf_opt_in',
+				'delay': 10000
+			};
+
+			// Send a pretty share button if this is a Facebook thread			
+			if (conversation.type == 'fb') {
+				facebook_model.buttons(
+					user.username,
+					l10n('msg_share_facebook_messenger', conversation.locale),
+					[
+						{
+							type: 'web_url',
+							url: 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffftf.io%2Ff%2F7a1836',
+							title: l10n('button_share', conversation.locale)
+						}
+					]
+				);
+			} else {
+				res.msg = l10n('msg_share', conversation.locale);				
+			}
+			return res;
+		},
+		process: function() {
+			return Promise.resolve({'next': 'fftf_opt_in'})
+		},
 	},
 	fftf_opt_in: {
 		process: simple_store('user.settings.fftf_opt_in', {validate: validate.boolean}),
 	},
 	restart: {
-		process: simple_store('user.settings', {validate: validate.empty_object}),
+		process: simple_store('user.settings', {
+			validate: validate.empty_object,
+			advance: true
+		}),
 	},
 
 	// per-state questions
@@ -680,7 +750,11 @@ function simple_store(store, options)
 					log.info('bot: validated body: ', body, '; extra_store: ', extra_store);
 					extra_store || (extra_store = {});
 					extra_store[store] = body;
-					return {next: step.next, store: extra_store};
+					return {
+						next: step.next,
+						store: extra_store,
+						advance: options.advance ? true : false
+					};
 				});
 		}
 		return promise;
@@ -722,7 +796,7 @@ var find_next_step = function(action, conversation, user)
 			if (res && res.next)
 				var processed_next = res.next;
 			if (res && res.delay)
-				var processed_next_delay = true;
+				var processed_next_delay = res.delay;
 		}
 
 		// same for post_process
@@ -747,7 +821,7 @@ var find_next_step = function(action, conversation, user)
 			if (!processed_next_delay)
 				return find_next_step(next_action, conversation, user);
 			else
-				return Promise.delay(config.bot.advance_delay).then(function() {
+				return Promise.delay(processed_next_delay).then(function() {
 					return find_next_step(next_action, conversation, user);
 				});
 		} else {
@@ -860,7 +934,7 @@ exports.next = function(user_id, conversation, message)
 			if(step.final)
 			{
 				log.info('bot: recv msg, but conversation finished');
-				if (validate.boolean(body)) {
+				if (language.is_yes(body)) {
 					log.info('bot: user wants to restart');
 					step = _restart;
 				} else {
