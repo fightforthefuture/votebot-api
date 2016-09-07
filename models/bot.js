@@ -657,6 +657,13 @@ var default_steps = {
 		next: 'per_state'
 	},
 
+	change_state: {
+		name: 'change_state',
+		msg: l10n('change_state'),
+		process: simple_store('user.settings.change_state', {validate: validate.us_state}),
+		next: 'per_state'
+	},
+
 
 };
 
