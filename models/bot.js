@@ -227,7 +227,7 @@ var default_steps = {
 			var res = {
 				next: 'confirm_ovr_disclosure',
 				advance: true,
-				delay: true
+				delay: config.bot.advance_delay
 			}
 
 			if (conversation.type != 'fb') {
@@ -421,13 +421,20 @@ var default_steps = {
 
 			if (form_type != 'NVRA') {
 				// registration complete online, no extra instructions
-				return {msg: l10n('msg_complete_ovr', conversation.locale), next: 'share', delay: true};
+				return {
+					msg: l10n('msg_complete_ovr', conversation.locale),
+					next: 'share',
+					delay: config.bot.advance_delay
+				};
 			} else {
 				// they'll get a PDF, special instructions
-				return {msg: l10n('msg_complete_pdf', conversation.locale), next: 'share', delay: true};
+				return {
+					msg: l10n('msg_complete_pdf', conversation.locale),
+					next: 'share',
+					delay: config.bot.advance_delay
+				};
 			}
 		},
-		advance: true,
 		process: function(body, user) {
 			return Promise.resolve({next: 'share'});
 		}
@@ -471,7 +478,10 @@ var default_steps = {
 	share: {
 		pre_process: function(action, conversation, user) {
 
-			res = {'next': 'fftf_opt_in'};
+			res = {
+				'next': 'fftf_opt_in',
+				'delay': 10000
+			};
 
 			// Send a pretty share button if this is a Facebook thread			
 			if (conversation.type == 'fb') {
@@ -491,14 +501,18 @@ var default_steps = {
 			}
 			return res;
 		},
-		process: function() { return Promise.resolve({'next': 'fftf_opt_in'})},
-		advance: true,
+		process: function() {
+			return Promise.resolve({'next': 'fftf_opt_in'})
+		},
 	},
 	fftf_opt_in: {
 		process: simple_store('user.settings.fftf_opt_in', {validate: validate.boolean}),
 	},
 	restart: {
-		process: simple_store('user.settings', {validate: validate.empty_object}),
+		process: simple_store('user.settings', {
+			validate: validate.empty_object,
+			advance: true
+		}),
 	},
 
 	// per-state questions
@@ -736,7 +750,11 @@ function simple_store(store, options)
 					log.info('bot: validated body: ', body, '; extra_store: ', extra_store);
 					extra_store || (extra_store = {});
 					extra_store[store] = body;
-					return {next: step.next, store: extra_store};
+					return {
+						next: step.next,
+						store: extra_store,
+						advance: options.advance ? true : false
+					};
 				});
 		}
 		return promise;
@@ -778,7 +796,7 @@ var find_next_step = function(action, conversation, user)
 			if (res && res.next)
 				var processed_next = res.next;
 			if (res && res.delay)
-				var processed_next_delay = true;
+				var processed_next_delay = res.delay;
 		}
 
 		// same for post_process
@@ -803,7 +821,7 @@ var find_next_step = function(action, conversation, user)
 			if (!processed_next_delay)
 				return find_next_step(next_action, conversation, user);
 			else
-				return Promise.delay(config.bot.advance_delay).then(function() {
+				return Promise.delay(processed_next_delay).then(function() {
 					return find_next_step(next_action, conversation, user);
 				});
 		} else {
@@ -916,7 +934,7 @@ exports.next = function(user_id, conversation, message)
 			if(step.final)
 			{
 				log.info('bot: recv msg, but conversation finished');
-				if (validate.boolean(body)) {
+				if (language.is_yes(body)) {
 					log.info('bot: user wants to restart');
 					step = _restart;
 				} else {
