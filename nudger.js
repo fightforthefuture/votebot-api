@@ -51,8 +51,9 @@ var nudge = function(stack) {
             nudged: true
         })
     }).then(function(whatever) {
-        console.log(' - sending message to user: ', msg);
         var msg = l10n('prompt_nudge', conversation.locale);
+
+        console.log(' - sending message to user: ', msg);
         return message_model.create(config.bot.user_id, conversation.id, {body: msg})
     }).then(function(lol) {
         console.log(' - Proceeding to next conversation...');
