@@ -49,11 +49,15 @@ var default_steps = {
 	},
 	first_name: {
 		process: simple_store('user.first_name'),
-		process: function(body, user) {
+		process: function(body, user, step, conversation) {
 			if (body.indexOf('2') > -1) {
-				return Promise.resolve({
-					next: 'share'
-				});
+				// SHORT CUT
+				return convo_model.update(conversation.id, {complete: true})
+					.then(function(lol) {;
+						return Promise.resolve({
+							next: 'share'
+						});
+					});
 			} else {
 				return Promise.resolve({
 					next: 'last_name',
