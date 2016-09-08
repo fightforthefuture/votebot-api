@@ -564,7 +564,7 @@ var default_steps = {
 		process: simple_store('user.settings.ethnicity')
 	},
 	political_party: {
-		process: simple_store('user.settings.political_party')
+		process: simple_store('user.settings.political_party', {validate: validate.political_party})
 	},
 	disenfranchised: {
 		process: simple_store('user.settings.disenfranchised', {validate: validate.boolean_no})
