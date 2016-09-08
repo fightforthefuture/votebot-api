@@ -49,6 +49,10 @@ var create = function(req, res)
             var update_user = util.object.set(user, 'settings.submit_success', true);
             update_user = util.object.set(update_user, 'settings.submit_form_type', form_class);
             update_user = util.object.set(update_user, 'complete', true);
+
+            // also update the conversation to be complete
+            conversation_model.update(conversation.id, {complete: true});
+
             goto_step = 'processed';
         } else if (form_class == "NVRA") {
             var update_user = util.object.set(user, 'settings.failed_pdf', true);
