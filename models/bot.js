@@ -438,14 +438,14 @@ var default_steps = {
 				return {
 					msg: l10n('msg_complete_ovr', conversation.locale),
 					next: 'share',
-					delay: config.bot.advance_delay
+					delay: config.bot.advance_delay * 2
 				};
 			} else {
 				// they'll get a PDF, special instructions
 				return {
 					msg: l10n('msg_complete_pdf', conversation.locale),
 					next: 'share',
-					delay: config.bot.advance_delay
+					delay: config.bot.advance_delay * 2
 				};
 			}
 		},
