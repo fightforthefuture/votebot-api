@@ -92,6 +92,7 @@ exports.create = function(user_id, data)
 
 exports.update = function(conversation_id, data)
 {
+	data.updated = db.now(); // always set the update date
 	return db.update('conversations', conversation_id, data);
 };
 

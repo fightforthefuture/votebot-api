@@ -6,6 +6,7 @@ var submission_model = require('./submission');
 var message_model = require('./message');
 var facebook_model = require('./facebook');
 var user_model = require('./user');
+var attrition_model = require('./attrition');
 var error = require('../lib/error');
 var util = require('../lib/util');
 var language = require('../lib/language');
@@ -438,14 +439,14 @@ var default_steps = {
 				return {
 					msg: l10n('msg_complete_ovr', conversation.locale),
 					next: 'share',
-					delay: config.bot.advance_delay * 2
+					delay: config.bot.advance_delay * 4
 				};
 			} else {
 				// they'll get a PDF, special instructions
 				return {
 					msg: l10n('msg_complete_pdf', conversation.locale),
 					next: 'share',
-					delay: config.bot.advance_delay * 2
+					delay: config.bot.advance_delay * 4
 				};
 			}
 		},
@@ -692,6 +693,25 @@ var default_steps = {
 		process: simple_store('user.settings.change_state', {validate: validate.us_state}),
 		next: 'per_state'
 	},
+
+	nudge: {
+		name: 'nudge',
+		msg: l10n('prompt_nudge'),
+		process: function(body, user, step, conversation) {
+			var next = '_cancel';
+			if (language.is_yes(body)) {
+				next = conversation.state.back;
+				attrition_model.update(
+					conversation.state.attrition_log_id,
+					{
+						recaptured: true
+					}
+				);
+			}
+			return Promise.resolve({next: next});
+		},
+		next: 'incomplete'
+	}
 
 
 };
