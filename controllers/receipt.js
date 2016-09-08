@@ -82,7 +82,7 @@ var create = function(req, res)
             // generic receipt
             msg_parts.push("Your receipt is attached:");
             msg_parts.push("- Name: {{first_name}} {{last_name}}");
-            msg_parts.push("- Address: {{settings.address}} {{settings.city}} {{settings.state}}");
+            msg_parts.push("- Address: {{settings.address}} {{settings.address_unit}} {{settings.city}} {{settings.state}}");
             if (user.settings.state_id_number) { msg_parts.push("- State ID: {{settings.state_id_number}}"); }
             if (user.settings.ssn_last4) { msg_parts.push("- SSN: ****"); }
         }
