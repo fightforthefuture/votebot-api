@@ -18,6 +18,7 @@ var schema = [
 	'create table if not exists chains_steps (id serial primary key, chain_id bigint not null, name varchar(64) not null, msg text not null, no_msg boolean default false, errormsg text not null, next varchar(64) not null, advance boolean default false, final boolean default false, entries int default 0, exits int default 0, admin_order int default 0, admin_special boolean default false, created timestamp);',
 	'create table if not exists validation_errors (ts timestamp default current_timestamp, level varchar, msg varchar, meta jsonb);',
 	'create table if not exists submissions (id serial primary key, user_id bigint not null, conversation_id bigint not null, form_stuffer_reference varchar(255), form_stuffer_response json, form_stuffer_log_id bigint, status varchar(64) not null default \'pending\', created timestamp, ended timestamp);',
+	'create table if not exists slack_credentials (id serial primary key, team_name varchar(255), team_id varchar(255) not null, access_token varchar(255) not null, webhook_url varchar(255) not null, webhook_channel varchar(64) not null, config_url varchar(255) not null, bot_user_id varchar(255) not null, bot_access_token varchar(255) not null, created timestamp);',
 
 	// index our tables
 	'create unique index if not exists users_username on users (username);',
@@ -34,6 +35,7 @@ var schema = [
 	'create index if not exists submissions_form_stuffer_log_id on submissions (form_stuffer_log_id);',
 	'create index if not exists validation_errors_meta_user_id on validation_errors ((meta->>\'user_id\'));',
 	'create index if not exists validation_errors_ts on validation_errors (ts desc);',
+	'create index if not exists slack_credentials_team_id on slack_credentials (team_id);',
 
 	// create our first user (VoteBot) and set our auto-inc user id
 	'insert into users (id, username, type, first_name, last_name, created) values ('+config.bot.user_id+', \''+bot_number+'\', \'sms\', \'VoteBot\', \'\', now()) on conflict (id) do update set username = \''+bot_number+'\'',

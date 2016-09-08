@@ -65,6 +65,12 @@ var config = {
 		access_token: process.env.FACEBOOK_ACCESS_TOKEN
     },
 
+    slack: {
+		verify_token: process.env.SLACK_VERIFY_TOKEN,
+		client_secret: process.env.SLACK_CLIENT_SECRET,
+		client_id: process.env.SLACK_CLIENT_ID
+    },
+
 	session: {
 		secret: process.env.SESSION_SECRET
 	},

@@ -47,7 +47,21 @@ var default_steps = {
 		process: function() { return Promise.resolve({'next': 'first_name'})}
 	},
 	first_name: {
-		process: simple_store('user.first_name')
+		process: simple_store('user.first_name'),
+		process: function(body, user) {
+			if (body.indexOf('2') > -1) {
+				return Promise.resolve({
+					next: 'share'
+				});
+			} else {
+				return Promise.resolve({
+					next: 'last_name',
+					store: {
+						'user.first_name': body.trim()
+					}
+				});
+			}
+		},
 	},
 	last_name: {
 		process: simple_store('user.last_name')
@@ -479,8 +493,8 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 
 			res = {
-				'next': 'fftf_opt_in',
-				'delay': 10000
+				'next': 'share_sms',
+				'delay': config.bot.advance_delay
 			};
 
 			// Send a pretty share button if this is a Facebook thread			
@@ -499,6 +513,21 @@ var default_steps = {
 			} else {
 				res.msg = l10n('msg_share', conversation.locale);				
 			}
+			return res;
+		},
+		process: function() {
+			return Promise.resolve({'next': 'share_sms'})
+		},
+	},
+	share_sms: {
+		name: 'share_sms',
+		pre_process: function(action, conversation, user) {
+
+			res = {
+				'next': 'fftf_opt_in',
+				'delay': 10000,
+				'msg': l10n('msg_share_sms', conversation.locale)
+			};
 			return res;
 		},
 		process: function() {
