@@ -536,7 +536,7 @@ var default_steps = {
 			return res;
 		},
 		process: function() {
-			return Promise.resolve({'next': 'fftf_opt_in'})
+			return Promise.resolve({'next': 'restart'})
 		},
 	},
 	fftf_opt_in: {
