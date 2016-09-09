@@ -529,7 +529,7 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 
 			res = {
-				'next': 'fftf_opt_in',
+				'next': 'restart', // was fftf_opt_in, disable until list sharing resolved
 				'delay': 10000,
 				'msg': l10n('msg_share_sms', conversation.locale)
 			};

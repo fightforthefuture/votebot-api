@@ -233,7 +233,7 @@ var default_chain_steps = [
 		msg: '',
 		no_msg: true,
 		errormsg: '',
-		next: 'fftf_opt_in',
+		next: 'restart',
 		advance: false,
 		admin_order: 22,
 	},
