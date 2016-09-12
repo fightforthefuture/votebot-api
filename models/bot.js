@@ -4,6 +4,7 @@ var db = require('../lib/db');
 var convo_model = require('./conversation');
 var submission_model = require('./submission');
 var message_model = require('./message');
+var existing_registration = require('./existing_registration');
 var facebook_model = require('./facebook');
 var user_model = require('./user');
 var attrition_model = require('./attrition');
@@ -204,7 +205,20 @@ var default_steps = {
 				return {msg: l10n('prompt_email_for_pdf', conversation.locale)};
 			}
 		},
-		process: simple_store('user.settings.email', {validate: validate.email})
+		process: simple_store('user.settings.email', {validate: validate.email, advance: true})
+	},
+	check_existing_registration: {
+		pre_process: function(action, conversation, user) {
+			return existing_registration.verify(user).then(function(registration_status) {
+				if (registration_status && registration_status[0]) {
+					return {msg: l10n('msg_already_registered', conversation.locale), next: 'share'};
+				} else {
+					// msg here?
+					return {next: 'per_state'};
+				}
+			});
+		},
+		process: function(body, user) {}
 	},
 	// this is a MAGICAL step. it never actually runs, but instead just
 	// points to other steps until it runs out of per-state questions to
