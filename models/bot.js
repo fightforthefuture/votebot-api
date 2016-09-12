@@ -315,30 +315,6 @@ var default_steps = {
 		}
 	},
 	submit: {
-		pre_process: function(action, conversation, user) {
-			// check to ensure user has all required fields before submitting
-			//
-			// JL NOTE ~ How would this ever work?
-			// The validate.voter_registration_complete method is not synchronous,
-			// but we are treating it as such.
-			//
-			// Also, it tries to update the user with a "response.errors" object.
-			// There is no such object in the scope of this method. It appears to
-			// be duplicate code from the submit.process step. Disabling because it
-			// does not pass my mental sanity check. Plus I'm changing the format
-			// of the missing_fields object anyway.
-			//
-			/*
-			var missing_fields = validate.voter_registration_complete(user.settings, conversation.locale);
-			if (missing_fields.length) {
-				// incomplete, re-query missing fields
-				log.error('bot: submit: missing fields! ', missing_fields, {step: 'submit', username: user.username});
-				update_user = util.object.set(user, 'settings.missing_fields', response.errors);
-				user_model.update(user.id, update_user);
-				return {next: 'incomplete'};
-			}
-			*/
-		},
 		process: function(body, user, step, conversation) {
 			if (!config.app.submit_ovr_url || !config.app.submit_pdf_url) {
 				log.info('bot: no submit_url in config, skipping submit...');
