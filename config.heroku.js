@@ -1,14 +1,14 @@
 var config = {
-	environment: 'hellovote-production',
+	environment: process.env.APP_ENVIRONMENT,
 	port: process.env.PORT,
 
 	// the app website for votebot
 	app: {
-		url: 'https://votebot-api.herokuapp.com',
-		submit_pdf_url: 'https://votebot-forms.herokuapp.com/pdf',
-		submit_ovr_url: 'https://votebot-forms.herokuapp.com/ovr',
+		url: process.env.URL,
+		submit_pdf_url: process.env.SUBMIT_PDF_URL,
+		submit_ovr_url: process.env.SUBMIT_OVR_URL,
 		admin_password: process.env.ADMIN_PASSWORD,
-		force_ssl: true
+		force_ssl: process.env.FORCE_SSL ? true : false
 	},
 
 	// app-wide logging
@@ -26,7 +26,7 @@ var config = {
 		sparkpost: {
 			api_key: process.env.SPARKPOST_API_KEY
 		},
-		from: 'info@hellovote.org',
+		from: process.env.MAIL_FROM_ADDRESS,
 	},
 
 	// parameters for next election

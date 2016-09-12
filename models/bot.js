@@ -48,7 +48,6 @@ var default_steps = {
 		process: function() { return Promise.resolve({'next': 'first_name'})}
 	},
 	first_name: {
-		process: simple_store('user.first_name'),
 		process: function(body, user, step, conversation) {
 			if (body.indexOf('2') > -1) {
 				// SHORT CUT
@@ -497,7 +496,7 @@ var default_steps = {
 	share: {
 		pre_process: function(action, conversation, user) {
 
-			res = {
+			var res = {
 				'next': 'share_sms',
 				'delay': config.bot.advance_delay
 			};
@@ -527,17 +526,31 @@ var default_steps = {
 	share_sms: {
 		name: 'share_sms',
 		pre_process: function(action, conversation, user) {
-
-			res = {
-				'next': 'restart', // was fftf_opt_in, disable until list sharing resolved
-				'delay': 10000,
-				'msg': l10n('msg_share_sms', conversation.locale)
-			};
+			if (conversation.type == 'fb') {
+				var res = {
+					'next': 'final_tmp' // don't send sms message for FB
+				}
+			} else {
+				var res = {
+					'next': 'final_tmp', // was fftf_opt_in, disable until list sharing resolved
+					// 'delay': 10000, // re-enable this once fftf_opt_in thing is figured out
+					'msg': l10n('msg_share_sms', conversation.locale)
+				};
+			}
 			return res;
 		},
 		process: function() {
-			return Promise.resolve({'next': 'restart'})
+			return Promise.resolve({'next': 'final_tmp'})
 		},
+	},
+	// JL NOTE ~ put this in as the final instead of the sharing prompt
+	final_tmp: {
+		name: 'final_tmp',
+		msg: '',
+		no_msg: true,
+		errormsg: '',
+		next: '(final)',
+		final: true
 	},
 	fftf_opt_in: {
 		process: simple_store('user.settings.fftf_opt_in', {validate: validate.boolean}),
