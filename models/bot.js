@@ -85,12 +85,13 @@ var default_steps = {
 	},
 	state: {
 		pre_process: function(action, conversation, user) {
-			// if(util.object.get(user, 'settings.state')) return {next: 'address'};
-			var state = util.object.get(user, 'settings.state');
-
+			return this.check_eligibility(user);
+		},
+		check_eligibility: function(user) {
 			// check state eligibility requirements
+			var state = util.object.get(user, 'settings.state');
 			if (state) {
-				if (end_msg = us_election.states_without_ovr[state]) {
+				if (end_msg = us_election.states_without_ovr[state.toUpperCase()]) {
 					if (user_model.use_notify(user.username)) { notify.replace_tags(user, ['votebot-started'], ['votebot-completed']); }
 					return {msg: end_msg, next: 'share'}
 				}
@@ -104,11 +105,14 @@ var default_steps = {
 					}
 				}
 
-				return {next: 'address'}
+				return {next: 'address'};
 			}
-			return {}
 		},
-		process: simple_store('user.settings.state', {validate: validate.state})
+		process: simple_store('user.settings.state', {validate: validate.state}),
+		post_process: function(user, conversation) {
+			// need to also check state eligibility here, in case we didn't short circuit with pre_process
+			return this.check_eligibility(user);
+		},
 	},
 	address: {
 		pre_process: function(action, conversation, user) {
