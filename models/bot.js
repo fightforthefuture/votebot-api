@@ -48,7 +48,6 @@ var default_steps = {
 		process: function() { return Promise.resolve({'next': 'first_name'})}
 	},
 	first_name: {
-		process: simple_store('user.first_name'),
 		process: function(body, user, step, conversation) {
 			if (body.indexOf('2') > -1) {
 				// SHORT CUT
