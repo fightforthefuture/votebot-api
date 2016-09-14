@@ -17,8 +17,6 @@ var moment = require('moment-timezone');
 exports.hook = function(app)
 {
     app.post('/receipt/:username', createDelay); // TODO, secure with auth.key shared with votebot-forms
-    app.get('/receipt/test_nvra/:email', testNVRAReceipt);
-    app.get('/receipt/test_ovr/:email', testOVRReceipt);
 };
 
 var createDelay = function(req, res) {
@@ -101,48 +99,6 @@ var create = function(req, res)
         }
     });
 };
-
-var testNVRAReceipt = function(req, res)
-{
-    log.info('receipt: testNVRAReceipt: ', req.params.email);
-
-    email.sendNVRAReceipt(
-        {
-            first_name: 'Jeff',
-            settings: {
-                state: 'CA',
-                email: req.params.email
-            }
-        },
-        'https://hellovote.s3.amazonaws.com/print/bdf26f48-3380-48a2-bcf6-d09b7d8da89e.pdf?Signature=o9qwTo2yH0HccLxp6fOq%2BBKAgnw%3D&Expires=1476054566&AWSAccessKeyId=AKIAJISCIGLASOEKBQUQ&response-content-disposition=attachment%3B%20filename%3D%22hellovote-registration-form.pdf%22'
-    );
-
-    resutil.send(res, "ok");
-}
-
-var testOVRReceipt = function(req, res)
-{
-    log.info('receipt: testOVRReceipt: ', req.params.email);
-
-    email.sendOVRReceipt(
-        {
-            first_name: 'Jeff',
-            last_name: 'Lyon',
-            settings: {
-                address: '351 Western Dr',
-                address_unit: 'K',
-                city: 'Santa Cruz',
-                state: 'CA',
-                zip: '95051',
-                email: req.params.email,
-                state_id_number: 69,
-                ssn: 69
-            }
-        }
-    );
-
-    resutil.send(res, "ok");
-}
 
 // smarty streets gives us tz like "Pacific", so we have to add links to proper tz names
 moment.tz.link([
