@@ -1,0 +1,90 @@
+<table border="0" cellpadding="10" cellspacing="0" style="border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+  <tr>
+    <td valign="top" style="border-collapse: collapse; background-color: #FFFFFF; padding:10px 10px 40px;">
+      <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+        <tr>
+          <td valign="top" style="border-collapse: collapse;" width="600">
+            <div style="color: #333;font-family: Arial;font-size: 14px;line-height: 150%;text-align: left;">
+
+<p>{{ user.first_name }},</p>
+
+<p>
+Thank you for registering to vote with HelloVote!
+</p>
+
+<p>
+We just submitted your information to the
+<a href="{{ ovr_site_url }}">{{ state_name }} online voter registration system</a>.
+</p>
+
+<p>
+  Receipt follows:
+</p>
+<pre style="font-family: 'Courier New', 'Courier', mono;">
+• NAME:      {{ user.first_name}} {{ user.last_name }}
+• ADDRESS:   {{ user.settings.address}} {% if user.settings.address_unit %}Apt {{ user.settings.address_unit }}{% endif %}
+             {{ user.settings.city }} {{ user.settings.state }}, {{ user.settings.zip }}{% if user.settings.state_id_number %}
+• STATE ID:  *********{% endif %}
+• SUBMITTED: {{ friendly_timestamp }} 
+</pre>
+
+<p>
+If you don't hear from {{ state_name }}, or for additional certainty that your
+registration will be processed, you can register by mail, or directly using the
+{{ state_name }} site.
+</p>
+
+<p>
+<strong>
+<a href="{{ ovr_site_url }}">
+  Click here for the {{ state_name }} online voter registration site
+</a>
+</strong>
+</p>
+
+<p>
+<strong>
+<a href="http://www.eac.gov/assets/1/Documents/Federal%20Voter%20Registration_6-25-14_ENG.pdf">
+  Click here to print your voter registration form to sign and mail
+</a>
+</strong>
+</p>
+
+<p>
+Finally, this is also very important: do **not** assume your registration was
+successful until you hear from, or confirm with, your state.
+<a href="{{ verify_url }}">You can look up your
+status here.</a> (It may take days or weeks to appear, so keep checking, and
+contact your state directly if you can’t confirm.
+State systems and our software may fail, and your vote is too precious to risk.)
+{{ deadline_text }}.
+</p>
+
+<p>
+Oh yeah, and want to help others vote too?
+</p>
+
+<p>
+<a style="display:inline-block; padding: 5px 20px; font-size:18px; background: #3b5998; color: #fff; text-decoration: none; font-weight: bold; margin: 0px 10px; border-radius: 3px; " href="https://www.hello.vote/facebook">Share</a>
+<a style="display:inline-block; padding: 5px 15px; font-size:18px; background: #55acee; color: #fff; text-decoration: none; font-weight: bold; margin: 0px 10px; border-radius: 3px; " href="https://www.hello.vote/twitter">Tweet</a>
+</p>
+
+<p>
+Thank you for using HelloVote!
+</p>
+
+<p>
+Sincerely,
+</p>
+
+<p>
+&mdash;HelloVote
+</p>
+
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>

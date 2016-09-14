@@ -17,6 +17,8 @@ var moment = require('moment-timezone');
 exports.hook = function(app)
 {
     app.post('/receipt/:username', createDelay); // TODO, secure with auth.key shared with votebot-forms
+    app.get('/receipt/test_nvra/:email', testNVRAReceipt);
+    app.get('/receipt/test_ovr/:email', testOVRReceipt);
 };
 
 var createDelay = function(req, res) {
@@ -79,36 +81,68 @@ var create = function(req, res)
         ]
 
         if (user.settings.submit_form_type === 'NVRA') {
-            // include link to PDF download
-            msg_parts.push("Your voter registration form is attached. Make sure to print, sign and mail it today!");
-            msg_parts.push("<a href='"+pdf_url+"'>PRINT ME</a>");
+            return email.sendNVRAReceipt(user, pdf_url)
+                .then(function(emailResult) {
+                    resutil.send(res, emailResult);
+                })
+                .catch(function(err) {
+                    resutil.error(res, 'Problem sending email receipt', err);
+                    log.error('Unable to send email receipt', {user_email: [user.settings.email]});
+                });
         } else {
-            // generic receipt
-            msg_parts.push("Your receipt is attached:");
-            msg_parts.push("- Name: {{first_name}} {{last_name}}");
-            msg_parts.push("- Address: {{settings.address}} {{settings.address_unit}} {{settings.city}} {{settings.state}}");
-            if (user.settings.state_id_number) { msg_parts.push("- State ID: {{settings.state_id_number}}"); }
-            if (user.settings.ssn_last4) { msg_parts.push("- SSN: ****"); }
+            return email.sendOVRReceipt(user, pdf_url)
+                .then(function(emailResult) {
+                    resutil.send(res, emailResult);
+                })
+                .catch(function(err) {
+                    resutil.error(res, 'Problem sending email receipt', err);
+                    log.error('Unable to send email receipt', {user_email: [user.settings.email]});
+                });
         }
-        
-        local_time = moment.tz(user.settings.timezone).format('MM/DD/YYYY h:mm A z');
-        // if timezone parsing doesn't work, they'll still get UTC, so show complete timezone
-        msg_parts.push("- Submitted: "+local_time);
-        msg_parts.push("Make sure to tell your friends, share https://fftf.io/hellovote");
-
-        var templated_msg = language.template(msg_parts.join('<br/>'), user);
-
-        return email.create([user.settings.email], 'Your HelloVote Registration', templated_msg)
-            .then(function(emailResult) {
-                resutil.send(res, emailResult);
-            })
-            .catch(function(err) {
-                resutil.error(res, 'Problem sending email receipt', err);
-                log.error('Unable to send email receipt', {user_email: [user.settings.email]});
-            });
-
     });
 };
+
+var testNVRAReceipt = function(req, res)
+{
+    log.info('receipt: testNVRAReceipt: ', req.params.email);
+
+    email.sendNVRAReceipt(
+        {
+            first_name: 'Jeff',
+            settings: {
+                state: 'MN',
+                email: req.params.email
+            }
+        },
+        'https://hellovote.s3.amazonaws.com/print/bdf26f48-3380-48a2-bcf6-d09b7d8da89e.pdf?Signature=o9qwTo2yH0HccLxp6fOq%2BBKAgnw%3D&Expires=1476054566&AWSAccessKeyId=AKIAJISCIGLASOEKBQUQ&response-content-disposition=attachment%3B%20filename%3D%22hellovote-registration-form.pdf%22'
+    );
+
+    resutil.send(res, "ok");
+}
+
+var testOVRReceipt = function(req, res)
+{
+    log.info('receipt: testOVRReceipt: ', req.params.email);
+
+    email.sendOVRReceipt(
+        {
+            first_name: 'Jeff',
+            last_name: 'Lyon',
+            settings: {
+                address: '351 Western Dr',
+                address_unit: 'K',
+                city: 'Santa Cruz',
+                state: 'CA',
+                zip: '95051',
+                email: req.params.email,
+                state_id_number: 69,
+                ssn: 69
+            }
+        }
+    );
+
+    resutil.send(res, "ok");
+}
 
 // smarty streets gives us tz like "Pacific", so we have to add links to proper tz names
 moment.tz.link([
