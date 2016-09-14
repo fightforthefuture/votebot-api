@@ -93,7 +93,11 @@ var default_steps = {
 			if (state) {
 				if (end_msg = us_election.states_without_ovr[state.toUpperCase()]) {
 					if (user_model.use_notify(user.username)) { notify.replace_tags(user, ['votebot-started'], ['votebot-completed']); }
-					return {msg: end_msg, next: 'share'}
+					return {
+						msg: end_msg,
+						next: 'share',
+						delay: config.bot.advance_delay
+					}
 				}
 
 				// and online registration deadlines
