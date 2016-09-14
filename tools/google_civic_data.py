@@ -60,7 +60,8 @@ if __name__ == "__main__":
         print "Last known URL: https://docs.google.com/spreadsheets/d/1iWwgneNFajwDlFx91SLCHUxUJOSO7lR0G5zUWFK0YY4/export?format=csv"
 
     data = convert_google_data_to_json(open(file_path, 'r'))
-    print "PUT THE FOLLOWING IN lib/us_election.js"
-    print "==="
-    print ''
-    print "var registration_requirements = %s;" % json.dumps(data, indent=2, separators=(',', ': '))
+    content = """/* THIS IS AN AUTOMATICALLY GENERATED FILE. DO NOT EDIT MANUALLY */
+exports.registration_requirements = %s;""" % json.dumps(data, indent=2, separators=(',', ': '))
+    outfile = open('lib/google_civic.js', 'w')
+    outfile.write(content)
+    outfile.close()
