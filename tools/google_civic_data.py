@@ -17,6 +17,11 @@ def convert_google_data_to_json(file):
         if not state or state == "State":
             continue
 
+        ovr_link = row[3]
+        ovr_link = ovr_link.replace('[Register online](', '')
+        if ovr_link.endswith(')'):
+            ovr_link = ovr_link.replace(')', '')
+
         check_registration = row[31]
 
         deadlines = OrderedDict()
@@ -31,6 +36,7 @@ def convert_google_data_to_json(file):
         data['Requirements'] = requirements
         data['Deadlines'] = deadlines
         data['CheckRegistration'] = check_registration
+        data['RegisterOnline'] = ovr_link
         states[state] = data
 
     return states
