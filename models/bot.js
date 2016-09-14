@@ -285,8 +285,9 @@ var default_steps = {
 					if (i < chunks.length - 1)
 						chunk = chunk + '…';
 
-					sendChunk(chunk, i*250);
+					sendChunk(chunk, i*config.bot.advance_delay_fb);
 				}
+				res.delay = (i+1)*config.bot.advance_delay_fb;
 			}
 
 			return res;
@@ -749,7 +750,7 @@ var default_steps = {
 
 function default_delay(conversation) {
 	if (conversation.type == 'fb')
-		return 250;
+		return config.bot.advance_delay_fb;
 	else
 		return config.bot.advance_delay
 }

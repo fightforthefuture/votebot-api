@@ -42,7 +42,10 @@ var config = {
 	},
 
 	bot: {
-		user_id: 1
+		user_id: 1,
+		advance_delay: 1500, // ms between automatic message sending
+							// adjust per twilio recommendation
+		advance_delay_fb: 400
 	},
 
 	smarty_streets: {
