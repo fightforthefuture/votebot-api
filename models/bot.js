@@ -259,7 +259,7 @@ var default_steps = {
 			var res = {
 				next: 'confirm_ovr_disclosure',
 				advance: true,
-				delay: config.bot.advance_delay
+				delay: default_delay(conversation)
 			}
 
 			if (conversation.type != 'fb') {
@@ -512,7 +512,7 @@ var default_steps = {
 
 			var res = {
 				'next': 'share_sms',
-				'delay': config.bot.advance_delay
+				'delay': default_delay(conversation)
 			};
 
 			// Send a pretty share button if this is a Facebook thread			
@@ -747,6 +747,13 @@ var default_steps = {
 
 };
 
+function default_delay(conversation) {
+	if (conversation.type == 'fb')
+		return 250;
+	else
+		return config.bot.advance_delay
+}
+
 function get_chain(type) {
 	var vars = {type: type};
 	return db.query('SELECT * FROM chains WHERE name = {{type}}', vars).then(function(chain) {
@@ -966,7 +973,7 @@ exports.start = function(type, to_user_id, options)
 					if (step.advance) {
 						// advance conversation to next step, without waiting for user
 						// delay slightly, to avoid intro messages sending out of order
-						Promise.delay(config.bot.advance_delay).then(function() {
+						Promise.delay(default_delay(conversation)).then(function() {
 							return exports.next(user.id, conversation);
 						});
 					}
@@ -1149,7 +1156,7 @@ exports.next = function(user_id, conversation, message)
 						// advance to next step, without waiting for user response
 						// delay slightly 
 						promise = promise
-							.delay(config.bot.advance_delay)
+							.delay(default_delay(conversation))
 							.then(function() {
 								// construct empty message
 								return exports.next(user.id, conversation);
