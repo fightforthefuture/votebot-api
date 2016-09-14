@@ -464,7 +464,7 @@ var default_chain_steps = [
 		name: 'ineligible',
 		msg: '[[prompt_ineligible]]',
 		errormsg: '',
-		next: 'restart', 
+		next: 'share', 
 		admin_special: true,
 		admin_order: 51,
 	},
