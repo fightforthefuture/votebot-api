@@ -110,7 +110,7 @@ var testNVRAReceipt = function(req, res)
         {
             first_name: 'Jeff',
             settings: {
-                state: 'MN',
+                state: 'CA',
                 email: req.params.email
             }
         },
