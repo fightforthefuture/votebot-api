@@ -17,6 +17,8 @@ def convert_google_data_to_json(file):
         if not state or state == "State":
             continue
 
+        check_registration = row[31]
+
         deadlines = OrderedDict()
         deadlines['online'] = row[33]
         deadlines['received-by'] = row[34]
@@ -28,6 +30,7 @@ def convert_google_data_to_json(file):
         data = OrderedDict()
         data['Requirements'] = requirements
         data['Deadlines'] = deadlines
+        data['CheckRegistration'] = check_registration
         states[state] = data
 
     return states
