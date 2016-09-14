@@ -48,6 +48,12 @@ var default_steps = {
 		process: function() { return Promise.resolve({'next': 'first_name'})}
 	},
 	first_name: {
+		pre_process: function(action, conversation, user) {
+			if (conversation.type == 'fb')
+				return { msg: l10n('prompt_first_name_fb', conversation.locale) }
+			else
+				return { msg: l10n('prompt_first_name', conversation.locale) }
+		},
 		process: function(body, user, step, conversation) {
 			if (body.indexOf('2') > -1) {
 				// SHORT CUT

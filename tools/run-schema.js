@@ -72,7 +72,8 @@ var default_chain_steps = [
 	},
 	{
 		name: 'first_name',
-		msg: '[[prompt_first_name]]',
+		msg: '',
+		no_msg: true,
 		errormsg: '[[error_first_name]]',
 		next: 'last_name',
 		admin_order: 2,
