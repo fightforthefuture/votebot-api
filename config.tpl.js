@@ -45,7 +45,7 @@ var config = {
 		user_id: 1,
 		advance_delay: 1500, // ms between automatic message sending
 							// adjust per twilio recommendation
-		advance_delay_fb: 500
+		advance_delay_fb: 1000
 	},
 
 	smarty_streets: {
