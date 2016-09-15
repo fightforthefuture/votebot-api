@@ -53,10 +53,14 @@ registration will be processed, you can register by mail, or directly using the
 <p>
 Finally, this is also very important: do **not** assume your registration was
 successful until you hear from, or confirm with, your state.
-<a href="{{ verify_url }}">You can look up your
+{% if markdown_verify_text %}
+<strong>To verify your registration:</strong> {{ verify }}.
+{% else %}
+<a href="{{ verify }}">You can look up your
 status here.</a> (It may take days or weeks to appear, so keep checking, and
 contact your state directly if you can’t confirm.
 State systems and our software may fail, and your vote is too precious to risk.)
+{% endif %}
 {{ deadline_text }}.
 </p>
 
