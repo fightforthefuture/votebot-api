@@ -22,7 +22,7 @@ exports.hook = function(app)
 var createDelay = function(req, res) {
     setTimeout(function() {
         create(req, res);
-    }, config.bot.advance_delay);
+    }, config.bot.advance_delay * 2);
 }
 
 var create = function(req, res)
