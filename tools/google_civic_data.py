@@ -22,15 +22,15 @@ def convert_google_data_to_json(file):
         if ovr_link.endswith(')'):
             ovr_link = ovr_link.replace(')', '')
 
-        check_registration = row[31]
+        check_registration = row[32]
 
         deadlines = OrderedDict()
-        deadlines['online'] = row[33]
-        deadlines['received-by'] = row[34]
-        deadlines['mail-by'] = row[35]
-        deadlines['in-person'] = row[36]
+        deadlines['online'] = row[34]
+        deadlines['received-by'] = row[35]
+        deadlines['mail-by'] = row[36]
+        deadlines['in-person'] = row[37]
 
-        requirements = row[32].replace('- ', '').split('\n')
+        requirements = row[33].replace('- ', '').split('\n')
 
         data = OrderedDict()
         data['Requirements'] = requirements
