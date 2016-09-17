@@ -17,6 +17,7 @@ var us_states = require('../lib/us_states');
 var request = require('request-promise');
 var notify = require('./notify.js');
 var moment = require('moment');
+var momentTZ = require('moment-timezone');
 var l10n = require('../lib/l10n');
 
 // holds default steps for conversation chains. essentially, each "step" in the chain defines a
@@ -326,7 +327,7 @@ var default_steps = {
 			} else {
 				return Promise.resolve({next: 'restart'});
 			}
-			return Promise.resolve({next: 'submit', advance: true});
+			return Promise.resolve({next: 'choose_nvra_delivery'});
 		}
 	},
 	submit: {
@@ -451,6 +452,8 @@ var default_steps = {
 
 			// send confirmation prompt dependent on user state
 			var form_type = util.object.get(user, 'settings.submit_form_type');
+			var mail_eta = util.object.get(user, 'settings.nvra_mail_eta');
+			var pdf_url = util.object.get(user, 'settings.nvra_pdf_url');
 
 			if (form_type != 'NVRA') {
 				// registration complete online, no extra instructions
@@ -460,16 +463,70 @@ var default_steps = {
 					delay: config.bot.advance_delay * 4
 				};
 			} else {
-				// they'll get a PDF, special instructions
-				return {
-					msg: l10n('msg_complete_pdf', conversation.locale),
-					next: 'share',
-					delay: config.bot.advance_delay * 4
-				};
+				if (mail_eta) {
+					var msg = l10n('msg_complete_mail', conversation.locale),
+						friendly_eta = momentTZ(mail_eta).tz('America/Los_Angeles').format('MMMM D'),
+						msg = msg.replace('{{mail_eta}}', friendly_eta);
+
+					return {
+						msg: msg,
+						next: 'share',
+						delay: config.bot.advance_delay * 4
+					};
+				} else {
+					if (conversation.type == 'fb' && pdf_url) {
+						facebook_model.message(
+							user.username, 
+							l10n('msg_complete_pdf_fb', conversation.locale)
+						);
+						facebook_model.file(
+							user.username,
+							pdf_url
+						);
+						return {
+							next: 'share',
+							delay: config.bot.advance_delay * 4
+						};
+					} else {
+						return {
+							msg: l10n('msg_complete_pdf', conversation.locale),
+							next: 'share',
+							delay: config.bot.advance_delay * 4
+						};
+					}
+				}
 			}
 		},
 		process: function(body, user) {
 			return Promise.resolve({next: 'share'});
+		}
+	},
+	ovr_failed: {
+		name: 'ovr_failed',
+		msg: '',
+		no_msg: true,
+
+		process: function(body, user, step, conversation) {
+			var msg = language.template(l10n('msg_ovr_failed', conversation.locale), user, conversation.locale);
+			message_model.create(config.bot.user_id, conversation.id, {body: msg});
+			return Promise.delay(default_delay(conversation))
+				.then(function() {
+					return {'next': 'choose_nvra_delivery'}
+				});
+		},
+	},
+	choose_nvra_delivery: {
+		name: 'choose_nvra_delivery',
+		msg: l10n('prompt_choose_nvra_delivery'),
+		process: function(body, user) {
+			var update_user = util.object.set(user, 'settings.include_postage', true);
+
+			if (!language.is_yes(body)) {
+				util.object.set(update_user, 'settings.mail_letter', true);
+			}
+			user_model.update(user.id, update_user);				
+
+			return Promise.resolve({next: 'submit', advance: true});
 		}
 	},
 	incomplete: {

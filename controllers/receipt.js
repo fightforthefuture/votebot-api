@@ -17,6 +17,9 @@ var moment = require('moment-timezone');
 exports.hook = function(app)
 {
     app.post('/receipt/:username', createDelay); // TODO, secure with auth.key shared with votebot-forms
+    app.get('/receipt/test_nvra/:email', testNVRAReceipt);
+    app.get('/receipt/test_ovr/:email', testOVRReceipt);
+    app.get('/receipt/test_mail/:email', testMailReceipt);
 };
 
 var createDelay = function(req, res) {
@@ -32,6 +35,8 @@ var create = function(req, res)
     var status = req.body.status ? req.body.status : 'failure';
     var reference = req.body.reference ? req.body.reference : -1;
     var pdf_url = req.body.pdf_url ? req.body.pdf_url : null;
+    var mail_eta = req.body.expected_delivery_date ? req.body.expected_delivery_date : null;
+    var mail_carrier = req.body.mail_carrier ? req.body.mail_carrier : null;
     var user;
     var goto_step;
     var conversation;
@@ -50,6 +55,12 @@ var create = function(req, res)
             update_user = util.object.set(update_user, 'settings.submit_form_type', form_class);
             update_user = util.object.set(update_user, 'complete', true);
 
+            if (pdf_url)
+                update_user = util.object.set(update_user, 'settings.nvra_pdf_url', pdf_url);
+
+            if (mail_eta)
+                update_user = util.object.set(update_user, 'settings.nvra_mail_eta', mail_eta);
+
             // also update the conversation to be complete
             conversation_model.update(conversation.id, {complete: true});
 
@@ -60,7 +71,7 @@ var create = function(req, res)
             goto_step = 'incomplete';
         } else {
             var update_user = util.object.set(user, 'settings.failed_ovr', true);
-            goto_step = 'submit';
+            goto_step = 'ovr_failed';
         }
 
         return user_model.update(user.id, update_user);
@@ -69,36 +80,93 @@ var create = function(req, res)
     }).then(function(updated_conversation) {
         bot_model.next(user.id, updated_conversation);
 
-        if (status !== 'success') {
-            resutil.send(res, 'bummer');
-            return;
-        }
-
-        var msg_parts = [
-            "Thanks for registering to vote with HelloVote!",
-        ]
-
-        if (user.settings.submit_form_type === 'NVRA') {
-            return email.sendNVRAReceipt(user, pdf_url)
-                .then(function(emailResult) {
-                    resutil.send(res, emailResult);
-                })
-                .catch(function(err) {
-                    resutil.error(res, 'Problem sending email receipt', err);
-                    log.error('Unable to send email receipt', {user_email: [user.settings.email]});
-                });
-        } else {
-            return email.sendOVRReceipt(user, pdf_url)
-                .then(function(emailResult) {
-                    resutil.send(res, emailResult);
-                })
-                .catch(function(err) {
-                    resutil.error(res, 'Problem sending email receipt', err);
-                    log.error('Unable to send email receipt', {user_email: [user.settings.email]});
-                });
-        }
+        if (status !== 'success')
+            return 'failed, get over it';
+        
+        if (user.settings.submit_form_type === 'NVRA')
+            if (mail_eta)
+                return email.sendMailReceipt(user, mail_eta, mail_carrier);                
+            else
+                return email.sendNVRAReceipt(user, pdf_url);
+        else
+            return email.sendOVRReceipt(user);
+                
+    }).then(function(emailResult) {
+        resutil.send(res, emailResult);
+    })
+    .catch(function(err) {
+        resutil.error(res, 'Problem sending email receipt', err);
+        log.error('Unable to send email receipt', {user_email: [user.settings.email]});
     });
 };
+
+var testNVRAReceipt = function(req, res)
+{
+    log.info('receipt: testNVRAReceipt: ', req.params.email);
+
+    email.sendNVRAReceipt(
+        {
+            first_name: 'Jeff',
+            settings: {
+                state: 'CA',
+                email: req.params.email
+            }
+        },
+        'https://hellovote.s3.amazonaws.com/print/bdf26f48-3380-48a2-bcf6-d09b7d8da89e.pdf?Signature=o9qwTo2yH0HccLxp6fOq%2BBKAgnw%3D&Expires=1476054566&AWSAccessKeyId=AKIAJISCIGLASOEKBQUQ&response-content-disposition=attachment%3B%20filename%3D%22hellovote-registration-form.pdf%22'
+    );
+
+    resutil.send(res, "ok");
+}
+
+var testOVRReceipt = function(req, res)
+{
+    log.info('receipt: testOVRReceipt: ', req.params.email);
+
+    email.sendOVRReceipt(
+        {
+            first_name: 'Jeff',
+            last_name: 'Lyon',
+            settings: {
+                address: '351 Western Dr',
+                address_unit: 'K',
+                city: 'Santa Cruz',
+                state: 'CA',
+                zip: '95051',
+                email: req.params.email,
+                state_id_number: 69,
+                ssn: 69
+            }
+        }
+    );
+
+    resutil.send(res, "ok");
+}
+
+var testMailReceipt = function(req, res)
+{
+    log.info('receipt: testMailReceipt: ', req.params.email);
+
+    email.sendMailReceipt(
+        {
+            first_name: 'Jeff',
+            last_name: 'Lyon',
+            settings: {
+                address: '351 Western Dr',
+                address_unit: 'K',
+                city: 'Santa Cruz',
+                state: 'CA',
+                zip: '95051',
+                email: req.params.email,
+                state_id_number: 69,
+                ssn: 69
+            }
+        },
+        '2016-09-23',
+        'USPS'
+    );
+
+    resutil.send(res, "ok");
+}
 
 // smarty streets gives us tz like "Pacific", so we have to add links to proper tz names
 moment.tz.link([

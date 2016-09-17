@@ -36,6 +36,25 @@ exports.buttons = function(username, text, buttons) {
 	return sendMessage(message);
 }
 
+exports.file = function(username, url) {
+	var message = {
+		json: {
+			recipient: {
+				id: username.replace('Messenger:', '')
+			},
+			message: {
+				attachment: {
+					type: 'file',
+					payload: {
+						url: url
+					}
+				}
+			}
+		}
+	}
+	return sendMessage(message);
+}
+
 exports.message = function(username, text) {
 	var message = {
 		json: {
