@@ -1,6 +1,6 @@
-State,How to,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Requirements,Deadlines,,,
-,Online,,,,,,,By mail (intro),,,,By mail (steps),,,By mail (deadline & address),,,,,In person,,,,,,,,,,,Check if you're registered link,,Online,Received by,Mail by,In person
-,Step 1 title,Step 1 content,Step 1 link,Step 2 title,Step 2 content,Step 2 link,Change party or address info,Step 1 title,Step 1 content,Step 1 link,Change party or address info,Step 2 title,Step 2 content,Step 2 link,Step 3 title,Step 3 content,Step 3 link,Step 4 title,Step 4 content,Step 1 title,Step 1 content,Step 1 link,Change party or address info,Step 2 title,Step 2 content,Step 2 link,Step 3 title,Step 3 content,Step 4 title,Step 4 content,,,,,,
+State,How to,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Requirements,Deadlines,,,
+,Online,,,,,,,By mail (intro),,,,By mail (steps),,,By mail (deadline & address),,,,,In person,,,,,,,,,,,Check if you're registered title,Check if you're registered link,,Online,Received by,Mail by,In person
+,Step 1 title,Step 1 content,Step 1 link,Step 2 title,Step 2 content,Step 2 link,Change party or address info,Step 1 title,Step 1 content,Step 1 link,Change party or address info,Step 2 title,Step 2 content,Step 2 link,Step 3 title,Step 3 content,Step 3 link,Step 4 title,Step 4 content,Step 1 title,Step 1 content,Step 1 link,Change party or address info,Step 2 title,Step 2 content,Step 2 link,Step 3 title,Step 3 content,Step 4 title,Step 4 content,,,,,,,
 Alabama,Register online,You'll need an Alabama driver’s license or non-driver's ID card to register online,[Register online](https://www.alabamavotes.gov/olvr/default.aspx),,,,,1. Get the voter registration form,"Download the Alabama voter registration form or request a form be mailed to you by calling [1-800-274-8683 (VOTE)](tel:1-800-274-8683),or by [applying online](https://www.alabamavotes.gov/vb/vr-req.aspx?a=voters)",[Get the form](https://www.alabamavotes.gov/downloads/election/vr/nvra-2.pdf),,2. Fill out the form,"**Step 1–2** · Check the boxes to indicate you're a US citizen and will be 18 by Election Day, Nov 8
 
 **Step 3** · Provide your name
@@ -49,7 +49,7 @@ Alabama,Register online,You'll need an Alabama driver’s license or non-driver'
 
 - _If you don't have one, provide the last 4 digits of your Social Security number. If you don't have any of these, check the appropriate box._
 
-**Step 13** · Sign and date the form",,3. Return the form,Return the form by **Oct 24** to your local [county board of registrars](https://www.alabamavotes.gov/vb/borjop1.aspx),,,https://myinfo.alabamavotes.gov/VoterView/RegistrantSearch.do,"- Be a US citizen
+**Step 13** · Sign and date the form",,3. Return the form,Return the form by **Oct 24** to your local [county board of registrars](https://www.alabamavotes.gov/vb/borjop1.aspx),,,Check if you're registered to vote,https://myinfo.alabamavotes.gov/VoterView/RegistrantSearch.do,"- Be a US citizen
 - Live at an Alabama address
 - Be 18 years old on Election Day, Nov 8
 - Not have been convicted of a disqualifying felony (unless your civil and political rights have been restored)
@@ -114,7 +114,7 @@ Alaska,Register online,You'll need a valid Alaska driver’s license or state ID
 
 **Step 14** · If you're reporting a change of address, provide your previous address information
 
-**Step 15** · Sign and date the form",,3. Return the form,Return the form by **Oct 9** to your [regional elections office](https://www.elections.alaska.gov/csm_contact_reo.php) or other government office where you picked up the form,,,https://myvoterinformation.alaska.gov/,"- Be a US citizen
+**Step 15** · Sign and date the form",,3. Return the form,Return the form by **Oct 9** to your [regional elections office](https://www.elections.alaska.gov/csm_contact_reo.php) or other government office where you picked up the form,,,Check if you're registered to vote,https://myvoterinformation.alaska.gov/,"- Be a US citizen
 - Be 18 years old or within 90 days of your 18th birthday
 - Live at an Alaska address by Oct 9
 - Not be registered to vote in another state unless you're willing to cancel that registration
@@ -155,7 +155,7 @@ Arizona,Register online,You'll need an Arizona driver’s license or non-driver'
 
 - _Naturalization documents (or fill in your Alien Registration Number in Step 11)_
 
-- _A copy of your Tribal Certificate of Indian Blood or Tribal or Bureau of Indian Affairs Affidavit of Birth (or enter your Indian Census Number, Bureau of Indian Affairs Card Number, Tribal Treaty Card Number, or Tribal Enrollment Number in box #10)_",,3. Send the form,Mail the form by **Oct 10** to your local [county recorder](http://www.azsos.gov/elections/voting-election/contact-information-county-election-officials),,,,1. Get the voter registration form,Pick up the voter registration form at your local [county recorder](http://www.azsos.gov/elections/voting-election/contact-information-county-election-officials),,,2. Fill out the form,"**Step 1** · (Optional) Check the box to indicate if you want to receive an early ballot by mail  
+- _A copy of your Tribal Certificate of Indian Blood or Tribal or Bureau of Indian Affairs Affidavit of Birth (or enter your Indian Census Number, Bureau of Indian Affairs Card Number, Tribal Treaty Card Number, or Tribal Enrollment Number in box #10)_",,3. Send the form,Mail the form by **Oct 8** to your local [county recorder](http://www.azsos.gov/elections/voting-election/contact-information-county-election-officials),,,,1. Get the voter registration form,Pick up the voter registration form at your local [county recorder](http://www.azsos.gov/elections/voting-election/contact-information-county-election-officials),,,2. Fill out the form,"**Step 1** · (Optional) Check the box to indicate if you want to receive an early ballot by mail  
 
 **Step 2** · Provide your name
 
@@ -193,11 +193,11 @@ If not, you must attach a copy of one of the following:
 
 - _Naturalization documents (or fill in your Alien Registration Number in Step 11)_
 
-- _A copy of your Tribal Certificate of Indian Blood or Tribal or Bureau of Indian Affairs Affidavit of Birth (or enter your Indian Census Number, Bureau of Indian Affairs Card Number, Tribal Treaty Card Number, or Tribal Enrollment Number in box #10)_",,3. Return the form,Return the form by **Oct 10** to your local [county recorder](http://www.azsos.gov/elections/voting-election/contact-information-county-election-officials),,,https://voter.azsos.gov/VoterView/RegistrantSearch.do,"- Be a US citizen
+- _A copy of your Tribal Certificate of Indian Blood or Tribal or Bureau of Indian Affairs Affidavit of Birth (or enter your Indian Census Number, Bureau of Indian Affairs Card Number, Tribal Treaty Card Number, or Tribal Enrollment Number in box #10)_",,3. Return the form,Return the form by **Oct 10** to your local [county recorder](http://www.azsos.gov/elections/voting-election/contact-information-county-election-officials),,,Check if you're registered to vote,https://voter.azsos.gov/VoterView/RegistrantSearch.do,"- Be a US citizen
 - Be a resident of Arizona by Oct 10
 - Be 18 years by Election Day, Nov 8
 - Not have been convicted of treason or a felony (unless your civil rights have been restored)
-- Not been legally declared an incapacitated person by a court",2016-10-10,,2016-10-10,2016-10-10
+- Not been legally declared an incapacitated person by a court",2016-10-10,,2016-10-08,2016-10-10
 Arkansas,,,,,,,,1. Get the voter registration form,"Download and print the Arkansas voter registration form, request a voter registration [application online](http://www.sos.arkansas.gov/elections/Pages/request-app-through-mail.aspx/), or call [1-800-482-1127](tel:1-800-482-1127) to request a form be mailed to you",[Get the form](http://www.sos.arkansas.gov/elections/Documents/ArkansasVoterRegistrationApplication.pdf),,2. Fill out the form,"**Step 1** · Check the boxes to indicate if you’re registering for the first time or reporting a name, address, or political party change. Provide your full name.
 
 **Step 2** · Provide your address
@@ -239,7 +239,7 @@ Arkansas,,,,,,,,1. Get the voter registration form,"Download and print the Arkan
 
 **Step 10** · Respond to the questions indicating whether you're a citizen; whether you'll be 18 by Election Day, Nov 8; whether you've been judged mentally incompetent by a court; and whether you've been convicted of a felony without fully discharging your sentence (including probation and parole)
 
-**Step 11** · Sign and date the form",,3. Return the form,Return your voter registration form by **Oct 10** at your local [county clerk](http://www.sos.arkansas.gov/elections/Documents/Revised%20County%20Clerks%20List.pdf) or other government office where you picked up the voter registration form,,,https://www.voterview.ar-nova.org/VoterView/RegistrantSearch.do,"- Be a US citizen
+**Step 11** · Sign and date the form",,3. Return the form,Return your voter registration form by **Oct 10** at your local [county clerk](http://www.sos.arkansas.gov/elections/Documents/Revised%20County%20Clerks%20List.pdf) or other government office where you picked up the voter registration form,,,Check if you're registered to vote,https://www.voterview.ar-nova.org/VoterView/RegistrantSearch.do,"- Be a US citizen
 - Live at an Arkansas address by Oct 9
 - Be 18 years old on Election Day, Nov 8
 - Not be serving a sentence (including parole) for a felony conviction
@@ -296,7 +296,7 @@ California,Register online,"You'll need your CA driver’s license or CA ID card
 
 **Step 17** · If you’re reporting a change in name, address, or political party, provide your previous information
 
-**Step 18** · Sign and date the form",,3. Return the form,Submit the form by **Oct 24** to your [county elections office](http://www.sos.ca.gov/elections/voting-resources/county-elections-offices/),,,http://www.sos.ca.gov/elections/registration-status/,"- Be a US citizen
+**Step 18** · Sign and date the form",,3. Return the form,Submit the form by **Oct 24** to your [county elections office](http://www.sos.ca.gov/elections/voting-resources/county-elections-offices/),,,Check if you're registered to vote,http://www.sos.ca.gov/elections/registration-status/,"- Be a US citizen
 - Live at a California address
 - Be 16 years old in order to register, and be 18 by Election Day, Nov 8, in order to vote
 - Not serving a sentence (including parole) for a felony conviction
@@ -340,7 +340,7 @@ In-person voter registration is also available at voter service and polling cent
 
 **Step 10** ·  (Optional) Provide your phone number, gender, and email address",,3. Return the form,"- Return the form to your [County Clerk and Recorder](https://www.sos.state.co.us/pubs/elections/Resources/CountyElectionOffices.html), or at a voter service and polling center, at any time on or before **Nov 8**
 - Return the form to any other state agency that provides voter registration forms by **Oct 31**
-- Return the form as part of a third-party voter registration drive by **Oct 17**",,,https://www.sos.state.co.us/voter-classic/pages/pub/olvr/findVoterReg.xhtml,"- Be a US citizen
+- Return the form as part of a third-party voter registration drive by **Oct 17**",,,Check if you're registered to vote,https://www.sos.state.co.us/voter-classic/pages/pub/olvr/findVoterReg.xhtml,"- Be a US citizen
 - Live at a Colorado address by Oct 17
 - Not serving a sentence (including parole) for a felony conviction
 - Not currently judged incompetent by a court
@@ -407,7 +407,7 @@ Connecticut,Register online,"You'll need a current driver’s license, learner�
 
 If you miss the deadline, you can register to vote in person on **Nov 8** at your [local Election Day registration location](http://www.sots.ct.gov/sots/lib/sots/2015_edr_locations.pdf) 
  
-_Your local Election Day registration location is not the same as your polling place_",,,http://www.dir.ct.gov/sots/LookUp.aspx,"- Be a US citizen
+_Your local Election Day registration location is not the same as your polling place_",,,Check if you're registered to vote,http://www.dir.ct.gov/sots/LookUp.aspx,"- Be a US citizen
 - Be a resident of a Connecticut town
 - Be at least 18 years old by Election Day, Nov 8
 - Not be convicted of a felony, or if previously convicted of a felony, have completed your prison sentence and parole and paid all related fines
@@ -474,7 +474,7 @@ Carvel State Office Building
 820 N. French Street, Suite 400
 Wilmington, DE 19801-3531
 
-Or, return it to the other government office where you picked up the form",,,https://ivote.de.gov/voterlogin.aspx,"- Be a US citizen
+Or, return it to the other government office where you picked up the form",,,Check if you're registered to vote,https://ivote.de.gov/voterlogin.aspx,"- Be a US citizen
 - Be a permanent resident of Delaware
 - Be at least 18 years old by Election Day, Nov 8
 - Not be judged mentally incompetent by a court
@@ -551,7 +551,7 @@ Washington, DC 20001",,,,1. Get the voter registration form,"Get the form in per
   - _Current utility bill_
   - _Bank statement_
   - _Government check_
-  - _Paycheck_",,,https://www.dcboee.org/voter_info/reg_status/,"- Be a US citizen
+  - _Paycheck_",,,Check if you're registered to vote,https://www.dcboee.org/voter_info/reg_status/,"- Be a US citizen
 - Be 18 years old by Election Day, Nov 8
 - Be a resident of DC by Oct 11
 - Not be in jail for a felony under DC law
@@ -639,7 +639,7 @@ Room 316, R.A. Gray Building
 500 South Bronough Street
 Tallahassee, Florida 32399-0250
 
-You can also return the form to any [County Supervisor of Elections](http://dos.elections.myflorida.com/supervisors/), any Florida driver’s license office or tax collector’s office that issues driver’s licenses and/or Florida ID cards, any “voter registration agency” where you get services, any office that primarily serves persons with disabilities, any military recruitment office, or any public library",,,http://registration.elections.myflorida.com/CheckVoterStatus,"- Be a US citizen
+You can also return the form to any [County Supervisor of Elections](http://dos.elections.myflorida.com/supervisors/), any Florida driver’s license office or tax collector’s office that issues driver’s licenses and/or Florida ID cards, any “voter registration agency” where you get services, any office that primarily serves persons with disabilities, any military recruitment office, or any public library",,,Check if you're registered to vote,http://registration.elections.myflorida.com/CheckVoterStatus,"- Be a US citizen
 - Be a Florida resident
 - Be a resident of the county you register in
 - Be at least 16 years old, but in order to vote, you must be at least 18 years old by Election Day, Nov 8
@@ -730,7 +730,7 @@ The Secretary of State’s Office:
 2 Martin Luther King, Jr. Dr.
 SE Atlanta, GA 30334-1505
 
-You can also return the form to your local [county board of registrar's office](http://sos.ga.gov/cgi-bin/countyregistrarsindex.asp) or election office, or any state or governmental office such as a public library, public school, county or municipal clerk’s office, and government revenue office",,,https://www.mvp.sos.ga.gov/MVP/mvp.do ,"- Be a US citizen
+You can also return the form to your local [county board of registrar's office](http://sos.ga.gov/cgi-bin/countyregistrarsindex.asp) or election office, or any state or governmental office such as a public library, public school, county or municipal clerk’s office, and government revenue office",,,Check if you're registered to vote,https://www.mvp.sos.ga.gov/MVP/mvp.do ,"- Be a US citizen
 - Be a resident of the county in which you're registering to vote
 - Be at least 17 ½ years old to register and 18 years old to vote 
 - Not be serving a sentence (including probation or parole) for conviction of a felony involving moral turpitude
@@ -763,7 +763,7 @@ Hawaii,Register online,You'll need a Hawaii Driver’s license (or State ID) and
 
 - _Paycheck_
 
-- _Other government document showing your name and address_",,3. Send the form,Your completed form must be postmarked by **Oct 10** and sent to your [County Clerk's office](http://elections.hawaii.gov/resources/county-election-divisions/),,,,1. Get the voter registration form,"Get the voter registration form [online](http://elections.hawaii.gov/wp-content/uploads/2016/03/VR-PAB-English.pdf), or pick it up at the Hawaii Office of Elections, [County Clerk's Offices](http://elections.hawaii.gov/resources/county-election-divisions/), state libraries, US post offices, state agencies, or satellite city halls",,,2. Fill out the form,"**Steps 1–4** · Provide your Social Security number, date of birth, telephone number, and name
+- _Other government document showing your name and address_",,3. Send the form,Your completed form must be postmarked by **Oct 8** and sent to your [County Clerk's office](http://elections.hawaii.gov/resources/county-election-divisions/),,,,1. Get the voter registration form,"Get the voter registration form [online](http://elections.hawaii.gov/wp-content/uploads/2016/03/VR-PAB-English.pdf), or pick it up at the Hawaii Office of Elections, [County Clerk's Offices](http://elections.hawaii.gov/resources/county-election-divisions/), state libraries, US post offices, state agencies, or satellite city halls",,,2. Fill out the form,"**Steps 1–4** · Provide your Social Security number, date of birth, telephone number, and name
 
 **Steps 5–6** · Provide your residential address and mailing address  
 
@@ -780,11 +780,11 @@ Hawaii,Register online,You'll need a Hawaii Driver’s license (or State ID) and
 **Step 12** · (If applicable) Complete if you want to apply for a permanent absentee ballot",,3. Return the form,"Your completed form must be returned in person by **Oct 10** to your [County Clerk's Office](http://elections.hawaii.gov/resources/county-election-divisions/) or to the Hawaii Office of Elections which is located at:        
 
 802 Lehua Avenue
-Pearl City, Hawaii 96782",,,Call [(808) 453-VOTE (8683)](tel:808-453-8683),"- Be a US citizen
+Pearl City, Hawaii 96782",,,Check if you're registered to vote,Call [(808) 453-VOTE (8683)](tel:808-453-8683),"- Be a US citizen
 - Be a resident of Hawaii
 - Be at least 18 years old by Election Day, Nov 8
 - Not be in prison or jail for a felony
-- Not judged mentally incompetent by a court",2016-10-10,,2016-10-10,2016-10-10
+- Not judged mentally incompetent by a court",2016-10-10,,2016-10-08,2016-10-10
 Idaho,,,,,,,,1. Get the voter registration form,Download and print the Idaho state voter registration form or email [elections@sos.idaho.gov](mailto:elections@sos.idaho.gov) to have one sent to you.,[Get the form](http://www.idahovotes.gov/VoterReg/voter_registration.pdf),,2. Fill out the form,"**Step 1** · Provide your name
 
 **Step 2** · Provide your driver’s license number. If you don't have one, provide the last 4 digits of your Social Security number. Check the box if you don't have either of these.
@@ -833,7 +833,7 @@ You’ll need to provide one of the following IDs:
 - _Idaho driver’s license_
 - _Idaho state ID card_
 - _Any document with your current address along with another ID that has your photo_
-- _Current, valid student photo ID card from a postsecondary school in Idaho and a current fee statement with your valid address_",,,http://www.idahovotes.gov/ypp_new/amiregistered.aspx,"- Be a US citizen
+- _Current, valid student photo ID card from a postsecondary school in Idaho and a current fee statement with your valid address_",,,Check if you're registered to vote,http://www.idahovotes.gov/ypp_new/amiregistered.aspx,"- Be a US citizen
 - Live at an Idaho address by Oct 9
 - Be 18 years old by Election Day, Nov 8
 - Not be in jail for a criminal conviction, and not have been imprisoned for a felony without having your rights restored following the completion of any probation or parole",,,2016-10-14,2016-10-14
@@ -864,7 +864,7 @@ For faster processing, mail your form to your [County Board of Elections or Boar
 - _If you don't submit an ID with your application, you'll have to provide ID the first time you vote_
 
 **Step 11** · Sign and date the form",,3. Return the form,"- Return the form by **Oct 11** to the State Board of Elections, the [County Clerk’s office](http://www.elections.il.gov/ElectionAuthorities/ElecAuthorityList.aspx), or the [Board of Election Commissioner’s office](http://www.elections.il.gov/ElectionAuthorities/ElecAuthorityList.aspx)
-- If you miss the deadline, contact your County Clerk or Board of Election Commissioners to see where you can register in person through **Nov 8**",,,https://www.elections.il.gov/votinginformation/RegistrationLookup.aspx,"- Be a US citizen
+- If you miss the deadline, contact your County Clerk or Board of Election Commissioners to see where you can register in person through **Nov 8**",,,Check if you're registered to vote,https://www.elections.il.gov/votinginformation/RegistrationLookup.aspx,"- Be a US citizen
 - Live in the district in Illinois in which you want to vote by Oct 9
 - Be 18 years old by Election Day, Nov 8
 - Not be convicted and in jail for a felony
@@ -923,7 +923,7 @@ For faster processing, mail your form to your [county voter registration office]
 
 **Step 13** · Provide your previous name if you're updating the name of your previous registration
 
-**Step 14** · Sign and date form",,3. Return the form,Your completed form must be returned by **Oct 11** to your [county voter registration office](https://indianavoters.in.gov/PublicSite/Public/FT1/PublicContactLookup.aspx),,,https://indianavoters.in.gov/PublicSite/Public/FT1/PublicLookupMain.aspx?Link=Registration,"- Be a US citizen
+**Step 14** · Sign and date form",,3. Return the form,Your completed form must be returned by **Oct 11** to your [county voter registration office](https://indianavoters.in.gov/PublicSite/Public/FT1/PublicContactLookup.aspx),,,Check if you're registered to vote,https://indianavoters.in.gov/PublicSite/Public/FT1/PublicLookupMain.aspx?Link=Registration,"- Be a US citizen
 - Live at an Indiana address by Oct 9
 - Be 18 years old by Election Day, Nov 8
 - Not be in jail after being convicted of a crime ",2016-10-11,,2016-10-11,2016-10-11
@@ -984,7 +984,7 @@ If the photo ID doesn’t have your current address, you’ll also need another 
 - Government check
 - Other government document",4. Return the form,"Turn in your form by **Oct 29** to your [county auditor](https://sos.iowa.gov/elections/voterinformation/preregister.html) or the other government office where you picked up the form
 
-You can also fill out and return the form at your early voting location **Sep 29–Nov 7**, or at your Election Day voting location on **Nov 8**",https://sos.iowa.gov/elections/voterreg/regtovote/search.aspx,"- Be a US citizen
+You can also fill out and return the form at your early voting location **Sep 29–Nov 7**, or at your Election Day voting location on **Nov 8**",Check if you're registered to vote,https://sos.iowa.gov/elections/voterreg/regtovote/search.aspx,"- Be a US citizen
 - Live at an Iowa address 
 - Be at least 17 ½ years old
 - Not be convicted of a felony (unless your voting rights have been restored)
@@ -1105,7 +1105,7 @@ If you're registering for the first time in Kansas, you'll also need to submit o
 
 - _Extract from a hospital record of birth created at the time of your birth that shows your place of birth in the US_
 
-- _A driver's license or non-driver's identification card only if the agency indicates on your driver's license or non-driver's ID card that you provided satisfactory proof of US citizenship_",4. Return the form,Your completed form must be returned to your [County Elections office](http://www.sos.ks.gov/elections/elections_registration_ceo.asp) by **Oct 18**,https://myvoteinfo.voteks.org/VoterView/RegistrantSearch.do,"- Be a US citizen
+- _A driver's license or non-driver's identification card only if the agency indicates on your driver's license or non-driver's ID card that you provided satisfactory proof of US citizenship_",4. Return the form,Your completed form must be returned to your [County Elections office](http://www.sos.ks.gov/elections/elections_registration_ceo.asp) by **Oct 18**,Check if you're registered to vote,https://myvoteinfo.voteks.org/VoterView/RegistrantSearch.do,"- Be a US citizen
 - Live at a Kansas address 
 - Be 18 years old by Election Day, Nov 8 
 - Must have received final discharge from being in jail, on parole, or conditional release if you've been convicted of a felony",2016-10-18,,2016-10-18,2016-10-18
@@ -1139,7 +1139,7 @@ For faster processing, mail your form to your [county clerk’s office](http://e
 
 **Step 13** · Check a box to register with a political party, or check “Other” if you're not affiliated with a party 
 
-**Step 14** · Sign and date the form",,3. Return the form,Submit your form by **Oct 11** to your [county clerk’s office](http://elect.ky.gov/contactcountyclerks/Pages/default.aspx),,,https://vrsws.sos.ky.gov/vic/,"- Be a US citizen
+**Step 14** · Sign and date the form",,3. Return the form,Submit your form by **Oct 11** to your [county clerk’s office](http://elect.ky.gov/contactcountyclerks/Pages/default.aspx),,,Check if you're registered to vote,https://vrsws.sos.ky.gov/vic/,"- Be a US citizen
 - Live at a Kentucky address by Oct 11
 - Be 18 years old by Election Day, Nov 8
 - Not be a convicted felon (unless you have had your rights restored by an executive pardon)
@@ -1210,7 +1210,7 @@ Louisiana,Register online,"You'll need your Louisiana driver's license or specia
 
 **Steps 15–17** · (If applicable) Provide your last residence address, place of last registration, and a former registered name, if any  
 
-**Step 18** · Sign and date the form",,3. Return the form,Return the form by **Oct 11**,,,https://voterportal.sos.la.gov/Home/VoterLogin,"- Be a US citizen
+**Step 18** · Sign and date the form",,3. Return the form,Return the form by **Oct 11**,,,Check if you're registered to vote,https://voterportal.sos.la.gov/Home/VoterLogin,"- Be a US citizen
 - Live at a Louisiana address
 - Be 17 years old (or 16 years old if registering in person at the Registrar of Voters or Office of Motor Vehicles) and 18 years old by Election Day, Nov 8
 - Not be under an order of imprisonment for a felony conviction
@@ -1305,7 +1305,7 @@ To prove residency, provide a document providing proof of your residential addre
 
 - _Other items that are up to the discretion of individual registrars, including a residency oath that you can take_",4. Return the form,"- You may register at a state agency on or before **Oct 9**
 - Between **Oct 10** and **Oct 18**, it’s recommended that you deliver your form to your [registrar](http://www.maine.gov/sos/cec/elec/munic.html) or Secretary of State’s Office, located at 101 State House Station, Augusta, ME 04333-0101 
-- You may register to vote on Election Day, **Nov 8**, by appearing in person before your [registrar](http://www.maine.gov/sos/cec/elec/munic.html)",Call [(207) 624-7650](tel:207-624-7650) or your [registrar](http://www.maine.gov/sos/cec/elec/munic.html),"- Be a US citizen
+- You may register to vote on Election Day, **Nov 8**, by appearing in person before your [registrar](http://www.maine.gov/sos/cec/elec/munic.html)",Check if you're registered to vote,Call [(207) 624-7650](tel:207-624-7650) or your [registrar](http://www.maine.gov/sos/cec/elec/munic.html),"- Be a US citizen
 - Must have established and maintain a voting residence (a fixed and principal home) in the municipality where you're registering 
 - Be at least 17 years old at the time of registration
 - Be at least 18 years old by Nov 8",,,2016-10-18,2016-11-08
@@ -1377,7 +1377,7 @@ You may also mail the application to your [local board of elections](http://www.
 
 **Step 13** · (If applicable) If you previously registered in another county in Maryland or in another state, provide the name, date of birth, and address on your last registration",,3. Return the form,"Return the form by **Oct 18**. 
 
-You can also register in person at an early voting center in your county from **Oct 27-Nov 3**. You'll need your your Maryland state driver’s license or an ID card, change of address card, paycheck, bank statement, utility bill, or other government document with your name and new address.",,,https://voterservices.elections.maryland.gov/VoterSearch,"- Be a US citizen
+You can also register in person at an early voting center in your county from **Oct 27-Nov 3**. You'll need your your Maryland state driver’s license or an ID card, change of address card, paycheck, bank statement, utility bill, or other government document with your name and new address.",,,Check if you're registered to vote,https://voterservices.elections.maryland.gov/VoterSearch,"- Be a US citizen
 - Be at least 16 years old
 - Be a resident of Maryland on the day you seek to register
 - Not have been convicted of a felony and currently serving a court-ordered sentence of imprisonment for the conviction
@@ -1453,7 +1453,7 @@ Massachusetts,Register online,You'll need your Massachusetts driver’s license 
 
 - _Paycheck_
 
-- _Other government document showing your name and address_",,3. Return the form,Return the form by **Oct 19** to one of the locations described above,,,https://www.sec.state.ma.us/VoterRegistrationSearch/MyVoterRegStatus.aspx,"- Be a US citizen
+- _Other government document showing your name and address_",,3. Return the form,Return the form by **Oct 19** to one of the locations described above,,,Check if you're registered to vote,https://www.sec.state.ma.us/VoterRegistrationSearch/MyVoterRegStatus.aspx,"- Be a US citizen
 - Be at least 18 years old on or before the next election 
 _Starting Aug 1, 2016, you may pre-register if you're at least 16 years old_
 - Live at a Massachusetts address 
@@ -1501,7 +1501,7 @@ Michigan,,,,,,,,1. Get the voter registration form,Download and print the Michig
 
 **Step 9** · If you were registered outside of Michigan or with a different name, provide the name and/or address where you were registered
 
-**Step 10** · Present an official Michigan ID card or driver’s license, or another generally recognized photo ID. If you don’t have, you may sign an affidavit.",,3. Return the form,Return the form by **Oct 11** to your [city or township clerk](http://www.michigan.gov/documents/MIVoterRegistration_97046_7.pdf),,,https://vote.michigan.gov/MVIC/,"- Be a US citizen
+**Step 10** · Present an official Michigan ID card or driver’s license, or another generally recognized photo ID. If you don’t have, you may sign an affidavit.",,3. Return the form,Return the form by **Oct 11** to your [city or township clerk](http://www.michigan.gov/documents/MIVoterRegistration_97046_7.pdf),,,Check if you're registered to vote,https://vote.michigan.gov/MVIC/,"- Be a US citizen
 - Be at least 18 years old by Nov 8
 - Be a resident of Michigan, and the city, township, or village where you're registering, by Oct 9
 - Not be confined in jail after having been convicted and sentenced ",,,2016-10-11,2016-10-11
@@ -1583,11 +1583,11 @@ Accepted documents with your current address include:
 
 - _Current student fee statement_
 
-Option 3: If you're on your college’s housing list, show the election official your student ID",,,https://mnvotes.sos.state.mn.us/VoterStatus.aspx,"- Be a US citizen
+Option 3: If you're on your college’s housing list, show the election official your student ID",,,Check if you're registered to vote,https://mnvotes.sos.state.mn.us/VoterStatus.aspx,"- Be a US citizen
 - Live at a Minnesota address by Oct 19
 - Be 18 years old by Election Day, Nov 8
 - Not be serving any part of a felony conviction, including any probation, parole or other conditions such as restitution
-- Not currently be judged incompetent by a court",2016-10-18,2016-10-18,,2016-10-18
+- Not currently be judged incompetent by a court",2016-10-18,2016-10-18,,2016-11-08
 Mississippi,,,,,,,,1. Get the voter registration form,Download and print the Mississippi registration application online or call [1-800-829-6786](tel:1-800-829-6786) to have one sent to you,[Get the form](http://www.sos.ms.gov/Elections-Voting/Documents/Voter_Registration.pdf),,2. Fill out the form,"**Steps 1–2** · Select “New Registration” or “Change of Information” and fill in the circles if you're a US citizen and will be 18 years old by Election Day, Nov 8
 
 **Step 3** · Provide your name
@@ -1618,7 +1618,7 @@ Mississippi,,,,,,,,1. Get the voter registration form,Download and print the Mis
 
 **Step 8** · (Optional) Provide your previous name and/or address if you were previously registered under a different name or address and are updating your registration information
 
-**Step 9** · Sign and date the form",,3. Return the form,Your completed form must be submitted in person by **Oct 8 at 12 PM** to your [county election office](http://www.sos.ms.gov/Elections-Voting/Pages/County-Election-Info.aspx),,,Call your [county election office](http://www.sos.ms.gov/Elections-Voting/Pages/County-Election-Info.aspx),"- Be a US citizen
+**Step 9** · Sign and date the form",,3. Return the form,Your completed form must be submitted in person by **Oct 8 at 12 PM** to your [county election office](http://www.sos.ms.gov/Elections-Voting/Pages/County-Election-Info.aspx),,,Check if you're registered to vote,Call your [county election office](http://www.sos.ms.gov/Elections-Voting/Pages/County-Election-Info.aspx),"- Be a US citizen
 - Live at your Mississippi address by Oct 9
 - Be 18 years old by Election Day, Nov 8
 - Never have been convicted of certain specific crimes, or if convicted have had your voting rights restored
@@ -1693,7 +1693,7 @@ To register online you'll need to check the box that indicates you're registerin
 
 - _Other gov’t document with a voter’s name and address_
 
-- _Other ID issued by Missouri or the US government_",,3. Return the form,Return the form to your [county clerk’s office](http://www.sos.mo.gov/elections/goVoteMissouri/pickupmail) by **Oct 12**,,,http://s1.sos.mo.gov/elections/voterlookup/,"- Be a US citizen
+- _Other ID issued by Missouri or the US government_",,3. Return the form,Return the form to your [county clerk’s office](http://www.sos.mo.gov/elections/goVoteMissouri/pickupmail) by **Oct 12**,,,Check if you're registered to vote,http://s1.sos.mo.gov/elections/voterlookup/,"- Be a US citizen
 - Live in Missouri
 - Be 17 years and six months old when you register, and 18 years old by Election Day, Nov 8, to vote
 - Not be in jail due to a criminal sentence
@@ -1759,7 +1759,7 @@ Montana,,,,,,,,1. Get the voter registration form,Download and print the Montana
 
 **Step 10** · Sign and date the form",,3. Return the form,"Return your completed form at your [county election office](http://sos.mt.gov/elections/forms/elections/electionadministrators.pdf) by **Nov 7** (before noon)
 
-You can also register at your polling place before voting on Election Day, **Nov 8**",,,https://app.mt.gov/voterinfo/,"- Be a US citizen
+You can also register at your polling place before voting on Election Day, **Nov 8**",,,Check if you're registered to vote,https://app.mt.gov/voterinfo/,"- Be a US citizen
 - Live at a Montana address by Oct 9
 - Be 18 years old by Election Day, Nov 8
 - Not be in jail for a felony
@@ -1823,7 +1823,7 @@ Nebraska,Register online,You'll need your Nebraska driver’s license or state I
 
 - _Government check_
 
-- _Other government document_",,3. Return the form,Return your completed form by **Oct 28** to your [county election office](http://www.sos.ne.gov/elec/clerks.html),,,https://www.votercheck.necvr.ne.gov/VoterView/RegistrantSearch.do,"- Be a US citizen
+- _Other government document_",,3. Return the form,Return your completed form by **Oct 28** to your [county election office](http://www.sos.ne.gov/elec/clerks.html),,,Check if you're registered to vote,https://www.votercheck.necvr.ne.gov/VoterView/RegistrantSearch.do,"- Be a US citizen
 - Live at a Nebraska address 
 - Be 18 years old by Election Day, Nov 8
 - Not be convicted for a felony, or if convicted, two years have passed since the completion of the sentence and any parole term
@@ -1874,7 +1874,7 @@ Nevada,Register online,You'll need a Nevada driver’s license or ID card to reg
 
 **Step 11** · If you're changing your registration information, provide your previous registration information
 
-**Step 12** · Sign and date the form",,3. Return the form,Return the form by **Oct 18** to your [county election office](http://nvsos.gov/index.aspx?page=81),,,https://nvsos.gov/VoterSearch/,"- Be a US citizen
+**Step 12** · Sign and date the form",,3. Return the form,Return the form by **Oct 18** to your [county election office](http://nvsos.gov/index.aspx?page=81),,,Check if you're registered to vote,https://nvsos.gov/VoterSearch/,"- Be a US citizen
 - Live at a Nevada address by Oct 9 and live in your precinct by Oct 29
 - Be 18 years old by Election Day, Nov 8
 - Not be convicted of a felony and currently serving your any part of your sentence
@@ -1896,7 +1896,7 @@ New Hampshire,,,,,,,,Eligibility,You may only register by mail if you'll be temp
 **Step 6** · Sign and date the form
 
 Provide proof of identity, age, citizenship, and domicile. You may sign an affidavit instead of providing documentation.",,3. Return the form,"- You may return the form to your [city or town clerk](http://app.sos.nh.gov/Public/ClerkDetails.aspx) or to a meeting of your local Supervisors of the Checklist by **Oct 29**
-- You may register in person at your voting location on **Nov 8**",,,http://app.sos.nh.gov/Public/AbsenteeBallot.aspx,"- Be a US citizen
+- You may register in person at your voting location on **Nov 8**",,,Check if you're registered to vote,http://app.sos.nh.gov/Public/AbsenteeBallot.aspx,"- Be a US citizen
 - Be 18 years old or older on Election Day, Nov 8
 - Be a New Hampshire resident 
 - Not have ever been convicted of treason, bribery, a willful violation of state or federal election law, or bribery or intimidation in New Hampshire elections (unless the right to vote is restored  by the New Hampshire Supreme Court)
@@ -1947,7 +1947,7 @@ New Jersey,,,,,,,,1. Get the voter registration form,Fill out and print a voter 
 
 **Step 11** · Select your gender
 
-**Step 12** · Sign and date the registration",,3. Return the form,Deliver the form in person to your [County Commissioner of Registration or Superintendent of Elections](http://www.state.nj.us/state/elections/voting-information-local-officials.html) by **Oct 18**,,,https://voter.njsvrs.com/PublicAccess/servlet/com.saber.publicaccess.control.PublicAccessNavigationServlet?USERPROCESS=PublicSearch,"- Be a US citizen
+**Step 12** · Sign and date the registration",,3. Return the form,Deliver the form in person to your [County Commissioner of Registration or Superintendent of Elections](http://www.state.nj.us/state/elections/voting-information-local-officials.html) by **Oct 18**,,,Check if you're registered to vote,https://voter.njsvrs.com/PublicAccess/servlet/com.saber.publicaccess.control.PublicAccessNavigationServlet?USERPROCESS=PublicSearch,"- Be a US citizen
 - Be at least 17 years old at the time of registration and at least 18 years by Nov 8
 - Live at a New Jersey address by Oct 9
 - Not serving a sentence (including parole) for a felony conviction
@@ -1995,7 +1995,7 @@ To register online, the address where you’re registering to vote needs to matc
 
 **Step 9** · Check the boxes to indicate if you're  a US citizen and will be at least 18 years old on Election Day, Nov 8 
 
-**Step 10** · Sign and date the form",,3. Return the form,"Your completed form must be filled out, signed, and dated by **Oct 11** and returned in person by **Oct 14** to your [county clerk’s office](http://www.sos.state.nm.us/Voter_Information/County_Clerk_Information.aspx)",,,https://voterview.state.nm.us/VoterView/RegistrantSearch.do,"- Be a US citizen 
+**Step 10** · Sign and date the form",,3. Return the form,"Your completed form must be filled out, signed, and dated by **Oct 11** and returned in person by **Oct 14** to your [county clerk’s office](http://www.sos.state.nm.us/Voter_Information/County_Clerk_Information.aspx)",,,Check if you're registered to vote,https://voterview.state.nm.us/VoterView/RegistrantSearch.do,"- Be a US citizen 
 - Be at least 18 years old on Election Day, Nov 8 
 - Live at a New Mexico address
 - Not be in jail or prison, or on probation or parole for a felony conviction
@@ -2046,7 +2046,7 @@ The DMV will automatically forward your completed form to your county board of e
 
 **Step 15** · (Optional) Check the boxes to apply for an absentee ballot or to volunteer at a voting place on Election Day, Nov 8  
 
-**Step 16** · Sign and date the form",,3. Return the form,Your completed form must be returned in person by **Oct 14** to your [county board of elections](http://www.elections.ny.gov:8080/reports/rwservlet?cmdkey=nysboe_roster),,,https://voterlookup.elections.state.ny.us/,"- Be a US citizen 
+**Step 16** · Sign and date the form",,3. Return the form,Your completed form must be returned in person by **Oct 14** to your [county board of elections](http://www.elections.ny.gov:8080/reports/rwservlet?cmdkey=nysboe_roster),,,Check if you're registered to vote,https://voterlookup.elections.state.ny.us/,"- Be a US citizen 
 - Be at least 18 years old on Election Day, Nov 8 
 - Live at a New York address by Oct 9
 - Not be in prison or on parole for a felony conviction
@@ -2109,12 +2109,12 @@ North Carolina,,,,,,,,1. Get the voter registration form,"Download and print the
 
 - _Paycheck_
 
-- _Other government document with your name and address_",,3. Return the form,"Return the form by 5 PM on **Oct 14** to your [county board of elections](http://enr.ncsbe.gov/cbesearch/), or the other government office where you picked up the form.",,,https://enr.ncsbe.gov/voter_search_public/,"- Be a US citizen
+- _Other government document with your name and address_",,3. Return the form,"Return the form by 5 PM on **Oct 14** to your [county board of elections](http://enr.ncsbe.gov/cbesearch/), or the other government office where you picked up the form.",,,Check if you're registered to vote,https://enr.ncsbe.gov/voter_search_public/,"- Be a US citizen
 - Be at least 16 years old and 18 years old by Election Day, Nov 8
 - Live in North Carolina and the precinct where you'll vote by Oct 9 
 - If convicted of a felony, not be in jail, on probation, or on parole 
 - Not claim the right to vote in another state",,,2016-10-14,2016-10-14
-North Dakota,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"You don't need to register to vote in North Dakota. Instead, make sure you meet all the voting requirements, and provide ID to vote on Election Day, Nov 8.
+North Dakota,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Check if you're registered to vote,,"You don't need to register to vote in North Dakota. Instead, make sure you meet all the voting requirements, and provide ID to vote on Election Day, Nov 8.
 
 Voting requirements in North Dakota
 - Be a US citizen
@@ -2171,7 +2171,7 @@ For faster processing, mail it to your [county board of elections](http://www.so
 
 **Step 13** · Provide your new full name if you're changing it, and sign the box with your old name
 
-**Step 14** · Sign and date the form",,3. Return the form,"Your completed form must be postmarked or returned in person by Oct 11 to your [county board of elections](http://www.sos.state.oh.us/SOS/elections/electionsofficials/boeDirectory.aspx), any BMV office, any county treasurer’s office, or any public library.",,,http://voterlookup.sos.state.oh.us/voterlookup.aspx,"- Be a US citizen
+**Step 14** · Sign and date the form",,3. Return the form,"Your completed form must be postmarked or returned in person by Oct 11 to your [county board of elections](http://www.sos.state.oh.us/SOS/elections/electionsofficials/boeDirectory.aspx), any BMV office, any county treasurer’s office, or any public library.",,,Check if you're registered to vote,http://voterlookup.sos.state.oh.us/voterlookup.aspx,"- Be a US citizen
 - Live at an Ohio address by Oct 9
 - Be 18 years old by Election Day, Nov 8
 - Not be in jail for a felony
@@ -2210,7 +2210,7 @@ Oklahoma City, OK 73152-8800
 
 **Step 8** · If you've been registered before, enter information about your former address
 
-**Step 9** · Indicate if you're a US citizen and if you'll be 18 on or before Election Day, Nov 8. Sign and date the form.",,3. Return the form,Your completed form must be returned in person by **Oct 14** to your [county board of elections](https://www.ok.gov/elections/documents/cebinfo.pdf) ,,,https://www.ok.gov/elections/Voter_Info/Online_Voter_Tool/,"- Be a US citizen
+**Step 9** · Indicate if you're a US citizen and if you'll be 18 on or before Election Day, Nov 8. Sign and date the form.",,3. Return the form,Your completed form must be returned in person by **Oct 14** to your [county board of elections](https://www.ok.gov/elections/documents/cebinfo.pdf) ,,,Check if you're registered to vote,https://www.ok.gov/elections/Voter_Info/Online_Voter_Tool/,"- Be a US citizen
 - Live at an Oklahoma address by Oct 14
 - Be 18 years old by Election Day, Nov 8
 - Not be in jail, on parole, or on probation for a felony
@@ -2251,7 +2251,7 @@ Oregon,Register online,You'll need an Oregon driver's license or ID card to regi
 
 **Step 9** · Fill in the box to select your political party or fill in the circle to indicate that you'ren't a member of a party
 
-**Step 10** · Sign and date the form",,3. Return the form,Your completed form must be returned in person by **Oct 18** to your [county elections official](http://sos.oregon.gov/elections/Pages/countyofficials.aspx),,,https://secure.sos.state.or.us/orestar/vr/showVoterSearch.do?lang=eng&source=SOS,"- Be a US citizen
+**Step 10** · Sign and date the form",,3. Return the form,Your completed form must be returned in person by **Oct 18** to your [county elections official](http://sos.oregon.gov/elections/Pages/countyofficials.aspx),,,Check if you're registered to vote,https://secure.sos.state.or.us/orestar/vr/showVoterSearch.do?lang=eng&source=SOS,"- Be a US citizen
 - Live at an Oregon address by Oct 18
 - Be 17 years old to register and 18 years old by Election Day, Nov 8 to vote in the 2016 election 
 - Not be in jail for a felony
@@ -2308,7 +2308,7 @@ Pennsylvania,Register online,"If you have one, have your Pennsylvania’s driver
 
 **Step 12** · If someone helped you with the form, provide their name, address, phone number, and signature
 
-**Step 13** · Check the box if you want to volunteer at a voting location on Election Day, Nov 8",,3. Return the form,Your completed form must be returned in person by **Oct 11** to your [county elections office](http://www.votespa.com/en-us/voting-and-elections/be-prepared/Pages/County-Contact-Information.aspx),,,https://www.pavoterservices.state.pa.us/pages/voterregistrationstatus.aspx,"- Be a US citizen
+**Step 13** · Check the box if you want to volunteer at a voting location on Election Day, Nov 8",,3. Return the form,Your completed form must be returned in person by **Oct 11** to your [county elections office](http://www.votespa.com/en-us/voting-and-elections/be-prepared/Pages/County-Contact-Information.aspx),,,Check if you're registered to vote,https://www.pavoterservices.state.pa.us/pages/voterregistrationstatus.aspx,"- Be a US citizen
 - Be 18 years old by Election Day, Nov 8
 - Live at your Pennsylvania address by Oct 9
 - Not be in jail for a felony",2016-10-11,,2016-10-11,2016-10-11
@@ -2358,7 +2358,7 @@ Rhode Island,Register online,You'll need your Rhode Island driver's license or s
 
 **Step 11** · Provide your previous name, if you're changing it
 
-**Step 12** · Provide your previous address, if you're changing it",,3. Return the form,Your completed form must be returned in person by **Oct 9** to your [local board of canvassers](http://www.elections.state.ri.us/canvassers/index.php),,,https://sos.ri.gov/vic/,"- Be a US citizen 
+**Step 12** · Provide your previous address, if you're changing it",,3. Return the form,Your completed form must be returned in person by **Oct 9** to your [local board of canvassers](http://www.elections.state.ri.us/canvassers/index.php),,,Check if you're registered to vote,https://sos.ri.gov/vic/,"- Be a US citizen 
 - Be at least 16 years old and be at least 18 years old to vote on Election Day, Nov 8 
 - Live at your Rhode Island address by Oct 9
 - Not be in jail or in prison for a felony
@@ -2413,7 +2413,7 @@ If you’ve moved, you’ll need to [update your address](https://www.scdmvonlin
 
 **Step 14** · If you're registering to vote in your county for the first time, attach a copy of a valid photo ID or a current utility bill, bank statement, paycheck or other government document that shows your name and address.
 
-- _If you don’t submit this with your application, you'll have to show an ID the first time you vote_",,3. Return the form,Your completed form must be returned in person by **Oct 8** to your [county voter registration office](http://www.scvotes.org/how_to_register_absentee_voting),,,https://info.scvotes.sc.gov/eng/voterinquiry/VoterInformationRequest.aspx?PageMode=VoterInfo,"- Be a US citizen 
+- _If you don’t submit this with your application, you'll have to show an ID the first time you vote_",,3. Return the form,Your completed form must be returned in person by **Oct 8** to your [county voter registration office](http://www.scvotes.org/how_to_register_absentee_voting),,,Check if you're registered to vote,https://info.scvotes.sc.gov/eng/voterinquiry/VoterInformationRequest.aspx?PageMode=VoterInfo,"- Be a US citizen 
 - Be at least 18 years old on Election Day, Nov 8
 - Live at a South Carolina address
 - Not be in jail or in prison for a felony
@@ -2447,7 +2447,7 @@ South Dakota,,,,,,,,1. Get the voter registration form,Download and print the So
 
 **Steps 9–11** · If you're reporting a change in name, address or driver’s license number, provide your previous information 
 
-**Step 12** · Sign and date form",,3. Return the form,Drop off your completed form by **Oct 24** at the county auditor or other government office where you picked up the form,,,https://sos.sd.gov/Elections/VIPLogin.aspx,"- Be a US citizen
+**Step 12** · Sign and date form",,3. Return the form,Drop off your completed form by **Oct 24** at the county auditor or other government office where you picked up the form,,,Check if you're registered to vote,https://sos.sd.gov/Elections/VIPLogin.aspx,"- Be a US citizen
 - Live at a South Dakota address 
 - Be at least 18 years old by Election Day, Nov 8
 - Not be currently serving any part of a sentence for a felony conviction 
@@ -2492,7 +2492,7 @@ Tennessee,,,,,,,,1. Get the voter registration form,Download and print the Tenne
 
 **Step 11** · Check the appropriate lines to declare if you're a resident of Tennessee and have previously been convicted of a felony 
 
-**Step 12** · Date and sign the form",,3. Return the form,Turn in the form by **Oct 11** to your [county election office](http://tnsos.org/elections/election_commissions.php),,,https://tnmap.tn.gov/voterlookup/,"- Be a US citizen
+**Step 12** · Date and sign the form",,3. Return the form,Turn in the form by **Oct 11** to your [county election office](http://tnsos.org/elections/election_commissions.php),,,Check if you're registered to vote,https://tnmap.tn.gov/voterlookup/,"- Be a US citizen
 - Live at a Tennessee address 
 - Be 18 years old by Election Day, Nov 8
 - Not be convicted of a felony and currently serving your sentence
@@ -2528,7 +2528,7 @@ Texas,,,,,,,,1. Get the voter registration form,"Complete the form online, or [s
 
 **Step 6** · Provide your mailing address, if different from Step 5
 
-**Step 7** · Sign and date the form",,3. Return the form,Return the form by **Oct 11** to your [county voter registrar’s office](http://www.sos.state.tx.us/elections/voter/votregduties.shtml),,,https://teamrv-mvp.sos.texas.gov/MVP/mvp.do,"- Be a US citizen
+**Step 7** · Sign and date the form",,3. Return the form,Return the form by **Oct 11** to your [county voter registrar’s office](http://www.sos.state.tx.us/elections/voter/votregduties.shtml),,,Check if you're registered to vote,https://teamrv-mvp.sos.texas.gov/MVP/mvp.do,"- Be a US citizen
 - Be at least 17 years and 10 months to register, and be 18 by Election Day, Nov 8, to vote 
 - Live at a Texas address
 - Not serving a sentence (including probation or parole) for a felony conviction
@@ -2591,7 +2591,7 @@ The street address you list on the voter registration form must be the same as t
 
 **Step 14** · If you're changing your name or address, provide your previous name or address
 
-**Step 15** · Sign and date the form",,3. Return the form,Your completed form must be returned in person by **Nov 1** to your [county clerk’s office](https://elections.utah.gov/election-resources/county-clerks),,,https://vote.utah.gov/vote/menu/index,"- Be a US citizen 
+**Step 15** · Sign and date the form",,3. Return the form,Your completed form must be returned in person by **Nov 1** to your [county clerk’s office](https://elections.utah.gov/election-resources/county-clerks),,,Check if you're registered to vote,https://vote.utah.gov/vote/menu/index,"- Be a US citizen 
 - Be at least 18 years old on Election Day, Nov 8
 - Live at a Utah address by Oct 9
 - Not be in jail or in prison for a felony conviction",2016-11-01,,2016-10-09,2016-11-01
@@ -2641,7 +2641,7 @@ Vermont,Register online,"You'll need either a Vermont driver’s license, permit
 
 **Step 9** · Take the voter oath
 
-**Step 10** · Sign and date the form",,3. Return the form,Return the form to your [Town or City Clerk’s Office](https://www.sec.state.vt.us/media/686155/townclerkguide.pdf) by **Nov 2**,,,https://mvp.sec.state.vt.us/,"- Be a US citizen
+**Step 10** · Sign and date the form",,3. Return the form,Return the form to your [Town or City Clerk’s Office](https://www.sec.state.vt.us/media/686155/townclerkguide.pdf) by **Nov 2**,,,Check if you're registered to vote,https://mvp.sec.state.vt.us/,"- Be a US citizen
 - Be 18 years old by Election Day, Nov 8
 - Be a Vermont resident and a resident of the town where you're applying to vote
 - Take the Voter’s Oath",2016-11-02,,2016-11-02,2016-11-02
@@ -2669,7 +2669,7 @@ For faster processing, mail your form to your local [Voter Registration Office](
 
 **Step 6** · Sign and date the form
 
-**Step 7** · If you're currently registered to vote elsewhere, provide your previous registration information",,3. Return the form,Register by the close of business on **Oct 17**.  Your local [Voter Registration Office](https://vote.elections.virginia.gov/VoterInformation/PublicContactLookup) can tell you the exact closing time in each county.,,,https://vote.elections.virginia.gov/VoterInformation,"- Be a US citizen
+**Step 7** · If you're currently registered to vote elsewhere, provide your previous registration information",,3. Return the form,Register by the close of business on **Oct 17**.  Your local [Voter Registration Office](https://vote.elections.virginia.gov/VoterInformation/PublicContactLookup) can tell you the exact closing time in each county.,,,Check if you're registered to vote,https://vote.elections.virginia.gov/VoterInformation,"- Be a US citizen
 - Be 18 years old by Election Day, Nov 8
 - Live at an address in Virginia
 - If convicted of a felony, not be in jail, on probation, or on parole; and have had your right to vote restored by the state
@@ -2701,7 +2701,7 @@ Washington,Register online,You'll need a current Washington State driver’s lic
 
 - _Current paycheck_
 
-- _Government document that shows both your name and address_",,3. Send the form,"Your completed form must be mailed by **Oct 10** to this address:
+- _Government document that shows both your name and address_",,3. Send the form,"Your completed form must be mailed by **Oct 8** to this address:
 
 Washington State Elections Division
 PO Box 40229
@@ -2717,12 +2717,12 @@ For faster processing, mail it to your [County Elections Office](http://www.sos.
 
 **Step 5** · (If applicable) Update your name and address, if previously registered
 
-**Step 6** · Sign and date the form",,3. Return the form,Register by the close of business on **Oct 31**. You can find out the exact closing time from your [County Election Office](http://www.sos.wa.gov/elections/auditors.aspx).,,,https://weiapplets.sos.wa.gov/MyVote/#/login,"- Be a US citizen
+**Step 6** · Sign and date the form",,3. Return the form,Register by the close of business on **Oct 31**. You can find out the exact closing time from your [County Election Office](http://www.sos.wa.gov/elections/auditors.aspx).,,,Check if you're registered to vote,https://weiapplets.sos.wa.gov/MyVote/#/login,"- Be a US citizen
 - Be 18 years old by Election Day, Nov 8
 - Live at a Washington address by Oct 9
 - If convicted of a felony, not be in jail or community custody
 - Not currently judged incompetent by a court
-- Not claim the right to vote in another state",2016-10-10,,2016-10-10,2016-10-31
+- Not claim the right to vote in another state",2016-10-10,,2016-10-08,2016-10-31
 West Virginia,Register online,"You'll need a West Virginia driver’s license or ID card number, and the last 4 digits of your Social Security number to register online.",[Register online](https://ovr.sos.wv.gov/Register#Qualifications),,,,,1. Get the voter registration form,Download and print the West Virginia Voter Registration Form or call [(866) 767-8683](tel:866-767-8683) to request one by mail,[Get the form](http://www.sos.wv.gov/elections/forms/Documents/Forms%20-%20Voter/mail%20in%20voter%20registration%20application.pdf),,2. Fill out the form,"Indicate whether  you're a US citizen and whether you'll be 18 by Nov 8
 
 **Step 1** · (Optional) Indicate whether this is a new registration; whether you're switching parties; and whether you're completing a name or address change 
@@ -2791,7 +2791,7 @@ West Virginia,Register online,"You'll need a West Virginia driver’s license or
 
 - _Paycheck_
 
-- _Government document showing your name and current residence address_",,3. Return the form,Register by the close of business on **Oct 18**. You can find out the exact closing time from your [County Clerk’s Office](http://www.sos.wv.gov/elections/VoterRegistration/Pages/ClerkDirectory.aspx).,,,https://services.sos.wv.gov/Elections/Voter/AmIRegisteredToVote,"- Be a US citizen
+- _Government document showing your name and current residence address_",,3. Return the form,Register by the close of business on **Oct 18**. You can find out the exact closing time from your [County Clerk’s Office](http://www.sos.wv.gov/elections/VoterRegistration/Pages/ClerkDirectory.aspx).,,,Check if you're registered to vote,https://services.sos.wv.gov/Elections/Voter/AmIRegisteredToVote,"- Be a US citizen
 - Be 18 years old by Election Day, Nov 8
 - Live in the county or city where you register in West Virginia
 - If convicted of a felony, treason, or bribery in an election, you can’t be in jail, on probation, or on parole
@@ -2851,7 +2851,7 @@ Wisconsin,,,,,,,,1. Get the voter registration form,Download and print the Wisco
 - _(Homeless voters only) A letter from an organization that provides services to the homeless that identifies you and describes the location designated as your residence for voting purposes_
 - _A bank statement, a paycheck, a check or other government-issued document_",4. Return the form,"Return the form by **Nov 4** to your [municipal clerk’s office](https://myvote.wi.gov/en-US/MyMunicipalClerk)
 
-You can also register at your voting location on Election Day, **Nov 8**",https://myvote.wi.gov/en-us/UpdateMyNameorAddress,"- Be a US citizen
+You can also register at your voting location on Election Day, **Nov 8**",Check if you're registered to vote,https://myvote.wi.gov/en-us/UpdateMyNameorAddress,"- Be a US citizen
 - Be 18 years old by Election Day, **Nov 8**
 - Live at your Wisconsin address by **Oct 29**
 - Not be in jail, on probation, or on parole for a felony conviction
@@ -2922,7 +2922,7 @@ Or, **2** of the following:
 
 **Steps 8** · Date and sign the form. **You must sign the form in front of a registry agent at the county clerk’s office.**",,3. Return the form,"- Submit the form by **Oct 25** at your [county clerk’s office](http://soswy.state.wy.us/Elections/Docs/WYCountyClerks.pdf) 
 
-- You can also register on Election Day, **Nov 8** at your polling place, and between **Oct 26** and **Nov 7** when you request and vote by in-person absentee at your [county clerk’s office](http://soswy.state.wy.us/Elections/Docs/WYCountyClerks.pdf)",,,Call your [county clerk’s office](http://soswy.state.wy.us/Elections/Docs/WYCountyClerks.pdf),"- Be a US citizen
+- You can also register on Election Day, **Nov 8** at your polling place, and between **Oct 26** and **Nov 7** when you request and vote by in-person absentee at your [county clerk’s office](http://soswy.state.wy.us/Elections/Docs/WYCountyClerks.pdf)",,,Check if you're registered to vote,Call your [county clerk’s office](http://soswy.state.wy.us/Elections/Docs/WYCountyClerks.pdf),"- Be a US citizen
 - Be 18 years old by Election Day, Nov 8
 - Live at a Wyoming address
 - If convicted of a felony, have had your civil or voting rights restored

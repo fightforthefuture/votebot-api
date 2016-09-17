@@ -17,20 +17,26 @@ def convert_google_data_to_json(file):
         if not state or state == "State":
             continue
 
-        check_registration = row[31]
+        ovr_link = row[3]
+        ovr_link = ovr_link.replace('[Register online](', '')
+        if ovr_link.endswith(')'):
+            ovr_link = ovr_link.replace(')', '')
+
+        check_registration = row[32]
 
         deadlines = OrderedDict()
-        deadlines['online'] = row[33]
-        deadlines['received-by'] = row[34]
-        deadlines['mail-by'] = row[35]
-        deadlines['in-person'] = row[36]
+        deadlines['online'] = row[34]
+        deadlines['received-by'] = row[35]
+        deadlines['mail-by'] = row[36]
+        deadlines['in-person'] = row[37]
 
-        requirements = row[32].replace('- ', '').split('\n')
+        requirements = row[33].replace('- ', '').split('\n')
 
         data = OrderedDict()
         data['Requirements'] = requirements
         data['Deadlines'] = deadlines
         data['CheckRegistration'] = check_registration
+        data['RegisterOnline'] = ovr_link
         states[state] = data
 
     return states
@@ -54,7 +60,8 @@ if __name__ == "__main__":
         print "Last known URL: https://docs.google.com/spreadsheets/d/1iWwgneNFajwDlFx91SLCHUxUJOSO7lR0G5zUWFK0YY4/export?format=csv"
 
     data = convert_google_data_to_json(open(file_path, 'r'))
-    print "PUT THE FOLLOWING IN lib/us_election.js"
-    print "==="
-    print ''
-    print "var registration_requirements = %s;" % json.dumps(data, indent=2, separators=(',', ': '))
+    content = """/* THIS IS AN AUTOMATICALLY GENERATED FILE. DO NOT EDIT MANUALLY */
+exports.registration_requirements = %s;""" % json.dumps(data, indent=2, separators=(',', ': '))
+    outfile = open('lib/google_civic.js', 'w')
+    outfile.write(content)
+    outfile.close()
