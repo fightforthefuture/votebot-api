@@ -84,7 +84,7 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			if(util.object.get(user, 'settings.city')) return {next: 'state'};
 		},
-		process: simple_store('user.settings.city')
+		process: simple_store('user.settings.city', {validate: validate.city})
 	},
 	state: {
 		pre_process: function(action, conversation, user) {
