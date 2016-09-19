@@ -4,6 +4,7 @@ var db = require('../lib/db');
 var convo_model = require('./conversation');
 var submission_model = require('./submission');
 var message_model = require('./message');
+var existing_registration = require('./existing_registration');
 var facebook_model = require('./facebook');
 var user_model = require('./user');
 var attrition_model = require('./attrition');
@@ -226,7 +227,20 @@ var default_steps = {
 				return {msg: l10n('prompt_email_for_pdf', conversation.locale)};
 			}
 		},
-		process: simple_store('user.settings.email', {validate: validate.email})
+		process: simple_store('user.settings.email', {validate: validate.email, advance: true})
+	},
+	check_existing_registration: {
+		pre_process: function(action, conversation, user) {
+			return existing_registration.verify(user).then(function(registration_status) {
+				if (registration_status && registration_status[0]) {
+					return {msg: l10n('msg_already_registered', conversation.locale), next: 'share'};
+				} else {
+					// msg here?
+					return {next: 'per_state'};
+				}
+			});
+		},
+		process: function(body, user) {}
 	},
 	// this is a MAGICAL step. it never actually runs, but instead just
 	// points to other steps until it runs out of per-state questions to
@@ -338,30 +352,6 @@ var default_steps = {
 		}
 	},
 	submit: {
-		pre_process: function(action, conversation, user) {
-			// check to ensure user has all required fields before submitting
-			//
-			// JL NOTE ~ How would this ever work?
-			// The validate.voter_registration_complete method is not synchronous,
-			// but we are treating it as such.
-			//
-			// Also, it tries to update the user with a "response.errors" object.
-			// There is no such object in the scope of this method. It appears to
-			// be duplicate code from the submit.process step. Disabling because it
-			// does not pass my mental sanity check. Plus I'm changing the format
-			// of the missing_fields object anyway.
-			//
-			/*
-			var missing_fields = validate.voter_registration_complete(user.settings, conversation.locale);
-			if (missing_fields.length) {
-				// incomplete, re-query missing fields
-				log.error('bot: submit: missing fields! ', missing_fields, {step: 'submit', username: user.username});
-				update_user = util.object.set(user, 'settings.missing_fields', response.errors);
-				user_model.update(user.id, update_user);
-				return {next: 'incomplete'};
-			}
-			*/
-		},
 		process: function(body, user, step, conversation) {
 			if (!config.app.submit_ovr_url || !config.app.submit_pdf_url) {
 				log.info('bot: no submit_url in config, skipping submit...');

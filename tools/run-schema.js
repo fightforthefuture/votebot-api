@@ -140,8 +140,16 @@ var default_chain_steps = [
 		msg: '',	// actual email prompt is sent in pre_process
 		no_msg: true,
 		errormsg: '[[error_email]]',
-		next: 'per_state',
+		next: 'check_existing_registration',
 		admin_order: 11,
+	},
+	{
+		name: 'check_existing_registration',
+		msg: '',
+		no_msg: true,
+		errormsg: '',
+		next: 'per_state',
+		admin_order: 12,
 	},
 	{
 		name: 'per_state',
@@ -149,16 +157,7 @@ var default_chain_steps = [
 		errormsg: '',
 		next: 'confirm_name_address',
 		admin_special: true,
-		admin_order: 12,
-	},
-	{
-		name: 'ovr_disclosure',
-		msg: '',
-		errormsg: '',
-		next: '',
-		no_msg: true,
-		admin_special: true,
-		admin_order: 13
+		admin_order: 13,
 	},
 	{
 		name: 'ovr_disclosure',
