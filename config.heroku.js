@@ -72,6 +72,8 @@ var config = {
 		client_id: process.env.SLACK_CLIENT_ID
     },
 
+    votebot_api_key: process.env.VOTEBOT_API_KEY,
+
 	session: {
 		secret: process.env.SESSION_SECRET
 	},

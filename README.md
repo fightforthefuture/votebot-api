@@ -67,6 +67,8 @@ Here are the specific environment variables, and what they do:
 
 * **`SMARTY_STREETS_TOKEN`**: Auth token for SmartyStreets address verification
 
+* **`VOTEBOT_API_KEY`**: key used to authenticate to votebot-forms
+
 
 ### Create the config.js file
 

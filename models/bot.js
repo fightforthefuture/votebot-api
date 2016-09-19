@@ -405,8 +405,16 @@ var default_steps = {
 					    method: 'POST',
 					    uri: url,
 					    body: body,
-					    json: true 
+					    json: true,
+						
 					};
+					if (config.votebot_api_key) {
+						var username = (config.votebot_api_key || '');
+						var password = '';
+						form_submit.headers = {
+						    'Authorization': 'Basic ' + new Buffer(username+':'+password).toString('base64')                  
+						  }
+					}
 					return request(form_submit);
 				}).then(function (response) {
 			    	log.info('bot: form_submit: response', response);
