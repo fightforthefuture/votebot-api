@@ -56,6 +56,12 @@ var default_steps = {
 				return { msg: l10n('prompt_first_name', conversation.locale) }
 		},
 		process: function(body, user, step, conversation) {
+			if (language.is_yes(body.trim())) {
+				return Promise.resolve({
+					next: 'first_name',
+					msg: l10n('error_first_name', conversation.locale)
+				});
+			}
 			if (body.indexOf('2') > -1) {
 				// SHORT CUT
 				return convo_model.update(conversation.id, {complete: true})
