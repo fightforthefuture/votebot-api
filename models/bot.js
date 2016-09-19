@@ -209,7 +209,7 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			// send email prompt dependent on user state
 			var state = util.object.get(user, 'settings.state');
-			if (us_election.state_required_questions[state]) {
+			if (us_election.state_integrated_ovr[state]) {
 				return {msg: l10n('prompt_email_for_ovr', conversation.locale)};
 			} else {
 				return {msg: l10n('prompt_email_for_pdf', conversation.locale)};
@@ -363,7 +363,7 @@ var default_steps = {
 			var state = util.object.get(user, 'settings.state');
 			var state_deadline = us_election.get_ovr_deadline(state);
 			var failed_ovr = util.object.get(user, 'settings.failed_ovr');
-			if (us_election.state_required_questions[state] && !failed_ovr) {
+			if (us_election.state_integrated_ovr[state] && !failed_ovr) {
 				log.info('bot: sending OVR submission...');
 				var url = config.app.submit_ovr_url;
 				var registration_deadline = state_deadline['online'];
