@@ -19,6 +19,7 @@ var notify = require('./notify.js');
 var moment = require('moment');
 var momentTZ = require('moment-timezone');
 var l10n = require('../lib/l10n');
+var partners = require('../config.partners');
 
 // holds default steps for conversation chains. essentially, each "step" in the chain defines a
 // part of the conversation (generally a question) and how to process the answer.
@@ -995,7 +996,7 @@ var find_next_step = function(action, conversation, user)
 /**
  * start a bot-initiated conversation, or continue a web-initiated one
  */
-exports.start = function(type, to_user_id, options)
+exports.start = function(type, to_user_id, conversation_id, options)
 {
 	options || (options = {});
 	var user;
@@ -1015,34 +1016,38 @@ exports.start = function(type, to_user_id, options)
 			
 			if(!step) throw new Error('bot: error loading step: '+type+'.'+step);
 
-			if (!options.existing_conversation_id) {
-				return convo_model.create(config.bot.user_id, {
-					type: 'sms',
-					state: {type: type, step: first_step_name},
-					recipients: [user],
-					message: { body: step.msg }
-				});
-			} else {
-				convo_model.update(options.existing_conversation_id, {
-					state: {type: type, step: first_step_name},
-				}).then(function(conversation) {
-					log.info('about to send first message! conversation:', conversation.id);
-					message_model.create(
-						config.bot.user_id,
-						conversation.id,
-						{ body: language.template(step.msg, null, conversation.locale) }
-					)
-					return conversation;
-				}).then(function(conversation) {
-					if (step.advance) {
-						// advance conversation to next step, without waiting for user
-						// delay slightly, to avoid intro messages sending out of order
-						Promise.delay(default_delay(conversation)).then(function() {
-							return exports.next(user.id, conversation);
-						});
-					}
-				});
-			}
+			convo_model.update(conversation_id, {
+				state: {type: type, step: first_step_name},
+			}).then(function(conversation) {
+				log.info('bot: about to send first message! conversation:', conversation.id);
+
+				if (conversation.partner && partners[conversation.partner])
+				{
+					var partner = partners[conversation.partner],
+						locale  = conversation.locale;
+
+					if (locale != 'en' && partner['msg_intro_'+locale])
+						step.msg = partner['msg_intro_'+locale];
+					else if (partner['msg_intro'])
+						step.msg = partners[conversation.partner].msg_intro;
+				}
+
+				message_model.create(
+					config.bot.user_id,
+					conversation.id,
+					{ body: language.template(step.msg, null, conversation.locale) }
+				)
+				return conversation;
+			}).then(function(conversation) {
+				if (step.advance) {
+					// advance conversation to next step, without waiting for user
+					// delay slightly, to avoid intro messages sending out of order
+					Promise.delay(default_delay(conversation)).then(function() {
+						return exports.next(user.id, conversation);
+					});
+				}
+			});
+			
 		});
 	});
 };

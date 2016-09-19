@@ -7,6 +7,7 @@ var user_model = require('./user');
 var convo_model = require('./conversation');
 var bot_model = require('./bot');
 var twilio = require('twilio')(config.twilio.account_sid, config.twilio.auth_token);
+var partners = require('../config.partners');
 
 Promise.promisifyAll(twilio.messages);
 
@@ -119,8 +120,22 @@ exports.incoming_message = function(data)
 			else
 			{
 				log.info('msg: incoming: starting new conversation');
+
+				var convPartner = null,
+					trimBody = data.Body.trim().toLowerCase();
+
+				for (var partner in partners) {
+					if (partners.hasOwnProperty(partner)) {
+						if (trimBody == partners[partner].intro_shortcode) {
+							log.info('msg: body matches shortcode: ', partner);
+							convPartner = partner;
+						}
+					}
+				}
+				
 				return convo_model.create(config.bot.user_id, {
 					type: user.type,
+					partner: convPartner,
 					recipients: [{username: user.username}]
 				});
 			}

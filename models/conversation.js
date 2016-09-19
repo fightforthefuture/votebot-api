@@ -5,6 +5,7 @@ var hasher = require('../lib/hasher');
 var message_model = require('./message');
 var user_model = require('./user');
 var bot_model = require('./bot');
+var partners = require('../config.partners');
 
 exports.get = function(id)
 {
@@ -16,6 +17,7 @@ exports.create = function(user_id, data)
 	var recipients = data.recipients || [];
 	var message = data.message || {};
 	var options = data.options || {};
+	var partner = null;
 	var valid_data_types = ['sms', 'web', 'fb', 'p2p'];
 	// sms means conversation was initiated by text message
 	// web means conversation was initiated by web call (from hellovote.org, or other client)
@@ -37,6 +39,11 @@ exports.create = function(user_id, data)
 		return Promise.reject(error('Please specify at least one recipient', {code: 400}));
 	}
 
+	if (data.partner && typeof partners[data.partner.toLowerCase()] !== 'undefined') {
+		console.log('conversation: requested partner: ', data.partner);
+		partner = data.partner.toLowerCase();
+	}
+
 	var usernames = recipients.map(function(r) { return r.username; }),
 		users;
 
@@ -48,6 +55,7 @@ exports.create = function(user_id, data)
 				user_id: user_id,
 				type: data.type,
 				state: data.state || null,
+				partner: partner,
 				created: db.now()
 			};
 
@@ -70,22 +78,15 @@ exports.create = function(user_id, data)
 					return conversation;
 				})
 				.tap(function(conversation) {
-					if(conversation.type === 'p2p') {
-						// if we're starting a p2p conversation, init multiple bots
-						return Promise.all(users.map(function(user) {
-							return bot_model.start('vote_1', user.id, {start: 'intro'});
-						}));
-					} else {
-						// start bot!
-						return bot_model.start(
-							'vote_1',
-							users[0].id,
-							{
-								start: options.start ? options.start : 'intro',
-								existing_conversation_id: conversation.id
-							}
-						);
-					}
+					// start bot!
+					return bot_model.start(
+						'vote_1',
+						users[0].id,
+						conversation.id,
+						{
+							start: options.start ? options.start : 'intro',
+						}
+					);
 				});
 		});
 };
