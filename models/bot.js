@@ -64,22 +64,10 @@ var default_steps = {
 					msg: l10n('error_first_name', conversation.locale)
 				});
 			}
-			if (body.indexOf('2') > -1) {
-				// SHORT CUT
-				return convo_model.update(conversation.id, {complete: true})
-					.then(function(lol) {;
-						return Promise.resolve({
-							next: 'share'
-						});
-					});
-			} else {
-				return Promise.resolve({
-					next: 'last_name',
-					store: {
-						'user.first_name': body.trim()
-					}
-				});
-			}
+			return Promise.resolve({
+				next: 'last_name',
+				store: { 'user.first_name': body.trim() }
+			});
 		},
 	},
 	last_name: {
@@ -230,17 +218,23 @@ var default_steps = {
 		process: simple_store('user.settings.email', {validate: validate.email, advance: true})
 	},
 	check_existing_registration: {
-		pre_process: function(action, conversation, user) {
+		process: function(body, user, step, conversation) {
 			return existing_registration.verify(user).then(function(registration_status) {
-				if (registration_status && registration_status[0]) {
-					return {msg: l10n('msg_already_registered', conversation.locale), next: 'share'};
+				if (registration_status && registration_status[0] === true) {
+					// they are already registered
+					// mark it
+					var update_user = util.object.set(user, 'settings.already_registered', registration_status[0]);
+					user_model.update(user.id, update_user);
+					// thank them
+					var msg = language.template(l10n('msg_already_registered', conversation.locale), user, conversation.locale);
+					message_model.create(config.bot.user_id, conversation.id, {body: msg});
+					// and prompt to share
+					return {next: 'share'};
 				} else {
-					// msg here?
 					return {next: 'per_state'};
 				}
 			});
-		},
-		process: function(body, user) {}
+		}
 	},
 	// this is a MAGICAL step. it never actually runs, but instead just
 	// points to other steps until it runs out of per-state questions to

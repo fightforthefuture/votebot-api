@@ -52,6 +52,10 @@ var config = {
         auth_token: process.env.SMARTY_STREETS_TOKEN,
     },
 
+    target_smart: {
+    	api_key: process.env.TARGET_SMART_KEY,
+    },
+
 	twilio: {
 		account_sid: process.env.TWILIO_SID,
 		auth_token: process.env.TWILIO_AUTH_TOKEN,
