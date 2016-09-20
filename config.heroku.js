@@ -1,3 +1,5 @@
+require('newrelic');
+
 var config = {
 	environment: process.env.APP_ENVIRONMENT,
 	port: process.env.PORT,
