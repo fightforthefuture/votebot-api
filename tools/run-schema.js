@@ -352,7 +352,15 @@ var default_chain_steps = [
 	{
 		name: 'state_id_or_ssn_last4',
 		msg: '[[prompt_state_id_or_ssn_last4]]',
-		errormsg: '[[error_state_id_or_ssn_last4]]',
+		errormsg: '[[error_validate_ssn_last4]]',
+		next: 'per_state',
+		admin_special: true,
+		admin_order: 37,
+	},
+	{
+		name: 'state_id_or_full_ssn',
+		msg: '[[prompt_state_id_or_full_ssn]]',
+		errormsg: '[[error_validate_ssn]]',
 		next: 'per_state',
 		admin_special: true,
 		admin_order: 37,

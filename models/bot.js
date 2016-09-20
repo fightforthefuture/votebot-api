@@ -242,7 +242,10 @@ var default_steps = {
 	per_state: {
 		pre_process: function(action, conversation, user) {
 			var state = util.object.get(user, 'settings.state');
-			var state_questions = us_election.state_required_questions[state] || us_election.required_questions_default;
+			var state_questions = us_election.required_questions_default;
+			if (us_election.state_required_questions[state]) {
+				state_questions = state_questions.concat(us_election.state_required_questions[state]);
+			}
 			var next_default = {next: 'confirm_name_address'};
 
 			// no per-state questions? skip!!
@@ -686,10 +689,28 @@ var default_steps = {
 		process: simple_store('user.settings.ssn', {validate: validate.ssn})
 	},
 	ssn_last4: {
-		process: simple_store('user.settings.ssn_last4', {validate: validate.ssn_last_4})
+		process: simple_store('user.settings.ssn_last4', {validate: validate.ssn_last4})
 	},
 	state_id_or_ssn_last4: {
-		process: simple_store('user.settings.state_id_or_ssn_last4')
+		pre_process: function(action, conversation, user) {
+			if(util.object.get(user, 'settings.state_id_number') || util.object.get(user, 'settings.ssn_last4')) {
+				// mark this step done by setting it's name to true
+				var update_user = util.object.set(user, 'settings.state_id_or_ssn_last4', true);
+				user_model.update(user.id, update_user);
+				return {next: 'per_state'};
+			}
+		},
+		process: simple_store('user.settings.ssn_last4', {validate: validate.ssn_last4})
+	},
+	state_id_or_full_ssn: {
+		pre_process: function(action, conversation, user) {
+			if(util.object.get(user, 'settings.state_id_number') || util.object.get(user, 'settings.ssn')) {
+				var update_user = util.object.set(user, 'settings.state_id_or_full_ssn', true);
+				user_model.update(user.id, update_user);
+				return {next: 'per_state'};
+			}
+		},
+		process: simple_store('user.settings.ssn', {validate: validate.ssn})
 	},
 	gender: {
 		process: simple_store('user.settings.gender', {validate: validate.gender})
