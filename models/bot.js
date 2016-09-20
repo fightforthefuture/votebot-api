@@ -609,10 +609,42 @@ var default_steps = {
 				}
 			} else {
 				var res = {
-					'next': 'final_tmp', // was fftf_opt_in, disable until list sharing resolved
-					// 'delay': 10000, // re-enable this once fftf_opt_in thing is figured out
+					'next': 'sms_notice',
 					'msg': l10n('msg_share_sms', conversation.locale)
 				};
+			}
+			return res;
+		},
+		process: function() {
+			return Promise.resolve({'next': 'final_tmp'})
+		},
+	},
+	sms_notice: {
+		name: 'sms_notice',
+		pre_process: function(action, conversation, user) {
+			if (conversation.type == 'sms')  {
+				var locale = conversation.locale;
+				if (conversation.partner) {
+					tpl = {partner: conversation.partner.toUpperCase()};
+
+					var msg_1 = language.template(l10n('msg_sms_notice_partner', locale), tpl, locale);
+					var msg_2 = l10n('msg_sms_fftf_stop', locale);
+
+					// send both our and partner opt-out messages, no delay in between
+					message_model.create(config.bot.user_id, conversation.id, {body: msg_1});
+					message_model.create(config.bot.user_id, conversation.id, {body: msg_2});
+				} else {
+					// just send the single FFTF&EF notice
+					var msg = l10n('msg_sms_notice', locale);
+					message_model.create(config.bot.user_id, conversation.id, {body: msg});
+				}
+				var res = {
+					'next': 'final_tmp', // was fftf_opt_in, disable until list sharing resolved
+				};
+			} else {
+				var res = {
+					'next': 'final_tmp' // don't send sms message for other messaging services
+				}
 			}
 			return res;
 		},
@@ -938,8 +970,6 @@ function simple_store(store, options)
 
 var parse_step = function(step, body, user, conversation)
 {
-	// if the user is canceling, don't bother parsing anything
-	if(language.is_cancel(body)) return Promise.resolve({next: '_cancel'});
 	if(language.is_help(body)) return Promise.resolve({next: '_help', prev: step.name});
 	if(language.is_back(body)) return Promise.resolve({next: '_back'});
 
@@ -1079,6 +1109,12 @@ exports.next = function(user_id, conversation, message)
 	    step,
 		state;
 
+	if (conversation.active == false) {
+		// refuse to send anything, even if prompted
+		log.info('bot: recv msg, but conversation inactive');
+		return;
+	}
+
 	if (!message)
 		message = {
 			user_id: user_id,
@@ -1109,6 +1145,16 @@ exports.next = function(user_id, conversation, message)
 
 			var body = message.body;
 
+			// handle stop messages first
+			if(language.is_cancel(body)) {
+				var stop_msg = l10n('msg_unsubscribed', conversation.locale);
+				message_model.create(config.bot.user_id, conversation.id, {body: language.template(stop_msg, null, conversation.locale)});
+				if (user_model.use_notify(user.username)) { notify.delete_binding(user); }
+				// mark user inactive, so we don't share their info with partners
+				user_model.update(user.id, util.object.set(user, 'active', false));
+				return convo_model.close(conversation.id);
+			}
+
 			// we've reached the final step
 			if(step.final)
 			{
@@ -1129,13 +1175,6 @@ exports.next = function(user_id, conversation, message)
 
 					log_chain_step_exit(step.id);
 
-					// if user wants out, let them
-					if(action.next == '_cancel') {
-						var stop_msg = l10n('msg_unsubscribed', conversation.locale);
-						message_model.create(config.bot.user_id, conversation.id, {body: language.template(stop_msg, null, conversation.locale)});
-						if (user_model.use_notify(user.username)) { notify.delete_binding(user); }
-						return convo_model.close(conversation.id);
-					}
 					if(action.next == '_help') {
 						var help_msg = l10n('msg_help', conversation.locale);
 						message_model.create(config.bot.user_id, conversation.id, {body: language.template(help_msg, null, conversation.locale)});

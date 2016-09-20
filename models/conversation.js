@@ -194,6 +194,5 @@ exports.poll = function(user_id, conversation_id, last_id, username, options)
 exports.close = function(conversation_id)
 {
 	return db.update('conversations', conversation_id, {active: false});
-	// also set users inactive?
 };
 
