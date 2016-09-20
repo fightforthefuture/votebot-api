@@ -610,7 +610,9 @@ var default_steps = {
 			} else {
 				var res = {
 					'next': 'sms_notice',
-					'msg': l10n('msg_share_sms', conversation.locale)
+					'msg': l10n('msg_share_sms', conversation.locale),
+					'delay': default_delay(conversation),
+					'advance': true
 				};
 			}
 			return res;
