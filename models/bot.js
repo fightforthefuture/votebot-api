@@ -1120,9 +1120,18 @@ exports.next = function(user_id, conversation, message)
 						// let user continue
 						action.next = action.prev; 
 					}
+
 					if(action.next == '_back') {
-						log.info('bot: going back to '+state.back);
-						action.next = state.back;
+
+						// JL HACK ~ going "back" will not work due to preprocess
+						// just go back to the zip step if there's an issue						
+						if (step.name == 'state' || step.name == 'address') {
+							log.info('bot: overriding back! going to zip...');
+							action.next = 'zip';
+						} else {
+							log.info('bot: going back to '+state.back);
+							action.next = state.back;
+						}
 					}
 
 					var promise = Promise.resolve();
