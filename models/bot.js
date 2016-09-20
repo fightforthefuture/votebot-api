@@ -231,6 +231,9 @@ var default_steps = {
 					// and prompt to share
 					return {next: 'share'};
 				} else {
+					// tell them they're not yet registered, to increase urgency
+					var msg = language.template(l10n('msg_not_yet_registered', conversation.locale), user, conversation.locale);
+					message_model.create(config.bot.user_id, conversation.id, {body: msg});
 					return {next: 'per_state'};
 				}
 			});
