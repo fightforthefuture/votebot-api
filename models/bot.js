@@ -4,6 +4,7 @@ var db = require('../lib/db');
 var convo_model = require('./conversation');
 var submission_model = require('./submission');
 var message_model = require('./message');
+var existing_registration = require('./existing_registration');
 var facebook_model = require('./facebook');
 var user_model = require('./user');
 var attrition_model = require('./attrition');
@@ -57,22 +58,16 @@ var default_steps = {
 				return { msg: l10n('prompt_first_name', conversation.locale) }
 		},
 		process: function(body, user, step, conversation) {
-			if (body.indexOf('2') > -1) {
-				// SHORT CUT
-				return convo_model.update(conversation.id, {complete: true})
-					.then(function(lol) {;
-						return Promise.resolve({
-							next: 'share'
-						});
-					});
-			} else {
+			if (language.is_yes(body.trim())) {
 				return Promise.resolve({
-					next: 'last_name',
-					store: {
-						'user.first_name': body.trim()
-					}
+					next: 'first_name',
+					msg: l10n('error_first_name', conversation.locale)
 				});
 			}
+			return Promise.resolve({
+				next: 'last_name',
+				store: { 'user.first_name': body.trim() }
+			});
 		},
 	},
 	last_name: {
@@ -89,7 +84,7 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			if(util.object.get(user, 'settings.city')) return {next: 'state'};
 		},
-		process: simple_store('user.settings.city')
+		process: simple_store('user.settings.city', {validate: validate.city})
 	},
 	state: {
 		pre_process: function(action, conversation, user) {
@@ -214,13 +209,35 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			// send email prompt dependent on user state
 			var state = util.object.get(user, 'settings.state');
-			if (us_election.state_required_questions[state]) {
+			if (us_election.state_integrated_ovr[state]) {
 				return {msg: l10n('prompt_email_for_ovr', conversation.locale)};
 			} else {
 				return {msg: l10n('prompt_email_for_pdf', conversation.locale)};
 			}
 		},
-		process: simple_store('user.settings.email', {validate: validate.email})
+		process: simple_store('user.settings.email', {validate: validate.email, advance: true})
+	},
+	check_existing_registration: {
+		process: function(body, user, step, conversation) {
+			return existing_registration.verify(user).then(function(registration_status) {
+				if (registration_status && registration_status[0] === true) {
+					// they are already registered
+					// mark it
+					var update_user = util.object.set(user, 'settings.already_registered', registration_status[0]);
+					user_model.update(user.id, update_user);
+					// thank them
+					var msg = language.template(l10n('msg_already_registered', conversation.locale), user, conversation.locale);
+					message_model.create(config.bot.user_id, conversation.id, {body: msg});
+					// and prompt to share
+					return {next: 'share'};
+				} else {
+					// tell them they're not yet registered, to increase urgency
+					var msg = language.template(l10n('msg_not_yet_registered', conversation.locale), user, conversation.locale);
+					message_model.create(config.bot.user_id, conversation.id, {body: msg});
+					return {next: 'per_state'};
+				}
+			});
+		}
 	},
 	// this is a MAGICAL step. it never actually runs, but instead just
 	// points to other steps until it runs out of per-state questions to
@@ -228,7 +245,10 @@ var default_steps = {
 	per_state: {
 		pre_process: function(action, conversation, user) {
 			var state = util.object.get(user, 'settings.state');
-			var state_questions = us_election.state_required_questions[state] || us_election.required_questions_default;
+			var state_questions = us_election.required_questions_default;
+			if (us_election.state_required_questions[state]) {
+				state_questions = state_questions.concat(us_election.state_required_questions[state]);
+			}
 			var next_default = {next: 'confirm_name_address'};
 
 			// no per-state questions? skip!!
@@ -332,30 +352,6 @@ var default_steps = {
 		}
 	},
 	submit: {
-		pre_process: function(action, conversation, user) {
-			// check to ensure user has all required fields before submitting
-			//
-			// JL NOTE ~ How would this ever work?
-			// The validate.voter_registration_complete method is not synchronous,
-			// but we are treating it as such.
-			//
-			// Also, it tries to update the user with a "response.errors" object.
-			// There is no such object in the scope of this method. It appears to
-			// be duplicate code from the submit.process step. Disabling because it
-			// does not pass my mental sanity check. Plus I'm changing the format
-			// of the missing_fields object anyway.
-			//
-			/*
-			var missing_fields = validate.voter_registration_complete(user.settings, conversation.locale);
-			if (missing_fields.length) {
-				// incomplete, re-query missing fields
-				log.error('bot: submit: missing fields! ', missing_fields, {step: 'submit', username: user.username});
-				update_user = util.object.set(user, 'settings.missing_fields', response.errors);
-				user_model.update(user.id, update_user);
-				return {next: 'incomplete'};
-			}
-			*/
-		},
 		process: function(body, user, step, conversation) {
 			if (!config.app.submit_ovr_url || !config.app.submit_pdf_url) {
 				log.info('bot: no submit_url in config, skipping submit...');
@@ -373,7 +369,7 @@ var default_steps = {
 			var state = util.object.get(user, 'settings.state');
 			var state_deadline = us_election.get_ovr_deadline(state);
 			var failed_ovr = util.object.get(user, 'settings.failed_ovr');
-			if (us_election.state_required_questions[state] && !failed_ovr) {
+			if (us_election.state_integrated_ovr[state] && !failed_ovr) {
 				log.info('bot: sending OVR submission...');
 				var url = config.app.submit_ovr_url;
 				var registration_deadline = state_deadline['online'];
@@ -399,8 +395,16 @@ var default_steps = {
 					    method: 'POST',
 					    uri: url,
 					    body: body,
-					    json: true 
+					    json: true,
+						
 					};
+					if (config.votebot_api_key) {
+						var username = (config.votebot_api_key || '');
+						var password = '';
+						form_submit.headers = {
+						    'Authorization': 'Basic ' + new Buffer(username+':'+password).toString('base64')                  
+						  }
+					}
 					return request(form_submit);
 				}).then(function (response) {
 			    	log.info('bot: form_submit: response', response);
@@ -688,10 +692,28 @@ var default_steps = {
 		process: simple_store('user.settings.ssn', {validate: validate.ssn})
 	},
 	ssn_last4: {
-		process: simple_store('user.settings.ssn_last4', {validate: validate.ssn_last_4})
+		process: simple_store('user.settings.ssn_last4', {validate: validate.ssn_last4})
 	},
 	state_id_or_ssn_last4: {
-		process: simple_store('user.settings.state_id_or_ssn_last4')
+		pre_process: function(action, conversation, user) {
+			if(util.object.get(user, 'settings.state_id_number') || util.object.get(user, 'settings.ssn_last4')) {
+				// mark this step done by setting it's name to true
+				var update_user = util.object.set(user, 'settings.state_id_or_ssn_last4', true);
+				user_model.update(user.id, update_user);
+				return {next: 'per_state'};
+			}
+		},
+		process: simple_store('user.settings.ssn_last4', {validate: validate.ssn_last4})
+	},
+	state_id_or_full_ssn: {
+		pre_process: function(action, conversation, user) {
+			if(util.object.get(user, 'settings.state_id_number') || util.object.get(user, 'settings.ssn')) {
+				var update_user = util.object.set(user, 'settings.state_id_or_full_ssn', true);
+				user_model.update(user.id, update_user);
+				return {next: 'per_state'};
+			}
+		},
+		process: simple_store('user.settings.ssn', {validate: validate.ssn})
 	},
 	gender: {
 		process: simple_store('user.settings.gender', {validate: validate.gender})

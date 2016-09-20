@@ -1,4 +1,7 @@
 module.exports = {
+    aarw: {
+        intro_shortcode: 'aarw'
+    },
     care2: {
         intro_shortcode: 'care2',
     },
