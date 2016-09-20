@@ -12,6 +12,7 @@ var ATTRITION_QUERY = [
     'FROM   conversations',
     'WHERE  nudged = false',
     'AND    complete = false',
+    'AND    active = true',
     'AND    updated < now() - \'23 hours\'::interval',
     'AND    updated > now() - \'24 hours\'::interval',
 ];

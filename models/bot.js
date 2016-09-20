@@ -968,6 +968,19 @@ function simple_store(store, options)
 	};
 }
 
+var cancel_conversation = function(user, conversation) {
+	if (user_model.use_notify(user.username)) { notify.delete_binding(user); }
+
+	var stop_msg = l10n('msg_unsubscribed', conversation.locale);
+	return message_model.create(config.bot.user_id, conversation.id, {
+		body: language.template(stop_msg, null, conversation.locale)
+	}).then(function() {
+		// mark user inactive, so we don't share their info with partners
+		user_model.update(user.id, util.object.set(user, 'active', false));
+		convo_model.close(conversation.id);
+	});
+};
+
 var parse_step = function(step, body, user, conversation)
 {
 	if(language.is_help(body)) return Promise.resolve({next: '_help', prev: step.name});
@@ -1147,16 +1160,7 @@ exports.next = function(user_id, conversation, message)
 
 			// handle stop messages first
 			if(language.is_cancel(body)) {
-				if (user_model.use_notify(user.username)) { notify.delete_binding(user); }
-
-				var stop_msg = l10n('msg_unsubscribed', conversation.locale);
-				return message_model.create(config.bot.user_id, conversation.id, {
-					body: language.template(stop_msg, null, conversation.locale)
-				}).then(function() {
-					// mark user inactive, so we don't share their info with partners
-					user_model.update(user.id, util.object.set(user, 'active', false));
-					convo_model.close(conversation.id);
-				});
+				return cancel_conversation(user, conversation);
 			}
 
 			// we've reached the final step
@@ -1178,6 +1182,10 @@ exports.next = function(user_id, conversation, message)
 					log.info('bot: action:', JSON.stringify(action));
 
 					log_chain_step_exit(step.id);
+
+					if(action.next == '_cancel') {
+						return cancel_conversation(user, conversation);
+					}
 
 					if(action.next == '_help') {
 						var help_msg = l10n('msg_help', conversation.locale);
@@ -1356,4 +1364,3 @@ exports.next = function(user_id, conversation, message)
 				});
 		});
 };
-
