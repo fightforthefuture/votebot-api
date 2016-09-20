@@ -57,7 +57,7 @@ fs.readdirSync(controller_dir).forEach(function(file) {
 
 // our default API route
 app.get('/', function(req, res) {
-	resutil.send(res, {message: 'Good day, fellow explorer.'});
+	resutil.send(res, {application: 'votebot-api', status: 'OK', message: 'Good day, fellow explorer.'});
 });
 
 var port = config.port ? config.port : 3000
