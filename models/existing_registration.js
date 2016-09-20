@@ -15,7 +15,7 @@ exports.verify = function(user)
             "city": util.object.get(user, 'settings.city'),
             "state": util.object.get(user, 'settings.state'),
             "zip_code": util.object.get(user, 'settings.zip'),
-            //"dob": date_of_birth.format("YYYYMMDD") // if we send DOB, TS requires an exact match
+            "dob": date_of_birth.format("YYYYMMDD") // if we send DOB, TS requires an exact match
         };
         
         var request_options = {
