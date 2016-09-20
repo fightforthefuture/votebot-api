@@ -603,18 +603,18 @@ var default_steps = {
 	share_sms: {
 		name: 'share_sms',
 		pre_process: function(action, conversation, user) {
-			if (conversation.type == 'fb') {
-				var res = {
-					'next': 'final_tmp' // don't send sms message for FB
-				}
-			} else {
+			if (conversation.type == 'sms')  {
 				var res = {
 					'next': 'sms_notice',
 					'msg': l10n('msg_share_sms', conversation.locale),
-					'delay': default_delay(conversation),
+					// 'delay': default_delay(conversation),
 					'advance': true
 				};
-			}
+			} else {
+				var res = {
+					'next': 'final_tmp'
+				}
+			} 
 			return res;
 		},
 		process: function() {
