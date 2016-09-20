@@ -1147,12 +1147,16 @@ exports.next = function(user_id, conversation, message)
 
 			// handle stop messages first
 			if(language.is_cancel(body)) {
-				var stop_msg = l10n('msg_unsubscribed', conversation.locale);
-				message_model.create(config.bot.user_id, conversation.id, {body: language.template(stop_msg, null, conversation.locale)});
 				if (user_model.use_notify(user.username)) { notify.delete_binding(user); }
-				// mark user inactive, so we don't share their info with partners
-				user_model.update(user.id, util.object.set(user, 'active', false));
-				return convo_model.close(conversation.id);
+
+				var stop_msg = l10n('msg_unsubscribed', conversation.locale);
+				return message_model.create(config.bot.user_id, conversation.id, {
+					body: language.template(stop_msg, null, conversation.locale)
+				}).then(function() {
+					// mark user inactive, so we don't share their info with partners
+					user_model.update(user.id, util.object.set(user, 'active', false));
+					convo_model.close(conversation.id);
+				});
 			}
 
 			// we've reached the final step
