@@ -220,6 +220,8 @@ var default_steps = {
 	check_existing_registration: {
 		process: function(body, user, step, conversation) {
 			return existing_registration.verify(user).then(function(registration_status) {
+				var next = 'per_state';
+
 				if (registration_status && registration_status[0] === true) {
 					// they are already registered
 					// mark it
@@ -229,13 +231,16 @@ var default_steps = {
 					var msg = language.template(l10n('msg_already_registered', conversation.locale), user, conversation.locale);
 					message_model.create(config.bot.user_id, conversation.id, {body: msg});
 					// and prompt to share
-					return {next: 'share'};
+					next = 'share';
 				} else {
 					// tell them they're not yet registered, to increase urgency
 					var msg = language.template(l10n('msg_not_yet_registered', conversation.locale), user, conversation.locale);
 					message_model.create(config.bot.user_id, conversation.id, {body: msg});
-					return {next: 'per_state'};
 				}
+				return Promise.delay(default_delay(conversation))
+					.then(function() {
+						return {'next': next}
+					});
 			});
 		}
 	},
