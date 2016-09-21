@@ -608,12 +608,11 @@ var default_steps = {
 	share_sms: {
 		name: 'share_sms',
 		pre_process: function(action, conversation, user) {
-			if (conversation.type == 'sms')  {
+			if (conversation.type == 'sms' || conversation.type == 'web')  {
 				var res = {
 					'next': 'sms_notice',
 					'msg': l10n('msg_share_sms', conversation.locale),
-					// 'delay': default_delay(conversation),
-					'advance': true
+					'delay': default_delay(conversation),
 				};
 			} else {
 				var res = {
