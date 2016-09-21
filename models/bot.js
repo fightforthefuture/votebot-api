@@ -463,10 +463,23 @@ var default_steps = {
 			// send confirmation prompt dependent on user state
 			var form_type = util.object.get(user, 'settings.submit_form_type');
 			var mail_eta = util.object.get(user, 'settings.nvra_mail_eta');
-			var pdf_url = util.object.get(user, 'settings.nvra_pdf_url');
+			var pdf_url = util.object.get(user, 'settings.nvra_pdf_url'),
+				state_name = us_states.abbr_to_name(user.settings.state),
+      			requirements = us_election.get_registration_requirements(state_name),
+      			deadline = l10n('frag_soon', conversation.locale);
+
+      		if (requirements["Deadlines"]["received-by"]) {
+		      deadline = moment(requirements["Deadlines"]["received-by"]).format('MM/DD')
+		    } else if (requirements["Deadlines"]["mail-by"]) {
+		      deadline = moment(requirements["Deadlines"]["mail-by"]).format('MM/DD')
+		    }
 
 			if (form_type != 'NVRA') {
 				// registration complete online, no extra instructions
+				setTimeout(function() {
+					var msg = language.template(l10n('msg_complete_ovr_disclaimer', conversation.locale), user, conversation.locale);
+					message_model.create(config.bot.user_id, conversation.id, {body: msg});
+				}, config.bot.advance_delay);
 				return {
 					msg: l10n('msg_complete_ovr', conversation.locale),
 					next: 'share',
@@ -477,7 +490,7 @@ var default_steps = {
 					var msg = l10n('msg_complete_mail', conversation.locale),
 						friendly_eta = momentTZ(mail_eta).tz('America/Los_Angeles').format('MMMM D'),
 						msg = msg.replace('{{mail_eta}}', friendly_eta);
-
+						msg = msg.replace('{{deadline}}', deadline);
 					return {
 						msg: msg,
 						next: 'share',
@@ -498,8 +511,10 @@ var default_steps = {
 							delay: config.bot.advance_delay * 4
 						};
 					} else {
+						var msg = l10n('msg_complete_pdf', conversation.locale);
+						msg = msg.replace('{{deadline}}', deadline);
 						return {
-							msg: l10n('msg_complete_pdf', conversation.locale),
+							msg: msg,
 							next: 'share',
 							delay: config.bot.advance_delay * 4
 						};

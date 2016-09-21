@@ -7,6 +7,7 @@ var query = [
     'WHERE      conversations.partner = {{partner}}',
     'AND        conversations_recipients.conversation_id = conversations.id',
     'AND        users.id = conversations_recipients.user_id',
+    'AND        users.active = TRUE',
     'ORDER BY   users.created DESC'
 ];
 
@@ -25,7 +26,7 @@ pg.connect(connstr, function(err, client, done) {
         process.exit(1);
     };
     client.query(query, {}, function(err, result) {
-        console.log('"first_name","last_name","email","phone","address","address_unit","city","state","zip","partner"');
+        console.log('"first_name","last_name","email","phone","address","address_unit","city","state","zip","complete","partner"');
         for (var i=0; i<result.rows.length; i++) {
             var row = result.rows[i];
             var line = '';
@@ -39,6 +40,7 @@ pg.connect(connstr, function(err, client, done) {
             line += '"'+escape(row.settings.city)+'",';
             line += '"'+escape(row.settings.state)+'",';
             line += '"'+escape(row.settings.zip)+'",';
+            line += '"'+(row.complete ? 'complete' : '')+'",';
             line += '"'+escape(partner)+'"';
 
             console.log(line);
