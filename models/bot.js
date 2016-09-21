@@ -628,7 +628,7 @@ var default_steps = {
 	sms_notice: {
 		name: 'sms_notice',
 		pre_process: function(action, conversation, user) {
-			if (conversation.type == 'sms')  {
+			if (conversation.type == 'sms' || conversation.type == 'web')  {
 				var locale = conversation.locale;
 				if (conversation.partner) {
 					tpl = {partner: conversation.partner.toUpperCase()};
