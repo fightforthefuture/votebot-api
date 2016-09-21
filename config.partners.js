@@ -1,4 +1,7 @@
 module.exports = {
+    '18mr': {
+        intro_shortcode: '18mr'
+    },
     aarw: {
         intro_shortcode: 'aarw'
     },
