@@ -1,49 +1,63 @@
 module.exports = {
     '18mr': {
-        intro_shortcode: '18mr'
+        intro_shortcode: '18mr',
+        msg_intro: "(Hi, this is 18MR and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     aarw: {
-        intro_shortcode: 'aarw'
+        intro_shortcode: 'aarw',
+        msg_intro: "(Hi, this is AARW and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     care2: {
         intro_shortcode: 'care2',
+        msg_intro: "(Hi, this is Care2 and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     dailykos: {
         intro_shortcode: 'dailykos',
+        msg_intro: "(Hi, this is DailyKos and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     generalassembly: {
         intro_shortcode: 'ga',
+        msg_intro: "(Hi, this is General Assembly and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",  
     },
     genius: {
         intro_shortcode: 'genius',
+        msg_intro: "(Hi, this is Genius and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     headcount: {
         intro_shortcode: 'count',
-        msg_intro: "Hi this is HelloVote and HeadCount! I'm going to help you register to vote. I'll ask a few questions to fill out your registration form.",
+        msg_intro: "(Hi, this is Headcount and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
         msg_intro_es: "Hola, this could be localized."
     },
     krcla: {
         intro_shortcode: 'krcla',
+        msg_intro: "(Hi, this is KRC LA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     lvp: {
         intro_shortcode: 'lvp',
+        msg_intro: "(Hi, this is LVP and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     mtv: {
         intro_shortcode: 'mtv',
+        msg_intro: "(Hi, this is MTV and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     nextgen: {
         intro_shortcode: 'nextgen',
+        msg_intro: "(Hi, this is NextGen and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     presente: {
         intro_shortcode: 'presente',
+        msg_intro: "(Hi, this is Presente and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     refinery29: {
         intro_shortcode: 'r29',
+        msg_intro: "(Hi, this is Refinery29 and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     seiuca: {
         intro_shortcode: 'seiuca',
+        msg_intro: "(Hi, this is SEIU CA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     shaderoom: {
         intro_shortcode: 'shaderoom',
+        msg_intro: "(Hi, this is the Shade Room and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
 };
