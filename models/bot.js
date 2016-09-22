@@ -844,7 +844,7 @@ var default_steps = {
 					log.info('bot: got previous address from smarty: ', address_data);
 					var previous_address = {
 						'user.settings.has_previous_address': true,
-						'user.settings.previous_address': validate.massage_street_address(address_data),
+						'user.settings.previous_address': validate.massage_street_address(address_data, {omit_apartment: true}),
 						'user.settings.previous_city': address_data.components.city_name,
 						'user.settings.previous_state': address_data.components.state_abbreviation,
 						'user.settings.previous_zip': address_data.components.zipcode,
