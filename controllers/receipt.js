@@ -80,6 +80,8 @@ var create = function(req, res)
     }).then(function(updated_conversation) {
         bot_model.next(user.id, updated_conversation);
 
+        resutil.send(res, 'kthx');
+
         if (status !== 'success')
             return 'failed, get over it';
         
@@ -92,7 +94,7 @@ var create = function(req, res)
             return email.sendOVRReceipt(user);
                 
     }).then(function(emailResult) {
-        resutil.send(res, emailResult);
+        log.info('receipt: email result: ', emailResult);
     })
     .catch(function(err) {
         resutil.error(res, 'Problem sending email receipt', err);
