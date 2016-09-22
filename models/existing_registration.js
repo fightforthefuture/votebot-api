@@ -15,13 +15,11 @@ exports.verify = function(user)
             "city": util.object.get(user, 'settings.city'),
             "state": util.object.get(user, 'settings.state'),
             "zip_code": util.object.get(user, 'settings.zip'),
-            "dob": date_of_birth.format("YYYYMMDD") // if we send DOB, TS requires an exact match
+            "dob": date_of_birth.format("YYYY****") // just send year to TargetSmart
+            // they do an exact match on what they have, but their default value is 0101
+            // which is not helpful. so, just match on year
         }
-        var year_only_states = ["VT"]; // some states have year-only dates
-        if (year_only_states.indexOf(query_data.state) != -1) {
-            query_data.dob = date_of_birth.format("YYYY0101");
-        }
-        
+
         var request_options = {
             url: 'https://api.targetsmart.com/voter-registration-check',
             qs: query_data,
