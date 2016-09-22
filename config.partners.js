@@ -22,6 +22,9 @@ module.exports = {
     krcla: {
         intro_shortcode: 'krcla',
     },
+    lvp: {
+        intro_shortcode: 'lvp',
+    },
     nextgen: {
         intro_shortcode: 'nextgen',
     },
