@@ -7,8 +7,13 @@ exports.validate = function(street, city, state, zip)
     return new Promise(function(resolve, reject) {
         var req_url = 'https://api.smartystreets.com/street-address'
             +'?auth-id='+config.smarty_streets.auth_id
-            +'&auth-token='+config.smarty_streets.auth_token
-            +'&street='+street+'&city='+city+'&state='+state;
+            +'&auth-token='+config.smarty_streets.auth_token;
+
+        if (!city && !state && !zip)
+            req_url += '&street='+street;
+        else
+            req_url += '&street='+street+'&city='+city+'&state='+state;
+        
         request(req_url, function(err, res, body) {
             if(err) return reject(err);
             if(res.statusCode >= 400) return reject(new Error('not_found'));

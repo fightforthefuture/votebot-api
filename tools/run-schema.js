@@ -405,6 +405,14 @@ var default_chain_steps = [
 		admin_order: 41,
 	},
 	{
+		name: 'has_previous_name_address',
+		msg: '[[prompt_has_previous_name_address]]',
+		errormsg: '',
+		next: '',
+		admin_special: false,
+		admin_order: 42
+	},
+	{
 		name: 'has_previous_address',
 		msg: '[[prompt_has_previous_address]]',
 		errormsg: '',
@@ -415,6 +423,54 @@ var default_chain_steps = [
 	{
 		name: 'previous_address',
 		msg: '[[prompt_previous_address]]',
+		next: 'per_state',
+		errormsg: '',
+		admin_special: true,
+		admin_order: 43
+	},
+	{
+		name: 'previous_address_street',
+		msg: '[[prompt_previous_address_street]]',
+		next: 'previous_address_unit',
+		errormsg: '',
+		admin_special: true,
+		admin_order: 43
+	},
+	{
+		name: 'previous_address_unit',
+		msg: '[[prompt_previous_address_unit]]',
+		next: 'previous_city',
+		errormsg: '',
+		admin_special: true,
+		admin_order: 43
+	},
+	{
+		name: 'previous_city',
+		msg: '[[prompt_previous_city]]',
+		next: 'previous_state',
+		errormsg: '',
+		admin_special: true,
+		admin_order: 43
+	},
+	{
+		name: 'previous_state',
+		msg: '[[prompt_previous_state]]',
+		next: 'previous_zip',
+		errormsg: '',
+		admin_special: true,
+		admin_order: 43
+	},
+	{
+		name: 'previous_zip',
+		msg: '[[prompt_previous_zip]]',
+		next: 'previous_county',
+		errormsg: '',
+		admin_special: true,
+		admin_order: 43
+	},
+	{
+		name: 'previous_county',
+		msg: '[[prompt_previous_county]]',
 		next: 'per_state',
 		errormsg: '',
 		admin_special: true,

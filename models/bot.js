@@ -8,6 +8,7 @@ var existing_registration = require('./existing_registration');
 var facebook_model = require('./facebook');
 var user_model = require('./user');
 var attrition_model = require('./attrition');
+var street_address_model = require('./street_address');
 var error = require('../lib/error');
 var util = require('../lib/util');
 var language = require('../lib/language');
@@ -817,7 +818,7 @@ var default_steps = {
 
 			if (language.is_yes(body)) {
 				var update_user = util.object.set(user, 'settings.has_previous_address', true);
-				var next = 'previous_address';
+				next = 'previous_address';
 			} else {
 				var update_user = util.object.set(user, 'settings.has_previous_address', false);
 			}
@@ -829,7 +830,97 @@ var default_steps = {
 	},
 
 	previous_address: {
+		process: function(body, user) {
+			if (language.is_skip(body)) {
+				return Promise.resolve({
+					next: 'per_state',
+					store: {
+						'user.settings.has_previous_address': false
+					}
+				});
+			}
+			return street_address_model.validate(body)
+				.then(function(address_data) {
+					log.info('bot: got previous address from smarty: ', address_data);
+					var previous_address = {
+						'user.settings.has_previous_address': true,
+						'user.settings.previous_address': validate.massage_street_address(address_data),
+						'user.settings.previous_city': address_data.components.city_name,
+						'user.settings.previous_state': address_data.components.state_abbreviation,
+						'user.settings.previous_zip': address_data.components.zipcode,
+						'user.settings.previous_county': address_data.metadata.county_name,
+					}
+					if (address_data.components.secondary_number)
+						previous_address['user.settings.previous_address_unit'] = address_data.components.secondary_number;
+
+					return {
+						next: 'per_state',
+						store: previous_address
+					};
+				})
+				.catch(function(baaahhhh) {
+					log.info('bot: BOGUS PREVIOUS ADDRESS:', body);
+					return {
+						next: 'previous_address_street',
+						store: {
+							'user.settings.has_previous_address': true
+						}
+					};
+				});
+		}
+	},
+
+	previous_address_street: {
 		process: simple_store('user.settings.previous_address'),
+	},
+
+	previous_address_unit: {
+		process: function(body) {
+			var result = {
+				next: 'previous_city',
+				store: {
+					'user.settings.previous_address_unit': body
+				}
+			};
+			if (body.toLowerCase().indexOf('none') !== -1)
+				result.store['user.settings.previous_address_unit'] = null;
+
+			return Promise.resolve(result);
+		}
+	},
+
+	previous_city: {
+		process: simple_store('user.settings.previous_city'),
+	},
+
+	previous_state: {
+		process: simple_store('user.settings.previous_state', {validate: validate.us_state}),
+	},
+
+	previous_zip: {
+		process: simple_store('user.settings.previous_zip'),
+	},
+
+	previous_county: {
+		process: simple_store('user.settings.previous_county'),
+	},
+
+	has_previous_name_address: {
+		process: function(body, user) {
+			var next = 'per_state';
+			var flag = false;
+
+			if (language.is_yes(body)) {
+				next = 'previous_name';
+				flag = true;
+			}
+			return Promise.resolve({
+				next: next,
+				store: {
+					'user.settings.has_previous_name_address': flag
+				}
+			});
+		}
 	},
 
 	has_previous_name: {
@@ -838,7 +929,7 @@ var default_steps = {
 
 			if (language.is_yes(body)) {
 				var update_user = util.object.set(user, 'settings.has_previous_name', true);
-				var next = 'previous_name';
+				next = 'previous_name';
 			} else {
 				var update_user = util.object.set(user, 'settings.has_previous_name', false);
 			}
@@ -850,7 +941,24 @@ var default_steps = {
 	},
 
 	previous_name: {
-		process: simple_store('user.settings.previous_name'),
+		process: function(body, user) {
+			if (language.is_skip(body)) {
+				return Promise.resolve({
+					next: 'previous_address',
+					store: {
+						'user.settings.has_previous_name': false
+					}
+				});
+			} else {
+				return Promise.resolve({
+					next: 'previous_address',
+					store: {
+						'user.settings.has_previous_name': true,
+						'user.settings.previous_name': body.trim()
+					}
+				});
+			}
+		},
 	},
 
 	has_separate_mailing_address: {
@@ -861,7 +969,7 @@ var default_steps = {
 
 			if (language.is_yes(body)) {
 				var update_user = util.object.set(user, 'settings.has_separate_mailing_address', true);
-				var next = 'separate_mailing_address';
+				next = 'separate_mailing_address';
 			} else {
 				var update_user = util.object.set(user, 'settings.has_separate_mailing_address', false);
 			}
