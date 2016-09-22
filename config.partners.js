@@ -11,6 +11,9 @@ module.exports = {
     dailykos: {
         intro_shortcode: 'dailykos',
     },
+    generalassembly: {
+        intro_shortcode: 'ga',
+    },
     genius: {
         intro_shortcode: 'genius',
     },
@@ -25,11 +28,17 @@ module.exports = {
     lvp: {
         intro_shortcode: 'lvp',
     },
+    mtv: {
+        intro_shortcode: 'mtv',
+    },
     nextgen: {
         intro_shortcode: 'nextgen',
     },
     presente: {
         intro_shortcode: 'presente',
+    },
+    refinery29: {
+        intro_shortcode: 'r29',
     },
     seiuca: {
         intro_shortcode: 'seiuca',
