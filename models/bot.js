@@ -907,19 +907,23 @@ var default_steps = {
 
 	has_previous_name_address: {
 		process: function(body, user) {
-			var next = 'per_state';
-			var flag = false;
-
 			if (language.is_yes(body)) {
-				next = 'previous_name';
-				flag = true;
+				return Promise.resolve({
+					next: 'previous_name',
+					store: {
+						'user.settings.has_previous_name_address': true
+					}
+				});
 			}
 			return Promise.resolve({
-				next: next,
+				next: 'per_state',
 				store: {
-					'user.settings.has_previous_name_address': flag
+					'user.settings.has_previous_name_address': false,
+					'user.settings.has_previous_name': false,
+					'user.settings.has_previous_address': false
 				}
 			});
+			
 		}
 	},
 
