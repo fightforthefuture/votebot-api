@@ -43,4 +43,7 @@ module.exports = {
     seiuca: {
         intro_shortcode: 'seiuca',
     },
+    shaderoom: {
+        intro_shortcode: 'shaderoom',
+    },
 };
