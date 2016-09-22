@@ -421,13 +421,17 @@ var default_steps = {
 			    	submission_model.update(submission.id, {
 			    		form_stuffer_reference: response.uid
 			    	});
-			    	*/
-
+			    	
+					// JL NOTE ~ This should work via the existing promise.
 			    	var update_user = util.object.set(user, 'submit', true);
 			    	user_model.update(user.id, update_user);
+			    	*/
 
 			    	return Promise.resolve({
 						next: 'processing',
+						store: {
+							'user.submit': true
+						}
 					});
 			    })
 			    .catch(function (error) {
