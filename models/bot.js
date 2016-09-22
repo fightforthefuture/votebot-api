@@ -506,9 +506,12 @@ var default_steps = {
 					};
 				} else {
 					if (conversation.type == 'fb' && pdf_url) {
+						var msg = l10n('msg_complete_pdf_fb', conversation.locale);
+						msg = msg.replace('{{deadline}}', deadline);
+						msg = language.template(msg, user, conversation.locale);
 						facebook_model.message(
 							user.username, 
-							l10n('msg_complete_pdf_fb', conversation.locale)
+							msg
 						);
 						facebook_model.file(
 							user.username,
