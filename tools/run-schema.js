@@ -77,6 +77,13 @@ var default_chain_steps = [
 		errormsg: '[[error_first_name]]',
 		next: 'last_name',
 		admin_order: 2,
+	},
+	{
+		name: 'confirm_first_name',
+		msg: '[[prompt_confirm_first_name]]',
+		errormsg: '',
+		next: 'last_name',
+		admin_order: 2,
 	},	
 	{
 		name: 'last_name',

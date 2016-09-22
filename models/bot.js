@@ -64,11 +64,26 @@ var default_steps = {
 					msg: l10n('error_first_name', conversation.locale)
 				});
 			}
-			return Promise.resolve({
+			var result = {
 				next: 'last_name',
 				store: { 'user.first_name': body.trim() }
-			});
+			}
+			if (body.trim().indexOf(' ') !== -1)
+				result.next = 'confirm_first_name';
+
+			return Promise.resolve(result);
 		},
+	},
+	confirm_first_name: {
+		process: function(body, user, step, conversation) {
+			var next = 'last_name';
+			if (!language.is_yes(body.trim())) {
+				next = 'first_name';
+			}
+			return Promise.resolve({
+				next: next,
+			});
+		}
 	},
 	last_name: {
 		process: simple_store('user.last_name')
