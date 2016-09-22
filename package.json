@@ -28,6 +28,7 @@
     "moment-timezone": "^0.5.5",
     "morgan": "^1.7.0",
     "newrelic": "^1.30.3",
+    "node-uuid": "^1.4.7",
     "nodemailer": "^2.5.0",
     "nodemailer-smtp-transport": "^2.6.0",
     "pg": "^4.5.5",

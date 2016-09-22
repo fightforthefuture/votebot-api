@@ -395,13 +395,14 @@ var default_steps = {
 				.then(function(_submission) {
 					submission = _submission;
 
+					body.uid = submission.form_stuffer_reference;
+
 					// send to votebot-forms
 					var form_submit = {
 					    method: 'POST',
 					    uri: url,
 					    body: body,
-					    json: true,
-						
+					    json: true				
 					};
 					if (config.votebot_api_key) {
 						var username = (config.votebot_api_key || '');
@@ -415,9 +416,12 @@ var default_steps = {
 			    	log.info('bot: form_submit: response', response);
 			    	log.info('bot: saving response uid ', response.uid);
 
+			    	// JL NOTE ~ We are now generating the uuid here in votebot-api
+			    	/*
 			    	submission_model.update(submission.id, {
 			    		form_stuffer_reference: response.uid
 			    	});
+			    	*/
 
 			    	var update_user = util.object.set(user, 'submit', true);
 			    	user_model.update(user.id, update_user);
