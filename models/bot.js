@@ -241,6 +241,7 @@ var default_steps = {
 					// they are already registered
 					// mark it
 					var update_user = util.object.set(user, 'settings.already_registered', registration_status[0]);
+					util.object.set(update_user, 'complete', true);
 					user_model.update(user.id, update_user);
 					// thank them
 					var msg = language.template(l10n('msg_already_registered', conversation.locale), user, conversation.locale);
