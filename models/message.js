@@ -8,6 +8,7 @@ var convo_model = require('./conversation');
 var bot_model = require('./bot');
 var twilio = require('twilio')(config.twilio.account_sid, config.twilio.auth_token);
 var partners = require('../config.partners');
+var facebook_model = require('./facebook');
 
 Promise.promisifyAll(twilio.messages);
 
@@ -68,27 +69,26 @@ exports.broadcast = function(conversation_id, message)
 
 			log.info('messages: broadcast to: ', JSON.stringify(users.map(function(u) { return u.id; })));
 			return Promise.all(users.map(function(user) {
+				var to_user = config.sms_override || user.username;
+
 				if (user.type == 'web') {
 					log.info('user ' + user.id + ' is web-only. skip twilio');
 					return false;
-				}
-				
-				var to_user = config.sms_override || user.username;
-				if (user.type === 'fb') {
-					var from_number = 'Messenger:'+ config.twilio.facebook_page_id
+				} else if (user.type == 'fb') {
+					log.info('messages: sending Facebook Message to ', to_user);
+					return facebook_model.message(to_user.username, message.body);
 				} else {
-					var from_number = config.twilio.from_number;
-				}
-				log.info('sending message to '+to_user);
+					log.info('messages: sending twilio message to ', to_user);
 
-				return twilio.messages.createAsync({
-					to: to_user,
-					from: from_number,
-					messaging_service_sid: config.twilio.messaging_sid,
-					body: message.body
-				}).catch(function(error) {
-					log.error('message: failed to send to: '+ to_user, error);
-				});
+					return twilio.messages.createAsync({
+						to: to_user,
+						from: config.twilio.from_number,
+						messaging_service_sid: config.twilio.messaging_sid,
+						body: message.body
+					}).catch(function(error) {
+						log.error('message: failed to send to: '+ to_user, error);
+					});
+				}
 			}));
 		});
 };
@@ -132,7 +132,7 @@ exports.incoming_message = function(data)
 						}
 					}
 				}
-				
+
 				return convo_model.create(config.bot.user_id, {
 					type: user.type,
 					partner: convPartner,
