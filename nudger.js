@@ -32,7 +32,12 @@ var nudge = function(stack) {
 
     var conversation = stack.shift();
 
-    if (conversation.state.step == 'first_name') {
+    if (
+        conversation.state.step == 'first_name'
+        ||
+        conversation.state.step == 'incomplete'
+    ) 
+    {
         console.log('Skipping conversation ', conversation.id, ' in first_name state...');
         return nudge(stack);
     }
