@@ -76,7 +76,10 @@ exports.broadcast = function(conversation_id, message)
 					return false;
 				} else if (user.type == 'fb') {
 					log.info('messages: sending Facebook Message to ', to_user);
-					return facebook_model.message(to_user.username, message.body);
+					return facebook_model.message(to_user, message.body)
+						.catch(function(error) {
+							log.error('message: failed to send to: '+ to_user, error);
+						});
 				} else {
 					log.info('messages: sending twilio message to ', to_user);
 
