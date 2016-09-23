@@ -41,7 +41,7 @@ var nudge = function(stack) {
     console.log(' - first verifying this is the user\'s most recent conversation...');
 
     return db.one([
-        'SELECT user_id',
+        'SELECT user_id, complete',
         'FROM   conversations_recipients',
         'WHERE  conversation_id={{conv_id}}',
         'LIMIT  1'
@@ -49,15 +49,20 @@ var nudge = function(stack) {
         {conv_id: conversation.id}
     ).then(function(user) {
         console.log(' - user id is: ', user.user_id);
-        return db.one([
-                'SELECT conversation_id',
-                'FROM   conversations_recipients',
-                'WHERE  user_id = {{user_id}}',
-                'ORDER  BY created DESC',
-                'LIMIT  1'
-            ].join('\n'),
-            {user_id: user.user_id}
-        );
+        if (user.complete) {
+            console.log(' - USER IS MARKED COMPLETE! SKIPPING!');
+            return nudge(stack);
+        } else {
+            return db.one([
+                    'SELECT conversation_id',
+                    'FROM   conversations_recipients',
+                    'WHERE  user_id = {{user_id}}',
+                    'ORDER  BY created DESC',
+                    'LIMIT  1'
+                ].join('\n'),
+                {user_id: user.user_id}
+            );
+        }
     }).then(function(latestConversation) {
         if (latestConversation.conversation_id != conversation.id) {
             console.log(' - USER HAS MORE RECENT CONVERSATION. SKIPPING!');
