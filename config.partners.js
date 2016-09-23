@@ -36,6 +36,10 @@ module.exports = {
         intro_shortcode: 'lvp',
         msg_intro: "(Hi, this is LVP and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
+    lenny: {
+        intro_shortcode: 'lenny',
+        msg_intro: "(Hi, this is Lenny and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     mtv: {
         intro_shortcode: 'mtv',
         msg_intro: "(Hi, this is MTV and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -43,6 +47,10 @@ module.exports = {
     nextgen: {
         intro_shortcode: 'nextgen',
         msg_intro: "(Hi, this is NextGen and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    okgo: {
+        intro_shortcode: 'okgo',
+        msg_intro: "(Hi, this is OK Go and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     presente: {
         intro_shortcode: 'presente',
@@ -59,5 +67,9 @@ module.exports = {
     shaderoom: {
         intro_shortcode: 'shaderoom',
         msg_intro: "(Hi, this is the Shade Room and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    tab: {
+        intro_shortcode: 'tab',
+        msg_intro: "(Hi, this is The Tab and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
 };
