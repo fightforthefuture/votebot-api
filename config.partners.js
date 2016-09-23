@@ -44,6 +44,10 @@ module.exports = {
         intro_shortcode: 'mtv',
         msg_intro: "(Hi, this is MTV and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
+    votemtv: {
+        intro_shortcode: 'votemtv',
+        msg_intro: "(Hi, this is MTV and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     nextgen: {
         intro_shortcode: 'nextgen',
         msg_intro: "(Hi, this is NextGen and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
