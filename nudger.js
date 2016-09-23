@@ -41,10 +41,11 @@ var nudge = function(stack) {
     console.log(' - first verifying this is the user\'s most recent conversation...');
 
     return db.one([
-        'SELECT user_id, complete',
-        'FROM   conversations_recipients',
-        'WHERE  conversation_id={{conv_id}}',
-        'LIMIT  1'
+        'SELECT     cr.user_id, u.complete',
+        'FROM       conversations_recipients cr, users u',
+        'WHERE      cr.conversation_id={{conv_id}}',
+        'AND        u.id = cr.user_id',
+        'LIMIT      1'
         ].join('\n'),
         {conv_id: conversation.id}
     ).then(function(user) {
