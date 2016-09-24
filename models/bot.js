@@ -1108,7 +1108,7 @@ function simple_store(store, options)
 		if(!body.trim()) return validate.data_error(step.errormsg, {promise: true});
 
 		var obj = {};
-		obj[store] = body;
+		obj[store] = body.trim();
 		var promise = Promise.resolve({next: step.next, store: obj});
 		if(options.validate)
 		{
