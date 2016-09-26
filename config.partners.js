@@ -28,6 +28,10 @@ module.exports = {
         msg_intro: "(Hi, this is Headcount and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
         msg_intro_es: "Hola, this could be localized."
     },
+    jrs: {
+        intro_shortcode: 'jrs',
+        msg_intro: "(Hi, this is LVP and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     krcla: {
         intro_shortcode: 'krcla',
         msg_intro: "(Hi, this is KRC LA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -67,6 +71,10 @@ module.exports = {
     refinery29: {
         intro_shortcode: 'r29',
         msg_intro: "(Hi, this is Refinery29 and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    rtv: {
+        intro_shortcode: 'rtv',
+        msg_intro: "(Hi, this is Rock the Vote and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     seiuca: {
         intro_shortcode: 'seiuca',
