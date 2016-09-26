@@ -394,17 +394,15 @@ var default_steps = {
 			if (us_election.state_integrated_ovr[state] && !failed_ovr) {
 				log.info('bot: sending OVR submission...');
 				var url = config.app.submit_ovr_url;
-				var registration_deadline = state_deadline['online'];
 			} else {
 				log.info('bot: sending PDF submission...');
 				var url = config.app.submit_pdf_url;
-				var registration_deadline = state_deadline['mail-by'];
 			}
 
 			var submission;
 			var body = {
 					user: user,
-					registration_deadline: registration_deadline,
+					mail_deadline_text: us_election.get_mail_deadline_text(user.settings.state),
 					callback_url: config.app.url + '/receipt/'+user.username
 				};
 
