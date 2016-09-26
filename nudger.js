@@ -88,11 +88,14 @@ var nudge = function(stack) {
 
                 console.log(' - setting new state: ', conversation.state);
                 return conversation_model.update(conversation.id, {
-                    state: conversation.state,
+                    // JL NOTE ~ don't take them to a new question.
+                    // literally just send them a "?" to nudge this conversation
+                    // state: conversation.state,
                     nudged: true
                 })
             }).then(function(whatever) {
-                var msg = l10n('prompt_nudge', conversation.locale);
+                // var msg = l10n('prompt_nudge', conversation.locale);
+                var msg = "?";
 
                 console.log(' - sending message to user: ', msg);
                 return message_model.create(
