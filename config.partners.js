@@ -40,6 +40,10 @@ module.exports = {
         intro_shortcode: 'lenny',
         msg_intro: "(Hi, this is Lenny and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
+    mindy: {
+        intro_shortcode: 'mindy',
+        msg_intro: "(Hi, this is Mindy Kaling and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     mtv: {
         intro_shortcode: 'mtv',
         msg_intro: "(Hi, this is MTV and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -75,6 +79,10 @@ module.exports = {
     tab: {
         intro_shortcode: 'tab',
         msg_intro: "(Hi, this is The Tab and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    transportoakland: {
+        intro_shortcode: 'oakland',
+        msg_intro: "(Hi, this is HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     'wordpress.com': {
         intro_shortcode: 'wordpress',
