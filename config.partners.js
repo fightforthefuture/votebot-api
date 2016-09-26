@@ -32,6 +32,14 @@ module.exports = {
         msg_intro: "(Hi, this is Headcount and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
         msg_intro_es: "Hola, this could be localized."
     },
+    joker: {
+        intro_shortcode: 'joker',
+        msg_intro: "(Hi, this is Jokes for Votes and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    jrs: {
+        intro_shortcode: 'jrs',
+        msg_intro: "(Hi, this is LVP and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     krcla: {
         intro_shortcode: 'krcla',
         msg_intro: "(Hi, this is KRC LA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -60,6 +68,10 @@ module.exports = {
         intro_shortcode: 'nextgen',
         msg_intro: "(Hi, this is NextGen and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
+    nextgenca: {
+        intro_shortcode: 'nextgenca',
+        msg_intro: "(Hi, this is NextGen CA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     okgo: {
         intro_shortcode: 'okgo',
         msg_intro: "(Hi, this is OK Go and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -71,6 +83,10 @@ module.exports = {
     refinery29: {
         intro_shortcode: 'r29',
         msg_intro: "(Hi, this is Refinery29 and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    rtv: {
+        intro_shortcode: 'rtv',
+        msg_intro: "(Hi, this is Rock the Vote and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     seiuca: {
         intro_shortcode: 'seiuca',
