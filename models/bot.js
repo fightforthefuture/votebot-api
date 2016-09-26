@@ -755,8 +755,10 @@ var default_steps = {
 			if (username.type === 'sms') {
 				var update_user = util.object.set(user, 'settings.phone', username.username);
 				user_model.update(user.id, update_user);
+				return {next: 'per_state'};
+			} else {
+				return {};
 			}
-			return {next: 'per_state'};
 		},
 		process: simple_store('user.settings.phone', {validate: validate.phone})
 	},
