@@ -28,6 +28,10 @@ module.exports = {
         msg_intro: "(Hi, this is Headcount and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
         msg_intro_es: "Hola, this could be localized."
     },
+    joker: {
+        intro_shortcode: 'joker',
+        msg_intro: "(Hi, this is Jokes for Votes and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     jrs: {
         intro_shortcode: 'jrs',
         msg_intro: "(Hi, this is LVP and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -59,6 +63,10 @@ module.exports = {
     nextgen: {
         intro_shortcode: 'nextgen',
         msg_intro: "(Hi, this is NextGen and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    nextgenca: {
+        intro_shortcode: 'nextgenca',
+        msg_intro: "(Hi, this is NextGen CA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     okgo: {
         intro_shortcode: 'okgo',
