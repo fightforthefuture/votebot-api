@@ -606,7 +606,7 @@ var default_steps = {
 		process: function(body, user, step, conversation) {
 			// TODO, re-query missing fields
 			log.notice('bot: incomplete: submission_error ', util.object.get(user, 'settings.submission_error'), {user_id: user.id.toString()});
-			if (language.is_yes(body) || body.trim().toUpperCase() === 'RESTART') {
+			if (language.is_yes(body) || language.is_restart(body)) {
 				return Promise.resolve({next: 'restart'});
 			}
 			if (body.trim().toUpperCase() === 'RETRY') {
@@ -711,10 +711,13 @@ var default_steps = {
 		process: simple_store('user.settings.fftf_opt_in', {validate: validate.boolean}),
 	},
 	restart: {
-		process: simple_store('user.settings', {
-			validate: validate.empty_object,
-			advance: true
-		}),
+		process: function(body, user, step, conversation) {
+			if (language.is_yes(body) || language.is_restart(body)) {
+				user_model.update(user.id, {}); // clear user settings
+				return Promise.resolve({next: 'intro', advance: true});
+			}
+			return Promise.resolve({next: conversation.back});
+		}
 	},
 
 	// per-state questions
@@ -1009,6 +1012,16 @@ var default_steps = {
 					}
 				);
 			}
+			// also give people the opportunity to restart
+			if (language.is_restart(body)) {
+				next = 'restart';
+				attrition_model.update(
+					conversation.state.attrition_log_id,
+					{
+						recaptured: true
+					}
+				);
+			}
 			return Promise.resolve({next: next});
 		},
 		next: 'incomplete'
@@ -1142,6 +1155,7 @@ var parse_step = function(step, body, user, conversation)
 {
 	if(language.is_help(body)) return Promise.resolve({next: '_help', prev: step.name});
 	if(language.is_back(body)) return Promise.resolve({next: '_back'});
+	if(language.is_restart(body)) return Promise.resolve({next: 'restart'});
 
 	return step.process(body, user, step, conversation);
 };
