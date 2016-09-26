@@ -487,8 +487,7 @@ var default_steps = {
 			var form_type = util.object.get(user, 'settings.submit_form_type');
 			var mail_eta = util.object.get(user, 'settings.nvra_mail_eta');
 			var pdf_url = util.object.get(user, 'settings.nvra_pdf_url'),
-				state_name = us_states.abbr_to_name(user.settings.state),
-      			requirements = us_election.get_registration_requirements(state_name),
+      			requirements = us_election.get_registration_requirements(user.settings.state),
       			deadline = l10n('frag_soon', conversation.locale);
 
       		if (requirements["Deadlines"]["received-by"]) {
