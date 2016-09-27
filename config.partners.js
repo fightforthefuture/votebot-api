@@ -45,7 +45,7 @@ module.exports = {
         msg_intro: "(Hi, this is IAPALA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     joker: {
-        intro_shortcode: 'joker',
+        intro_shortcode: 'jokes',
         msg_intro: "(Hi, this is Jokes for Votes and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     jrs: {
