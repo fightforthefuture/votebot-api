@@ -36,6 +36,10 @@ module.exports = {
         msg_intro: "(Hi, this is Headcount and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
         msg_intro_es: "Hola, this could be localized."
     },
+    iapala: {
+        intro_shortcode: 'iapala',
+        msg_intro: "(Hi, this is IAPALA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     joker: {
         intro_shortcode: 'joker',
         msg_intro: "(Hi, this is Jokes for Votes and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -79,6 +83,10 @@ module.exports = {
     okgo: {
         intro_shortcode: 'okgo',
         msg_intro: "(Hi, this is OK Go and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    onearizona: {
+        intro_shortcode: 'oneaz',
+        msg_intro: "(Hi, this is One Arizona and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     presente: {
         intro_shortcode: 'presente',
