@@ -62,12 +62,18 @@ exports.update = function(user_id, userdata)
 	return db.update('users', user_id, userdata);
 };
 
-exports.batch_create = function(usernames)
+exports.batch_create = function(usernames, options)
 {
+	options || (options = {});
+
 	return Promise.all((usernames || []).map(function(username) {
 		var new_user = exports.parse_username(username);
 		new_user.settings = {};
 		new_user.created = db.now();
+
+		if (options.force_active)
+			new_user.active = true;
+
 		return exports.upsert(new_user);
 	}));
 };

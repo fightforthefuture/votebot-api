@@ -24,6 +24,11 @@ var create = function(req, res)
 	var user_id = config.bot.user_id;
 	var data = req.body;
 
+	if (!data.options)
+		data.options = {};
+
+	data.options.force_active = true;
+
 	model.create(user_id, data)
 		.then(function(convo) {
 			resutil.send(res, convo);

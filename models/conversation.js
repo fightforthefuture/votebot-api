@@ -47,7 +47,7 @@ exports.create = function(user_id, data)
 	var usernames = recipients.map(function(r) { return r.username; }),
 		users;
 
-	return user_model.batch_create(usernames)
+	return user_model.batch_create(usernames, {force_active: options.force_active})
 		.then(function(_users) {
 			users = _users;
 
