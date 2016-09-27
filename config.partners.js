@@ -11,6 +11,10 @@ module.exports = {
         intro_shortcode: 'care2',
         msg_intro: "(Hi, this is Care2 and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
+    credo: {
+        intro_shortcode: 'credo',
+        msg_intro: "(Hi, this is CREDO Action and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     dailykos: {
         intro_shortcode: 'dailykos',
         msg_intro: "(Hi, this is DailyKos and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
