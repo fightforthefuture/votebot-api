@@ -52,7 +52,7 @@ exports.create = function(user_id, data)
 
 	if (options.locale && options.locale == 'es')
 		locale = 'es';
-	else if (message.body.trim().toLowerCase().indexOf('hola') !== -1) {
+	else if (message.body && message.body.trim().toLowerCase().indexOf('hola') !== -1) {
 		log.info('conversation: hola! setting es locale...');
 		locale = 'es';
 	}
