@@ -566,17 +566,26 @@ var default_steps = {
 		},
 	},
 	choose_nvra_delivery: {
-		name: 'choose_nvra_delivery',
-		msg: l10n('prompt_choose_nvra_delivery'),
 		process: function(body, user) {
-			var update_user = util.object.set(user, 'settings.include_postage', true);
-
-			if (!language.is_yes(body)) {
-				util.object.set(update_user, 'settings.mail_letter', true);
-			}
-			user_model.update(user.id, update_user);				
-
-			return Promise.resolve({next: 'submit', advance: true});
+			return Promise.resolve({
+				advance: !language.is_yes(body) ? true : false,
+				next: !language.is_yes(body) ? 'submit' : 'choose_postage',
+				store: {
+					'user.settings.mail_letter': !language.is_yes(body),
+					'user.settings.include_postage': !language.is_yes(body)
+				}
+			});
+		}
+	},
+	choose_postage: {
+		process: function(body) {
+			return Promise.resolve({
+				next: 'submit',
+				advance: true,
+				store: {
+					'user.settings.include_postage': !!language.is_yes(body)
+				}
+			});
 		}
 	},
 	incomplete: {

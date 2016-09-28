@@ -94,7 +94,7 @@ var create = function(req, res)
             return email.sendOVRReceipt(user);
                 
     }).then(function(emailResult) {
-        log.info('receipt: email result: ', emailResult);
+        log.info('receipt: email result: LOL');
     })
     .catch(function(err) {
         resutil.error(res, 'Problem sending email receipt', err);
