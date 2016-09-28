@@ -881,7 +881,11 @@ var default_steps = {
 					'user.settings.previous_address_unit': body
 				}
 			};
-			if (body.toLowerCase().indexOf('none') !== -1)
+			if (
+				body.toLowerCase().indexOf('none') !== -1
+				||
+				body.toLowerCase().indexOf('ninguno') !== -1
+				)
 				result.store['user.settings.previous_address_unit'] = null;
 
 			return Promise.resolve(result);

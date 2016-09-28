@@ -6,6 +6,7 @@ var message_model = require('./message');
 var user_model = require('./user');
 var bot_model = require('./bot');
 var partners = require('../config.partners');
+var log = require('../lib/logger');
 
 exports.get = function(id)
 {
@@ -40,12 +41,21 @@ exports.create = function(user_id, data)
 	}
 
 	if (data.partner && typeof partners[data.partner.toLowerCase()] !== 'undefined') {
-		console.log('conversation: requested partner: ', data.partner);
+		log.info('conversation: requested partner: ', data.partner);
 		partner = data.partner.toLowerCase();
 	}
 
 	var usernames = recipients.map(function(r) { return r.username; }),
 		users;
+
+	var locale = 'en';
+
+	if (options.locale && options.locale == 'es')
+		locale = 'es';
+	else if (message.body.trim().toLowerCase().indexOf('hola') !== -1) {
+		log.info('conversation: hola! setting es locale...');
+		locale = 'es';
+	}
 
 	return user_model.batch_create(usernames, {force_active: options.force_active})
 		.then(function(_users) {
@@ -56,6 +66,7 @@ exports.create = function(user_id, data)
 				type: data.type,
 				state: data.state || null,
 				partner: partner,
+				locale: locale,
 				created: db.now()
 			};
 
