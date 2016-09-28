@@ -990,6 +990,13 @@ var default_steps = {
 		next: 'per_state'
 	},
 
+	az_pevl: {
+		name: 'az_pevl',
+		msg: l10n('prompt_az_pevl'),
+		process: simple_store('user.settings.az_pevl', {validate: validate.boolean}),
+		next: 'per_state'
+	},
+
 	change_state: {
 		name: 'change_state',
 		msg: l10n('change_state'),
