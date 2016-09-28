@@ -87,7 +87,7 @@ var create = function(req, res)
         
         if (user.settings.submit_form_type === 'NVRA')
             if (mail_eta)
-                return email.sendMailReceipt(user, mail_eta, mail_carrier);                
+                return email.sendMailReceipt(user, pdf_url, mail_eta, mail_carrier);                
             else
                 return email.sendNVRAReceipt(user, pdf_url);
         else
@@ -163,6 +163,7 @@ var testMailReceipt = function(req, res)
                 ssn: 69
             }
         },
+        'http://example.com/test.pdf',
         '2016-09-23',
         'USPS'
     );
