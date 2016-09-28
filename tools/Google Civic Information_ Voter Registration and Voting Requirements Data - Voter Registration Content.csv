@@ -137,6 +137,8 @@ Arizona,Register online,You'll need an Arizona driver’s license or non-driver'
 
 **Steps 15–16** · (Optional) Provide your phone number and occupation
 
+**Step 17** · If you were registered to vote in another state, list your former address
+
 **Step 18** · If you're reporting a name change, provide your previous name
 
 **Steps 19–21** · (Optional) Provide your father’s name or your mother’s maiden name; indicate if you're willing to work at a polling place on Election Day; and provide your email address
@@ -172,6 +174,8 @@ Arizona,Register online,You'll need an Arizona driver’s license or non-driver'
 **Step 14** · Provide your political party
 
 **Steps 15–16** · (Optional) Provide your phone number and occupation
+
+**Step 17** · If you were registered to vote in another state, list your former address
 
 **Step 18** · If you're reporting a name change, provide your previous name
 
@@ -244,7 +248,7 @@ Arkansas,,,,,,,,1. Get the voter registration form,"Download and print the Arkan
 - Be 18 years old on Election Day, Nov 8
 - Not be serving a sentence (including parole) for a felony conviction
 - Not been legally declared mentally incompetent by a court",,,2016-10-10,2016-10-10
-California,Register online,"You'll need your CA driver’s license or CA ID card number, last 4 digits of your Social Security number, and your birthday to register online.",[Register online](http://registertovote.ca.gov/),,,,,1. Get the voter registration form,Call your [county elections office](http://www.sos.ca.gov/elections/voting-resources/county-elections-offices/) or call [1-800-345-VOTE (8683)](tel:1-800-345-8683) to have a form sent to you,,,2. Fill out the form,"**Step 1** · Mark the boxes to indicate you’re a US citizen and will be 18 by Election Day, Nov 8
+California,Register online,"If you have one, you'll need your CA driver’s license, CA ID card number, or last 4 digits of your Social Security number to register online.",[Register online](http://registertovote.ca.gov/),,,,,1. Get the voter registration form,Call your [county elections office](http://www.sos.ca.gov/elections/voting-resources/county-elections-offices/) or call [1-800-345-VOTE (8683)](tel:1-800-345-8683) to have a form sent to you,,,2. Fill out the form,"**Step 1** · Mark the boxes to indicate you’re a US citizen and will be 18 by Election Day, Nov 8
 
 **Steps 2–4** · Provide your full name
 
@@ -299,7 +303,7 @@ California,Register online,"You'll need your CA driver’s license or CA ID card
 **Step 18** · Sign and date the form",,3. Return the form,Submit the form by **Oct 24** to your [county elections office](http://www.sos.ca.gov/elections/voting-resources/county-elections-offices/),,,Check if you're registered to vote,http://www.sos.ca.gov/elections/registration-status/,"- Be a US citizen
 - Live at a California address
 - Be 16 years old in order to register, and be 18 by Election Day, Nov 8, in order to vote
-- Not serving a sentence (including parole) for a felony conviction
+- Not be imprisoned or on parole for a felony conviction
 - Not currently found to be mentally incompetent by a court of law",2016-10-24,,2016-10-24,2016-10-24
 Colorado,Register online,You'll need a Colorado state driver’s license or ID card issued by the Department of Revenue to register online,[Register online](https://www.sos.state.co.us/voter-classic/pages/pub/olvr/verifyNewVoter.xhtml),,,,,1. Get the voter registration form,Download the Colorado voter registration form or call your [County Clerk and Recorder](http://www.sos.state.co.us/pubs/elections/Resources/CountyElectionOffices.html) to have one sent to you,[Get the form](https://www.sos.state.co.us/pubs/elections/vote/VoterRegFormEnglish.pdf),,2. Fill out the form,"**Step 1** · Respond Yes or No to whether you're a citizen
 
@@ -561,7 +565,7 @@ Florida,,,,,,,,1. Get the voter registration form,Download and print the voter r
 
 **Step 1** · Indicate whether this is a new registration, an update, or a request to replace your voter card, and confirm that you're a US citizen
 
-**Step 2** · Confirm that you're not a convicted felon, or if you're, that your voting rights have been restored
+**Step 2** · Confirm that you haven't been convicted of a felony, or if you have been, that your voting rights have been restored
 
 **Step 3** · Confirm that you have not been judged mentally incapacitated with respect to voting, or if you have, that your right to vote has been restored
 
@@ -608,13 +612,13 @@ Tallahassee, Florida 32399-0250
 
 You can also submit the form to any [County Supervisor of Elections](http://dos.elections.myflorida.com/supervisors/), any Florida driver’s license office or tax collector’s office that issues driver’s licenses and/or Florida ID cards, any “voter registration agency” where you get services, any office that primarily serves persons with disabilities, any military recruitment office, or any public library",,,,1. Get the voter registration form,"Get the voter registration application at The Florida Division of Elections, any [County Supervisor of Elections](http://dos.elections.myflorida.com/supervisors/), any Florida driver’s license office or tax collector’s office that issues driver’s licenses and/or Florida ID cards, any “voter registration agency” where you get services, any office that primarily serves persons with disabilities, any military recruitment office, or any public library.",,,2. Fill out the form,"**Step 1** · Indicate whether this is a new registration, an update, or a request to replace your voter card, and confirm that you're a US citizen
 
-**Step 2** · Confirm that you're not a convicted felon, or if you're, that your voting rights have been restored
+**Step 2** · Confirm that you're not a convicted felon, or if you are, that your voting rights have been restored
 
 **Step 3** · Confirm that you have not been judged mentally incapacitated with respect to voting, or if you have, that your right to vote has been restored
 
 **Step 4** · Provide your date of birth
 
-**Step 5** · Provide your Florida driver’s license or Florida ID card number. If you don't have one, provide the last 4 digits of your Social Security number 
+**Step 5** · Provide your Florida driver’s license or Florida ID card number. If you don't have one, provide the last 4 digits of your Social Security number. 
 
 - _If you don't have a Florida driver’s license, Florida ID card, or Social Security Number, check the box_
 
@@ -723,7 +727,7 @@ _If you don't have one, provide the last 4 digits of your Social Security number
 
 **Step 8** · (If applicable) Complete if you want to change the name or address of your current voter registration  
 
-**Step 9** · Indicate whether you're on active duty in the military.",,3. Return the form,"Your completed form must be returned in person by **Oct 11** to:
+**Step 9** · Indicate whether you're on active duty in the military",,3. Return the form,"Your completed form must be returned in person by **Oct 11** to:
 
 The Secretary of State’s Office:
 1104 West Tower
@@ -785,7 +789,7 @@ Pearl City, Hawaii 96782",,,Check if you're registered to vote,Call [(808) 453-V
 - Be at least 18 years old by Election Day, Nov 8
 - Not be in prison or jail for a felony
 - Not judged mentally incompetent by a court",2016-10-10,,2016-10-08,2016-10-10
-Idaho,,,,,,,,1. Get the voter registration form,Download and print the Idaho state voter registration form or email [elections@sos.idaho.gov](mailto:elections@sos.idaho.gov) to have one sent to you.,[Get the form](http://www.idahovotes.gov/VoterReg/voter_registration.pdf),,2. Fill out the form,"**Step 1** · Provide your name
+Idaho,,,,,,,,1. Get the voter registration form,Download and print the Idaho state voter registration form or email [elections@sos.idaho.gov](mailto:elections@sos.idaho.gov) to have one sent to you,[Get the form](http://www.idahovotes.gov/VoterReg/voter_registration.pdf),,2. Fill out the form,"**Step 1** · Provide your name
 
 **Step 2** · Provide your driver’s license number. If you don't have one, provide the last 4 digits of your Social Security number. Check the box if you don't have either of these.
 
@@ -919,7 +923,7 @@ For faster processing, mail your form to your [county voter registration office]
 
 **Steps 10–11** · Check the boxes to indicate you're a US citizen and will be 18 by Election Day, Nov 8
 
-**Step 12** · Provide your Indiana driver’s license number. If you don't have a driver’s license, provide the last 4 digits of your Social Security number. If you have none of these, check “None”
+**Step 12** · Provide your Indiana driver’s license number. If you don't have a driver’s license, provide the last 4 digits of your Social Security number. If you have none of these, check “None.”
 
 **Step 13** · Provide your previous name if you're updating the name of your previous registration
 
@@ -1142,7 +1146,7 @@ For faster processing, mail your form to your [county clerk’s office](http://e
 **Step 14** · Sign and date the form",,3. Return the form,Submit your form by **Oct 11** to your [county clerk’s office](http://elect.ky.gov/contactcountyclerks/Pages/default.aspx),,,Check if you're registered to vote,https://vrsws.sos.ky.gov/vic/,"- Be a US citizen
 - Live at a Kentucky address by Oct 11
 - Be 18 years old by Election Day, Nov 8
-- Not be a convicted felon (unless you have had your rights restored by an executive pardon)
+- Not be convicted of a felony (unless you have had your rights restored by an executive pardon)
 - Not currently be judged incompetent by a court
 - Not claim the right to vote in another state",2016-10-11,,2016-10-11,2016-10-11
 Louisiana,Register online,"You'll need your Louisiana driver's license or special ID card number, and a residential address in Louisiana to register online",[Register online](http://www.sos.la.gov/ElectionsAndVoting/Pages/OnlineVoterRegistration.aspx),,,,,1. Get the voter registration form,Download and print the Louisiana state voter registration form ,[Get the form](http://www.sos.la.gov/ElectionsAndVoting/PublishedDocuments/ApplicationToRegisterToVote.pdf),,2. Fill out the form,"**Step 1** · Check box for whether you're a US citizen and will be 18 years old on or before Nov 8
@@ -1381,7 +1385,7 @@ You can also register in person at an early voting center in your county from **
 - Be at least 16 years old
 - Be a resident of Maryland on the day you seek to register
 - Not have been convicted of a felony and currently serving a court-ordered sentence of imprisonment for the conviction
-- Not be under the guardianship for mental disability or if you're, you have not been found by a court to be unable to communicate a desire to vote
+- Not be under the guardianship for mental disability or if you are, you have not been found by a court to be unable to communicate a desire to vote
 - Not have been convicted of buying or selling votes ",2016-10-18,,2016-10-18,2016-11-03
 Massachusetts,Register online,You'll need your Massachusetts driver’s license or state ID card and a signature on file with the Registry of Motor Vehicles,[Register online](https://www.sec.state.ma.us/ovr/),,,,,1. Get the voter registration form,Download and print the Massachusetts registration application,[Get the form](https://www.sec.state.ma.us/ele/elepdf/Voter-reg-mail-in.pdf),,2. Fill out the form,"**Step 1** · Check boxes for whether you're a US citizen and will be 18 years old on or before Nov 8
 
@@ -1491,7 +1495,7 @@ Michigan,,,,,,,,1. Get the voter registration form,Download and print the Michig
 
 **Step 2** · Provide your Michigan driver’s license or personal ID number. If you don't have one, provide the last 4 digits of your Social Security number. If you have none of the above, indicate that.
 
-**Steps 3–4** · Provide your full name and residential address.
+**Steps 3–4** · Provide your full name and residential address
 
 **Steps 5–6** · Provide your gender and date of birth
 
@@ -1625,7 +1629,7 @@ Mississippi,,,,,,,,1. Get the voter registration form,Download and print the Mis
 - Not currently be judged incompetent by a court",,,2016-10-08,2016-10-08
 Missouri,Register online,"You'll need your Missouri driver’s license number, Social Security number, and birthday
 
-To register online you'll need to check the box that indicates you're registering from a tablet, mobile device, or touchscreen device",[Register online](https://www.sos.mo.gov/votemissouri/request),,,,,1. Get the voter registration form,"Download and print the Missouri voter registration form from the Secretary of State website, or call the Elections Division at [1-800-669-8683](tel:1-800-669-8683) to request a form.",[Get the form](http://www.sos.mo.gov/cmsimages/forms/elections/MVRA_PC_231-0169_042007.pdf),,2. Fill out the form,"**Steps 1–2** · Fill in the boxes for your citizenship status and age
+To register online you'll need to check the box that indicates you're registering from a tablet, mobile device, or touchscreen device",[Register online](https://www.sos.mo.gov/votemissouri/request),,,,,1. Get the voter registration form,"Download and print the Missouri voter registration form from the Secretary of State website, or call the Elections Division at [1-800-669-8683](tel:1-800-669-8683) to request a form",[Get the form](http://www.sos.mo.gov/cmsimages/forms/elections/MVRA_PC_231-0169_042007.pdf),,2. Fill out the form,"**Steps 1–2** · Fill in the boxes for your citizenship status and age
 
 **Step 3** · Fill in the box asking if this is a new registration
 
@@ -1868,7 +1872,7 @@ Nevada,Register online,You'll need a Nevada driver’s license or ID card to reg
 
 - _If you don't have either of these, provide the last 4 digits of your Social Security number_
 
-- _If you don’t have a Social Security number, leave blank and contact your [county election office](http://nvsos.gov/index.aspx?page=81) after submitting the application_
+- _If you don’t have a Social Security number, leave blank and contact your [county election office](http://nvsos.gov/index.aspx?page=81) after submitting the application._
 
 **Step 10** · Provide your party affiliation information or indicate you’re nonpartisan 
 
@@ -1879,7 +1883,7 @@ Nevada,Register online,You'll need a Nevada driver’s license or ID card to reg
 - Be 18 years old by Election Day, Nov 8
 - Not be convicted of a felony and currently serving your any part of your sentence
 - Not currently be judged incompetent by a court",2016-10-18,,2016-10-08,2016-10-18
-New Hampshire,,,,,,,,Eligibility,You may only register by mail if you'll be temporarily absent or have a physical disability that prevents you from registering in person,,,1. Get the voter registration from,Contact your [city or town clerk](http://app.sos.nh.gov/Public/ClerkDetails.aspx) to request the necessary forms,,2. Fill out the form,"**Step 1–3** · Provide your name, date of birth, and name at birth (if different)
+New Hampshire,,,,,,,,Eligibility,You may only register by mail if you'll be temporarily absent or have a physical disability that prevents you from registering in person,,,1. Get the voter registration form,Contact your [city or town clerk](http://app.sos.nh.gov/Public/ClerkDetails.aspx) to request the necessary forms,,2. Fill out the form,"**Step 1–3** · Provide your name, date of birth, and name at birth (if different)
 
 **Step 4** · Provide your New Hampshire address and your mailing address (if different)
 
@@ -1989,7 +1993,7 @@ To register online, the address where you’re registering to vote needs to matc
 
 **Step 6** · Provide your political party or check the box if you don't have a political party
 
-**Step 7** · (Optional) Provide your phone number, and check the box to indicate if you want the county clerk to make your phone number public. Check the box if you want to volunteer at a voting place on Election Day, Nov 8
+**Step 7** · (Optional) Provide your phone number, and check the box to indicate if you want the county clerk to make your phone number public. Check the box if you want to volunteer at a voting place on Election Day, Nov 8.
 
 **Step 8** · If you've registered to vote before, provide the city, county, and state where you were registered  
 
@@ -2109,7 +2113,9 @@ North Carolina,,,,,,,,1. Get the voter registration form,"Download and print the
 
 - _Paycheck_
 
-- _Other government document with your name and address_",,3. Return the form,"Return the form by 5 PM on **Oct 14** to your [county board of elections](http://enr.ncsbe.gov/cbesearch/), or the other government office where you picked up the form.",,,Check if you're registered to vote,https://enr.ncsbe.gov/voter_search_public/,"- Be a US citizen
+- _Other government document with your name and address_",,3. Return the form,"Return the form by 5 PM on **Oct 14** to your [county board of elections](http://enr.ncsbe.gov/cbesearch/), or the other government office where you picked up the form.
+
+If you miss the deadline, you can register and vote early in person at your one-stop early voting site. Check with your [county board of elections](http://enr.ncsbe.gov/cbesearch/) for early voting dates and times.",,,Check if you're registered to vote,https://enr.ncsbe.gov/voter_search_public/,"- Be a US citizen
 - Be at least 16 years old and 18 years old by Election Day, Nov 8
 - Live in North Carolina and the precinct where you'll vote by Oct 9 
 - If convicted of a felony, not be in jail, on probation, or on parole 
@@ -2122,7 +2128,7 @@ Voting requirements in North Dakota
 - Live at a North Dakota address by **Oct 9**
 - Not be in jail or prison for a felony conviction
 - Not be currently judged mentally incompetent by a court",,,,
-Ohio,,,,,,,,1. Get the voter registration form,Download and print the Ohio state voter registration form or call [1-877-767-6446](tel:1-877-767-6446) to request one by mail,[Get the form](http://www.sos.state.oh.us/sos/upload/elections/forms/4010.pdf),,2. Fill out the form,"Check the box to select whether you’re registering, updating your address, or updating your name register
+Ohio,,,,,,,,1. Get the voter registration form,Download and print the Ohio state voter registration form or call [1-877-767-6446](tel:1-877-767-6446) to request one by mail,[Get the form](http://www.sos.state.oh.us/sos/upload/elections/forms/4010_Bilingual.pdf),,2. Fill out the form,"Check the box to select whether you’re registering, updating your address, or updating your name register
 
 **Steps 1–2** · Indicate if you're a US citizen and if you'll be 18 on or before Election Day, Nov 8
 
@@ -2196,7 +2202,7 @@ Oklahoma,,,,,,,,1. Get the voter registration form,Download and print the Oklaho
 Oklahoma State Election Board
 P.O. Box 528800
 Oklahoma City, OK 73152-8800
-",,,,1. Get the voter registration form,"Pick up the registration form at your county board of elections, any BMV office, any public library, or any post office",,,2. Fill out the form,"**Step 1** · Provide your name 
+",,,,1. Get the voter registration form,"Pick up the registration form at your county board of elections, any DMV office, any public library, or any post office",,,2. Fill out the form,"**Step 1** · Provide your name 
 
 **Step 2** · Provide your birthday
 
@@ -2231,7 +2237,7 @@ Oregon,Register online,You'll need an Oregon driver's license or ID card to regi
 
 - _If you don't have any of these, fill in the appropriate circle and include either a copy of a photo ID, or a copy of a current utility bill, bank statement, government check, paycheck, or other government document that shows your name and address when you mail your application_
 
-**Step 9** · Fill in the box to select your political party or fill in the circle to indicate that you'ren't a member of a party
+**Step 9** · Fill in the box to select your political party or fill in the circle to indicate that you aren't a member of a party
 
 **Step 10** · Sign and date the form",,3. Send the form,Your completed form must be postmarked by **Oct 18** and mailed to your county election office at the address listed on [page 2 of the form](http://sos.oregon.gov/elections/Documents/SEL500.pdf),,,,1. Get the voter registration form,"Pick up the registration form at your [county elections official](http://sos.oregon.gov/elections/Pages/countyofficials.aspx), any public library, or any post office",,,2. Fill out the form,"**Steps 1–2** · Fill in the circle if you're a US citizen and at least 17 years old 
 
@@ -2245,11 +2251,11 @@ Oregon,Register online,You'll need an Oregon driver's license or ID card to regi
 
 **Step 7** · Provide your mailing address, if different from your street address (optional)
 
-**Step 8** · Provide your driver’s license number, state ID card number, or the last 4 digits of your Social Security number.  
+**Step 8** · Provide your driver’s license number, state ID card number, or the last 4 digits of your Social Security number  
 
 - _If you don't have any of these, fill in the appropriate circle and include either a copy of a photo ID, or a copy of a current utility bill, bank statement, government check, paycheck, or other government document that shows your name and address when you mail your application_
 
-**Step 9** · Fill in the box to select your political party or fill in the circle to indicate that you'ren't a member of a party
+**Step 9** · Fill in the box to select your political party or fill in the circle to indicate that you aren't a member of a party
 
 **Step 10** · Sign and date the form",,3. Return the form,Your completed form must be returned in person by **Oct 18** to your [county elections official](http://sos.oregon.gov/elections/Pages/countyofficials.aspx),,,Check if you're registered to vote,https://secure.sos.state.or.us/orestar/vr/showVoterSearch.do?lang=eng&source=SOS,"- Be a US citizen
 - Live at an Oregon address by Oct 18
@@ -2272,7 +2278,7 @@ Pennsylvania,Register online,"If you have one, have your Pennsylvania’s driver
 
 **Step 7** · Provide your driver’s license number, state ID card number, or the last 4 digits of your Social Security number, or check the box to indicate that you don't have any of these
 
-**Step 8** · Provide your political party or fill in the box to indicate that you'ren't a member of a party
+**Step 8** · Provide your political party or fill in the box to indicate that you aren't a member of a party
 
 **Step 9** · Check the box if you’ll need help voting, and indicate the type of help you'll need
 
@@ -2298,7 +2304,7 @@ Pennsylvania,Register online,"If you have one, have your Pennsylvania’s driver
 
 **Step 7** · Provide your driver’s license number, state ID card number, or the last 4 digits of your Social Security number, or check the box to indicate that you don't have any of these
 
-**Step 8** · Provide your political party or fill in the box to indicate that you'ren't a member of a party
+**Step 8** · Provide your political party or fill in the box to indicate that you aren't a member of a party
 
 **Step 9** · Check the box if you’ll need help voting, and indicate the type of help you'll need
 
@@ -2330,7 +2336,7 @@ Rhode Island,Register online,You'll need your Rhode Island driver's license or s
 
 **Step 8** · (Optional) Provide your phone number and email address (optional)
 
-**Step 9** · Check the box to select your political party or to indicate that you'ren't a member of a party
+**Step 9** · Check the box to select your political party or to indicate that you aren't a member of a party
 
 **Step 10** · Sign and date the form, and check the box if you're interested in working at a voting place on Election Day, Nov 8
 
@@ -2352,7 +2358,7 @@ Rhode Island,Register online,You'll need your Rhode Island driver's license or s
 
 **Step 8** · Provide your phone number and email address (optional)
 
-**Step 9** · Check the box to select your political party or to indicate that you'ren't a member of a party
+**Step 9** · Check the box to select your political party or to indicate that you aren't a member of a party
 
 **Step 10** · Sign and date the form, and check the box if you're interested in working at a voting place on Election Day, Nov 8
 
@@ -2452,7 +2458,7 @@ South Dakota,,,,,,,,1. Get the voter registration form,Download and print the So
 - Be at least 18 years old by Election Day, Nov 8
 - Not be currently serving any part of a sentence for a felony conviction 
 - Not be currently judged by a court as mentally incompetent",,2016-10-24,,2016-10-24
-Tennessee,,,,,,,,1. Get the voter registration form,Download and print the Tennessee registration form or call [(877) 850-4959](tel:877-850-4959) to request one by mail,[Get the form](http://sos.tn.gov/node/5996),,2. Fill out the form,"**Step 1** · Check the boxes to indicate you're a US citizen and will be 18 by Election Day, Nov 8
+Tennessee,,,,,,,,1. Get the voter registration form,Download and print the Tennessee registration form or call [(877) 850-4959](tel:877-850-4959) to request one by mail,[Get the form](http://sos-tn-gov-files.s3.amazonaws.com/forms/ss-3010.pdf),,2. Fill out the form,"**Step 1** · Check the boxes to indicate you're a US citizen and will be 18 by Election Day, Nov 8
 
 **Step 2** · Provide your name 
 
@@ -2498,7 +2504,7 @@ Tennessee,,,,,,,,1. Get the voter registration form,Download and print the Tenne
 - Not be convicted of a felony and currently serving your sentence
 - If previously convicted of a felony, have had your voting rights restored
 - Not currently be judged incompetent by a court",,,2016-10-11,2016-10-11
-Texas,,,,,,,,1. Get the voter registration form,"Complete the form online, or [submit a request](https://webservices.sos.state.tx.us/vrrequest/index.asp) to have one sent to you.",[Get the form](https://webservices.sos.state.tx.us/vrapp/index.asp),,2. Fill out the form,"**Step 1** · Respond Yes or No to whether you're a citizen
+Texas,,,,,,,,1. Get the voter registration form,"Complete the form online, or [submit a request](https://webservices.sos.state.tx.us/vrrequest/index.asp) to have one sent to you",[Get the form](https://webservices.sos.state.tx.us/vrapp/index.asp),,2. Fill out the form,"**Step 1** · Respond Yes or No to whether you're a citizen
 
 **Step 2** · Indicate whether you're filling out a new application, changing your address or name, or requesting a replacement voter registration card
 
@@ -2563,7 +2569,7 @@ The street address you list on the voter registration form must be the same as t
 
 **Step 14** · If you're changing your name or address, provide your previous name or address
 
-**Step 15** · Sign and date the form",,3. Send the form,Your completed form must be mailed by **Oct 9** to your [county clerk’s office](https://elections.utah.gov/election-resources/county-clerks),,,,1. Get the voter registration form,Pick up the registration form at your [county clerk’s office office](https://elections.utah.gov/election-resources/county-clerks),,,2. Fill out the form,"**Step 1** · Check the box to indicate if you’re registering for the first time or changing information such as your name, address, or party 
+**Step 15** · Sign and date the form",,3. Send the form,Your completed form must be mailed by **Oct 9** to your [county clerk’s office](https://elections.utah.gov/election-resources/county-clerks),,,,1. Get the voter registration form,Pick up the registration form at your [county clerk’s office](https://elections.utah.gov/election-resources/county-clerks),,,2. Fill out the form,"**Step 1** · Check the box to indicate if you’re registering for the first time or changing information such as your name, address, or party 
 
 **Step 2** · Check the boxes to indicate if you're a US citizen and will be 18 years old on Election Day, Nov 8
 
@@ -2595,7 +2601,7 @@ The street address you list on the voter registration form must be the same as t
 - Be at least 18 years old on Election Day, Nov 8
 - Live at a Utah address by Oct 9
 - Not be in jail or in prison for a felony conviction",2016-11-01,,2016-10-09,2016-11-01
-Vermont,Register online,"You'll need either a Vermont driver’s license, permit or DMV-issued personal ID number; or the last 4 digits of your Social Security number to register online",[Register online](https://olvr.sec.state.vt.us/),,,,,1. Get the voter registration form,Download and print the Vermont Voter Registration Form or call [1-800-439-8683](tel:1-800-439-8683) (inside Vermont) or [1-802-828-2464](tel:1-802-828-2464) (outside Vermont) to request one by mail.,[Get the form](https://www.sec.state.vt.us/media/33935/VTVoterApp.pdf),,2. Fill out the form,"**Step 1** · Provide your full name and town or city name 
+Vermont,Register online,"You'll need either a Vermont driver’s license, permit or DMV-issued personal ID number; or the last 4 digits of your Social Security number to register online",[Register online](https://olvr.sec.state.vt.us/),,,,,1. Get the voter registration form,Download and print the Vermont Voter Registration Form or call [1-800-439-8683](tel:1-800-439-8683) (inside Vermont) or [1-802-828-2464](tel:1-802-828-2464) (outside Vermont) to request one by mail,[Get the form](https://www.sec.state.vt.us/media/33935/VTVoterApp.pdf),,2. Fill out the form,"**Step 1** · Provide your full name and town or city name 
 
 **Step 2** · Indicate whether you're a US citizen; will be at least 18 years old on Election Day, Nov 8; and are a Vermont resident
 
@@ -2645,7 +2651,7 @@ Vermont,Register online,"You'll need either a Vermont driver’s license, permit
 - Be 18 years old by Election Day, Nov 8
 - Be a Vermont resident and a resident of the town where you're applying to vote
 - Take the Voter’s Oath",2016-11-02,,2016-11-02,2016-11-02
-Virginia,Register online,"You'll need a Virginia driver’s license or special ID card, and a Social Security number to register online.  ",[Register online](https://vote.elections.virginia.gov/Registration/Eligibility),,,,,1. Get the voter registration form,Download and print the Virginia voter registration form or call [1-800-552-9745](tel:1-800-552-9745) to request one by mail.,[Get the form](http://elections.virginia.gov/Files/Forms/VoterForms/VoterRegistrationApplication.pdf),,2. Fill out the form,"**Step 1** · Respond Yes or No to whether you're a citizen and whether you'll be 18 by Election Day, Nov 8 
+Virginia,Register online,"You'll need a Virginia driver’s license or special ID card, and a Social Security number to register online.  ",[Register online](https://vote.elections.virginia.gov/Registration/Eligibility),,,,,1. Get the voter registration form,Download and print the Virginia voter registration form or call [1-800-552-9745](tel:1-800-552-9745) to request one by mail,[Get the form](http://elections.virginia.gov/Files/Forms/VoterForms/VoterRegistrationApplication.pdf),,2. Fill out the form,"**Step 1** · Respond Yes or No to whether you're a citizen and whether you'll be 18 by Election Day, Nov 8 
 
 **Step 2–3** · Provide your name, address, date of birth, gender, Social Security number, phone number, and email address
 
@@ -2661,7 +2667,7 @@ Department of Elections
 1100 Bank Street, First Floor 
 Richmond, VA 23219
 
-For faster processing, mail your form to your local [Voter Registration Office](https://vote.elections.virginia.gov/VoterInformation/PublicContactLookup). ",,,,1. Get the voter registration form,Get the form in person at your local [Voter Registration Office](https://vote.elections.virginia.gov/VoterInformation/PublicContactLookup) or at other locations such as the Department of Motor Vehicles and Armed Forces recruitment offices.,,,2. Fill out the form,"**Step 1** · Respond Yes or No to whether you're a citizen and whether you'll be 18 by Election Day, Nov 8
+For faster processing, mail your form to your local [Voter Registration Office](https://vote.elections.virginia.gov/VoterInformation/PublicContactLookup)",,,,1. Get the voter registration form,Get the form in person at your local [Voter Registration Office](https://vote.elections.virginia.gov/VoterInformation/PublicContactLookup) or at other locations such as the Department of Motor Vehicles and Armed Forces recruitment offices.,,,2. Fill out the form,"**Step 1** · Respond Yes or No to whether you're a citizen and whether you'll be 18 by Election Day, Nov 8
 
 **Steps 2–3** · Provide your name, address, date of birth, gender, Social Security number, phone number, and email address
 
@@ -2675,7 +2681,7 @@ For faster processing, mail your form to your local [Voter Registration Office](
 - If convicted of a felony, not be in jail, on probation, or on parole; and have had your right to vote restored by the state
 - Not currently judged incompetent by a court
 - Not claim the right to vote in another state",2016-10-17,,2016-10-17,2016-10-17
-Washington,Register online,You'll need a current Washington State driver’s license or current Washington State ID card to register online,[Register online](http://www.sos.wa.gov/elections/myvote/olvr.html),,,,,1. Get the voter registration form,"Download and print the Washington State Voter Registration Form, request one by mail by filling out [this form](https://www.sos.wa.gov/elections/register-mail.aspx) online, or call [(360) 902-4180](tel:360-902-4180) to have one sent to you.",[Get the form](http://www.sos.wa.gov/elections/Print-Voter-Registration-Forms.aspx),,2. Fill out the form,"**Step 1** · Provide your name, date of birth, gender, residential address, mailing address (if different), phone number (optional), and email address (optional)  
+Washington,Register online,You'll need a current Washington State driver’s license or current Washington State ID card to register online,[Register online](http://www.sos.wa.gov/elections/myvote/olvr.html),,,,,1. Get the voter registration form,"Download and print the Washington State Voter Registration Form, request one by mail by filling out [this form](https://www.sos.wa.gov/elections/register-mail.aspx) online, or call [(360) 902-4180](tel:360-902-4180) to have one sent to you",[Get the form](http://www.sos.wa.gov/elections/Print-Voter-Registration-Forms.aspx),,2. Fill out the form,"**Step 1** · Provide your name, date of birth, gender, residential address, mailing address (if different), phone number (optional), and email address (optional)  
 
 **Step 2** · Indicate whether you're a US citizen and whether you'll be 18 by Election Day, Nov 8
 
@@ -2727,9 +2733,9 @@ West Virginia,Register online,"You'll need a West Virginia driver’s license or
 
 **Step 1** · (Optional) Indicate whether this is a new registration; whether you're switching parties; and whether you're completing a name or address change 
 
-**Steps 2–3** · Enter your name and date of birth.
+**Steps 2–3** · Enter your name and date of birth
 
-**Step 4** · Provide your West Virginia driver’s license or ID card number or the last 4 digits of your Social Security number. 
+**Step 4** · Provide your West Virginia driver’s license or ID card number or the last 4 digits of your Social Security number
 
 **Steps 5** · Provide your residential address and mailing address (if different)
 
@@ -2743,7 +2749,7 @@ West Virginia,Register online,"You'll need a West Virginia driver’s license or
 
 **Step 11** · (Optional) Check if you would like to be a poll worker
 
-**Step 12** · Sign and date the form.   
+**Step 12** · Sign and date the form
 
 **Step 13** · (If applicable) If you're registering for the first time in West Virginia, or if you have not voted in a federal election in West Virginia and are registering in the county for the first time, provide one of the following with your registration or when you vote:
 
@@ -2797,7 +2803,7 @@ West Virginia,Register online,"You'll need a West Virginia driver’s license or
 - If convicted of a felony, treason, or bribery in an election, you can’t be in jail, on probation, or on parole
 - Not currently judged incompetent by a court
 - Not claim the right to vote in another state",2016-10-18,,2016-10-18,2016-10-18
-Wisconsin,,,,,,,,1. Get the voter registration form,Download and print the Wisconsin Voter Registration Form or call [(866) 868-3947](tel:866-868-3947) to have one sent to you,[Get the form](http://www.gab.wi.gov/sites/default/files/gab_forms/4/el_131_voter_registration_app_fillable_rev_2016_0_99038.pdf),,2. Fill out the form,"**Step 1** · Check whether you're a new voter in Wisconsin or changing your name or address; then provide your municipality and county
+Wisconsin,,,,,,,,1. Get the voter registration form,Download and print the Wisconsin Voter Registration Form or call [(866) 868-3947](tel:866-868-3947) to have one sent to you,[Get the form](http://www.gab.wi.gov/sites/default/files/gab_forms/4/el_131_voter_registration_app_fillable_rev_2016__16117.pdf),,2. Fill out the form,"**Step 1** · Check whether you're a new voter in Wisconsin or changing your name or address; then provide your municipality and county
 
 **Step 2** · Provide your Wisconsin driver’s license number or your Wisconsin Department of Transportation-issued ID number. If you don't have either of these, provide the last 4 numbers of your Social Security number. If you don’t have any of these IDs, fill in the appropriate circle.
 
@@ -2849,7 +2855,7 @@ Wisconsin,,,,,,,,1. Get the voter registration form,Download and print the Wisco
 - _A photo ID from a university, college or technical college with an on-campus housing listing provided by the university, college or technical college to the municipality_
 - _A utility bill dated within 90 days of when you register_
 - _(Homeless voters only) A letter from an organization that provides services to the homeless that identifies you and describes the location designated as your residence for voting purposes_
-- _A bank statement, a paycheck, a check or other government-issued document_",4. Return the form,"Return the form by **Nov 4** to your [municipal clerk’s office](https://myvote.wi.gov/en-US/MyMunicipalClerk)
+- _A bank statement, a paycheck, a government check or other government-issued document_",4. Return the form,"Return the form by **Nov 4** to your [municipal clerk’s office](https://myvote.wi.gov/en-US/MyMunicipalClerk)
 
 You can also register at your voting location on Election Day, **Nov 8**",Check if you're registered to vote,https://myvote.wi.gov/en-us/UpdateMyNameorAddress,"- Be a US citizen
 - Be 18 years old by Election Day, **Nov 8**
