@@ -24,8 +24,8 @@ We just submitted your information to the
 • NAME:      {{ user.first_name}} {{ user.last_name }}
 • ADDRESS:   {{ user.settings.address}} {% if user.settings.address_unit %}Apt {{ user.settings.address_unit }}{% endif %}
              {{ user.settings.city }} {{ user.settings.state }}, {{ user.settings.zip }}{% if user.settings.state_id_number %}
-• STATE ID:  *********{% endif %}
-{% if user.settings.az_pevl %}• PERMANENT EARLY VOTER LIST: YES{% endif %}
+• STATE ID:  *********{% endif %}{% if user.settings.az_pevl %}
+• PERMANENT EARLY VOTER LIST: YES{% endif %}
 • SUBMITTED: {{ friendly_timestamp }} 
 </pre>
 
