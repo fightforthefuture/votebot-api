@@ -84,6 +84,10 @@ module.exports = {
         intro_shortcode: 'nextgenca',
         msg_intro: "(Hi, this is NextGen CA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
+    nextgenLCF: {
+        intro_shortcode: 'nextgenLCF',
+        msg_intro: "(Hi, this is Latino Community Foundation, NextGen, and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     okgo: {
         intro_shortcode: 'okgo',
         msg_intro: "(Hi, this is OK Go and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -91,6 +95,10 @@ module.exports = {
     onearizona: {
         intro_shortcode: 'oneaz',
         msg_intro: "(Hi, this is One Arizona and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    pia: {
+        intro_shortcode: 'pia',
+        msg_intro: "(Hi, this is PrivateInternetAccess and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     presente: {
         intro_shortcode: 'presente',
@@ -119,6 +127,10 @@ module.exports = {
     transportoakland: {
         intro_shortcode: 'oakland',
         msg_intro: "(Hi, this is HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    wiuvotes: {
+        intro_shortcode: 'wiuvotes',
+        msg_intro: "(Hi, this is the WIU UGC and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",  
     },
     'wordpress.com': {
         intro_shortcode: 'wordpress',
