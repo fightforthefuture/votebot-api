@@ -84,7 +84,7 @@ module.exports = {
         intro_shortcode: 'nextgenca',
         msg_intro: "(Hi, this is NextGen CA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
-    nextgenLCF: {
+    nextgenlcf: {
         intro_shortcode: 'latinos',
         msg_intro: "(Hi, this is Latino Community Foundation, NextGen, and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
