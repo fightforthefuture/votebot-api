@@ -40,6 +40,10 @@ module.exports = {
         msg_intro: "(Hi, this is Headcount and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
         msg_intro_es: "Hola, this could be localized."
     },
+    hunter: {
+        intro_shortcode: 'hunter',
+        msg_intro: "(Hi, this is Hunter Walk and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     iapala: {
         intro_shortcode: 'iapala',
         msg_intro: "(Hi, this is IAPALA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
