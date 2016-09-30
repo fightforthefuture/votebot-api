@@ -110,7 +110,8 @@ var default_steps = {
 			// check state eligibility requirements
 			var state = util.object.get(user, 'settings.state');
 			if (state) {
-				if (end_msg = us_election.states_without_ovr[state.toUpperCase()]) {
+				if (end_msg = us_election.states_without_nvra[state.toUpperCase()]) {
+					// these states don't accept our form, mark them complete and kick them to share
 					if (user_model.use_notify(user.username)) { notify.replace_tags(user, ['votebot-started'], ['votebot-completed']); }
 					return {
 						msg: end_msg,
