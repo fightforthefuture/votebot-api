@@ -680,6 +680,8 @@ var default_steps = {
 		pre_process: function(action, conversation, user) {
 			if (conversation.type == 'sms' || conversation.type == 'web')  {
 				var locale = conversation.locale;
+				/*
+				// send opt-out notice, if required by TCPA
 				if (conversation.partner) {
 					tpl = {partner: conversation.partner.toUpperCase()};
 
@@ -694,6 +696,7 @@ var default_steps = {
 					var msg = l10n('msg_sms_notice', locale);
 					message_model.create(config.bot.user_id, conversation.id, {body: msg});
 				}
+				*/
 				var res = {
 					'next': 'final_tmp', // was fftf_opt_in, disable until list sharing resolved
 				};
