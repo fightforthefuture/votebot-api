@@ -135,13 +135,18 @@ exports.incoming_message = function(data)
 						}
 					}
 				}
+				var locale = 'en';
+				if (data.Body.trim().toLowerCase().indexOf('hola') !== -1)
+					locale = 'es';
 
 				return convo_model.create(config.bot.user_id, {
 					type: user.type,
 					partner: convPartner,
+					options: {
+						locale: locale
+					},
 					recipients: [{username: user.username}]
 				});
 			}
 		});
 };
-
