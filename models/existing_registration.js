@@ -36,9 +36,7 @@ exports.verify = function(user)
                         var is_registered = (registration_status === "Registered");
                         var vb_dob = moment(obj.result_set[0]['vb.voterbase_dob'], 'YYYYMMDD');
                         var matched_dob = (date_of_birth.isSame(vb_dob) ||
-                                           (date_of_birth.isSame(vb_dob, 'year') && vb_dob.month() === 0 && vb_dob.day() === 1)
-                                          )
-                        return resolve([is_registered && matched_dob]);
+                                           (date_of_birth.isSame(vb_dob, 'year') && vb_dob.month() === 0 && vb_dob.day() === 0));
                     } else {
                         return resolve([false]);
                     }
