@@ -15,9 +15,11 @@ exports.verify = function(user)
             "city": util.object.get(user, 'settings.city'),
             "state": util.object.get(user, 'settings.state'),
             "zip_code": util.object.get(user, 'settings.zip'),
-            "dob": date_of_birth.format("YYYYMMDD") // if we send DOB, TS requires an exact match
-        };
-        
+            "dob": date_of_birth.format("YYYY*") // just send year to TargetSmart
+            // they do an exact match on what they have, but their default value for unknowns is 0101
+            // which is not helpful. so, just match on year now and filter later
+        }
+
         var request_options = {
             url: 'https://api.targetsmart.com/voter-registration-check',
             qs: query_data,
@@ -32,7 +34,11 @@ exports.verify = function(user)
                     if (obj.result) {
                         var registration_status = obj.result_set[0]['vb.voterbase_registration_status']; 
                         var is_registered = (registration_status === "Registered");
-                        return resolve([is_registered]);
+                        var vb_dob = moment(obj.result_set[0]['vb.voterbase_dob'], 'YYYYMMDD');
+                        var matched_dob = (date_of_birth.isSame(vb_dob) ||
+                                           (date_of_birth.isSame(vb_dob, 'year') && vb_dob.month() === 0 && vb_dob.day() === 1)
+                                          )
+                        return resolve([is_registered && matched_dob]);
                     } else {
                         return resolve([false]);
                     }
