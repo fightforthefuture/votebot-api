@@ -23,7 +23,8 @@ exports.verify = function(user)
         var request_options = {
             url: 'https://api.targetsmart.com/voter-registration-check',
             qs: query_data,
-            headers: {'x-api-key': config.target_smart.api_key}
+            headers: {'x-api-key': config.target_smart.api_key},
+            timeout: 15000, // keep it below Heroku's 30s limit, otherwise we'll send H12 errors
         };
         request.get(request_options, function(err, res, body) {
                 if(err) return reject(err);
@@ -37,6 +38,7 @@ exports.verify = function(user)
                         var vb_dob = moment(obj.result_set[0]['vb.voterbase_dob'], 'YYYYMMDD');
                         var matched_dob = (date_of_birth.isSame(vb_dob) ||
                                            (date_of_birth.isSame(vb_dob, 'year') && vb_dob.month() === 0 && vb_dob.day() === 0));
+                        return resolve([is_registered && matched_dob]);
                     } else {
                         return resolve([false]);
                     }
