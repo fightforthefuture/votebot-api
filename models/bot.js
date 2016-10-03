@@ -121,6 +121,8 @@ var default_steps = {
 				}
 
 				// and online registration deadlines
+				// JL NOTE ~ not yet
+				/*
 				if (deadline_str = us_election.get_ovr_deadline(state)['online']) {
 					var ovr_deadline = moment(deadline_str, 'YYYY-MM-DD');
 					var today = moment();
@@ -128,6 +130,7 @@ var default_steps = {
 						return {msg: l10n('error_state_deadline_expired', conversation.locale), next: 'share'}
 					}
 				}
+				*/
 
 				return {next: 'address'};
 			}
@@ -237,7 +240,7 @@ var default_steps = {
 	check_existing_registration: {
 		process: function(body, user, step, conversation) {
 			return existing_registration.verify(user).then(function(registration_status) {
-				var next = 'per_state';
+				var next = 'deadline_check';
 
 				if (registration_status && registration_status[0] === true) {
 					// they are already registered
@@ -262,6 +265,88 @@ var default_steps = {
 			});
 		}
 	},
+
+	deadline_check: {
+		pre_process: function(action, conversation, user) {
+			var state = util.object.get(user, 'settings.state'),
+				deadlines = us_election.get_ovr_deadline(state),
+				today = moment();
+
+			if (deadlines) {
+
+				// if the state supports OVR, do one thing
+				if (deadlines['online']) { // JL DEBUG ~ 
+					var ovr_deadline = moment(deadlines['online'], 'YYYY-MM-DD');
+
+					// if we're past the OVR deadline, kick them out
+					if (today.isAfter(ovr_deadline, 'day')) {
+
+						var msg = l10n('error_state_deadline_expired', conversation.locale);
+
+						if (deadlines['in-person'] == config.election.date)
+							msg = l10n('error_deadline_expired_but_in_person_allowed', conversation.locale);
+
+						return {
+							next: 'share',
+							msg: msg,
+							delay: default_delay(conversation)
+						};					
+					}
+
+					// If we're not past the OVR deadline, but haven't implemented
+					// OVR for this state, then ask the user to go to the state site
+					if (!us_election.state_integrated_ovr[state]) {
+						return {next: 'refer_external_ovr'};
+					}
+
+				// if state DOES NOT support OVR, we have to do another thing
+				} else {
+					var too_late_for_mailer = us_election.is_too_late_for_mailer(state);
+					var too_late_to_mail = us_election.is_too_late_to_mail(state);
+					var deadline_text = us_election.get_mail_deadline_text(state);
+					
+					// if we're between mailing cutoffs, then we're very close
+					// warn the user that the deadline is basically RIGHT NOW!
+					if (too_late_for_mailer && !too_late_to_mail) {
+						var msg = l10n('msg_warning_deadline_very_close', conversation.locale);
+						msg = msg.replace('{{deadline}}', deadline_text);
+						msg = language.template(msg, user, conversation.locale);
+
+						return {
+							msg: msg,
+							delay: default_delay(conversation),
+							next: 'per_state'
+						}
+					}
+				}
+
+			}
+			
+			return {next: 'per_state'};
+		},
+	},
+
+	refer_external_ovr: {
+		pre_process: function(action, conversation, user) {
+			var state = util.object.get(user, 'settings.state'),
+				requirements = us_election.get_registration_requirements(state),
+				url = requirements['RegisterOnline'];
+
+			var update_user = util.object.set(user, 'complete', true);
+			util.object.set(update_user, 'referred', true);
+			user_model.update(user.id, update_user);
+
+			return {
+				msg: l10n('msg_refer_external_ovr', conversation.locale).replace('{url}', url),
+				delay: 300000,
+				next: 'share'
+			}
+		}
+
+	},
+
+
+
 	// this is a MAGICAL step. it never actually runs, but instead just
 	// points to other steps until it runs out of per-state questions to
 	// ask. then it parties.
@@ -567,6 +652,21 @@ var default_steps = {
 		},
 	},
 	choose_nvra_delivery: {
+		pre_process: function(action, conversation, user) {
+			var state = util.object.get(user, 'settings.state');
+			var too_late_for_mailer = us_election.is_too_late_for_mailer(state);
+
+			if (too_late_for_mailer) {
+				var update_user = util.object.set(user, 'settings.mail_letter', false);
+				user_model.update(user.id, update_user);
+
+				return {
+					msg: l10n('msg_you_must_mail', conversation.locale),
+					delay: default_delay(conversation),
+					next: 'choose_postage'
+				}
+			}
+		},
 		process: function(body, user) {
 			return Promise.resolve({
 				advance: !language.is_yes(body) ? true : false,
