@@ -153,7 +153,7 @@ exports.replace_tags = function(user, tags_to_remove, tags_to_add) {
 
 exports.delete_binding = function(user) {
 	return new Promise(function(fulfill, reject){
-		service.bindings.delete({
+		service.bindings.remove({
 			endpoint: 'votebot-api:'+config.environment+':'+user.id,
 			address: user.username
 		}).then(function(response) {
