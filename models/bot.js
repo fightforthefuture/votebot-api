@@ -499,6 +499,7 @@ var default_steps = {
 
 			if (form_type != 'NVRA') {
 				// registration complete online, no extra instructions
+				if (user_model.use_notify(user.username)) { notify.add_tags(user, ['votebot-completed-ovr']); }
 				setTimeout(function() {
 					var msg = language.template(l10n('msg_complete_ovr_disclaimer', conversation.locale), user, conversation.locale);
 					message_model.create(config.bot.user_id, conversation.id, {body: msg});
@@ -510,6 +511,7 @@ var default_steps = {
 				};
 			} else {
 				if (mail_eta) {
+					if (user_model.use_notify(user.username)) { notify.add_tags(user, ['votebot-completed-mail']); }
 					var msg = l10n('msg_complete_mail', conversation.locale),
 						friendly_eta = momentTZ(mail_eta).tz('America/Los_Angeles').format('MMMM D'),
 						msg = msg.replace('{{mail_eta}}', friendly_eta);
@@ -520,6 +522,7 @@ var default_steps = {
 						delay: config.bot.advance_delay * 4
 					};
 				} else {
+					if (user_model.use_notify(user.username)) { notify.add_tags(user, ['votebot-completed-pdf']); }
 					if (conversation.type == 'fb' && pdf_url) {
 						var msg = l10n('msg_complete_pdf_fb', conversation.locale);
 						msg = msg.replace('{{deadline}}', deadline);
