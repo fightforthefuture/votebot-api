@@ -341,8 +341,7 @@ var default_steps = {
 
 			return {
 				msg: l10n('msg_refer_external_ovr', conversation.locale).replace('{url}', url),
-				delay: 300000,
-				next: 'share'
+				next: 'final_tmp'
 			}
 		}
 
