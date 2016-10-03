@@ -1,6 +1,7 @@
 var Promise = require('bluebird');
 var config = require('../config');
 var db = require('../lib/db');
+var email = require('../lib/email');
 var convo_model = require('./conversation');
 var submission_model = require('./submission');
 var message_model = require('./message');
@@ -275,7 +276,7 @@ var default_steps = {
 			if (deadlines) {
 
 				// if the state supports OVR, do one thing
-				if (deadlines['online']) { // JL DEBUG ~ 
+				if (deadlines['online']) {
 					var ovr_deadline = moment(deadlines['online'], 'YYYY-MM-DD');
 
 					// if we're past the OVR deadline, kick them out
@@ -335,6 +336,8 @@ var default_steps = {
 			var update_user = util.object.set(user, 'complete', true);
 			util.object.set(update_user, 'referred', true);
 			user_model.update(user.id, update_user);
+
+			email.sendExternalOVRNotification(user);
 
 			return {
 				msg: l10n('msg_refer_external_ovr', conversation.locale).replace('{url}', url),
