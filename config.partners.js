@@ -7,6 +7,10 @@ module.exports = {
         intro_shortcode: 'aarw',
         msg_intro: "(Hi, this is AARW and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
+    bazta: {
+        intro_shortcode: 'bazta',
+        msg_intro: "(Hi, this is Bazta Arpaio and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     bernie: {
         intro_shortcode: 'bernie',
         msg_intro: "(Hi, this is Senator Sanders and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -126,7 +130,7 @@ module.exports = {
     },
     shaderoom: {
         intro_shortcode: 'theshaderoom',
-        msg_intro: "(Hi, this is the Shade Room and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+        msg_intro: "(Hi, this is The Shade Room and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     tab: {
         intro_shortcode: 'tab',
