@@ -116,6 +116,10 @@ module.exports = {
         intro_shortcode: 'rtv',
         msg_intro: "(Hi, this is Rock the Vote and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
+    salesforce: {
+        intro_shortcode: 'votesalesforce',
+        msg_intro: "(Hi, this is Salesforce and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     seiuca: {
         intro_shortcode: 'seiuca',
         msg_intro: "(Hi, this is SEIU CA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -131,6 +135,10 @@ module.exports = {
     transportoakland: {
         intro_shortcode: 'oakland',
         msg_intro: "(Hi, this is HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    twilio: {
+        intro_shortcode: 'twilio',
+        msg_intro: "(Hi, this is Twilio and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     wiuvotes: {
         intro_shortcode: 'wiuvotes',
