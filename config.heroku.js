@@ -78,6 +78,10 @@ var config = {
 		client_id: process.env.SLACK_CLIENT_ID
     },
 
+    revere: {
+    	api_key: process.env.REVERE_API_KEY,
+    },
+
     votebot_api_key: process.env.VOTEBOT_API_KEY,
 
 	session: {

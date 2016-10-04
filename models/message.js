@@ -9,6 +9,7 @@ var bot_model = require('./bot');
 var twilio = require('twilio')(config.twilio.account_sid, config.twilio.auth_token);
 var partners = require('../config.partners');
 var facebook_model = require('./facebook');
+var revere_model = require('./revere');
 
 Promise.promisifyAll(twilio.messages);
 
@@ -80,6 +81,12 @@ exports.broadcast = function(conversation_id, message)
 						.catch(function(error) {
 							log.error('message: failed to send to: '+ to_user, error);
 						});
+				} else if (user.type == 'revere') {
+					log.info('messages: sending Revere Message to ', to_user);
+					return revere_model.message(to_user, message.body)
+						.catch(function(error) {
+							log.error('message: failed to send to: '+ to_user, error);
+						});
 				} else {
 					log.info('messages: sending twilio message to ', to_user);
 
@@ -108,16 +115,12 @@ exports.incoming_message = function(data)
 			return convo_model.get_recent_by_user(user.id);
 		})
 		.then(function(conversation) {
-			if(conversation)
+			if(conversation && data.Body)
 			{
 				log.info('msg: incoming: continuing existing conversation');
 				return exports.create(user.id, conversation.id, {body: data.Body})
 					.tap(function(message) {
-						if(conversation.type === 'p2p') {
-							// TODO, advance the bot for each user in turn?
-						} else {
-							return bot_model.next(user.id, conversation, message)
-						}
+						return bot_model.next(user.id, conversation, message)
 					});
 			}
 			else
@@ -125,7 +128,7 @@ exports.incoming_message = function(data)
 				log.info('msg: incoming: starting new conversation');
 
 				var convPartner = null,
-					trimBody = data.Body.trim().toLowerCase();
+					trimBody = data.body ? data.Body.trim().toLowerCase() : '';
 
 				for (var partner in partners) {
 					if (partners.hasOwnProperty(partner)) {
@@ -136,7 +139,7 @@ exports.incoming_message = function(data)
 					}
 				}
 				var locale = 'en';
-				if (data.Body.trim().toLowerCase().indexOf('hola') !== -1)
+				if (trimBody.indexOf('hola') !== -1)
 					locale = 'es';
 
 				return convo_model.create(config.bot.user_id, {

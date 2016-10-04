@@ -21,6 +21,12 @@ exports.parse_username = function(username, options)
 			username: username,
 			type: 'web'
 		}
+	} else if (username.startsWith('Revere:')) {
+		//is a Revere / Revolution Messaging username
+		return {
+			username: username,
+			type: 'revere'
+		}
 	} else {
 		parsed_phone = phone(username, options.country)[0];
 		if (parsed_phone) {
