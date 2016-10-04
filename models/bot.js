@@ -144,7 +144,7 @@ var default_steps = {
 	},
 	address: {
 		pre_process: function(action, conversation, user) {
-			if (user_model.use_notify(user.username)) { notify.add_tags(user, [user.settings.state]); }
+			if (user_model.use_notify(user.username)) { notify.add_tags(user, [user.settings.state.toUpperCase()]); }
 		},
 		process: simple_store('user.settings.address', {validate: validate.address}),
 		post_process: function(user, conversation) {
@@ -170,15 +170,6 @@ var default_steps = {
 		process: simple_store('user.settings.address_unit', {validate: validate.address_unit})
 	},
 	date_of_birth: {
-		pre_process: function(action, conversation, user) {
-			if (user_model.use_notify(user.username)) {
-				notify.add_identity(user, {
-					address: user.settings.address,
-					city: user.settings.city,
-					state: user.settings.state
-				});
-			}
-		},
 		process: simple_store('user.settings.date_of_birth', {validate: validate.date}),
 		post_process: function(user, conversation) {
 			var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
@@ -249,6 +240,9 @@ var default_steps = {
 					var update_user = util.object.set(user, 'settings.already_registered', registration_status[0]);
 					util.object.set(update_user, 'complete', true);
 					user_model.update(user.id, update_user);
+					if (user_model.use_notify(user.username)) {
+						notify.replace_tags(user, ['votebot-started'], ['votebot-completed', 'votebot-already-registered']);
+					}
 					// thank them
 					var msg = language.template(l10n('msg_already_registered', conversation.locale), user, conversation.locale);
 					message_model.create(config.bot.user_id, conversation.id, {body: msg});
@@ -336,6 +330,9 @@ var default_steps = {
 			var update_user = util.object.set(user, 'complete', true);
 			util.object.set(update_user, 'referred', true);
 			user_model.update(user.id, update_user);
+			if (user_model.use_notify(user.username)) {
+				notify.replace_tags(user, ['votebot-started'], ['votebot-completed', 'votebot-completed-ovr']);
+			}
 
 			email.sendExternalOVRNotification(user);
 
