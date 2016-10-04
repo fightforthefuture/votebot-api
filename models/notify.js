@@ -8,15 +8,14 @@ if (config.twilio) {
 
 // adds a binding for a user, with the given tag
 // stores binding SID as a user setting
-// overrites any existing binding for the user
+// sets identity to user's email
+// overwrites any existing binding for the user with the same endpoint
 // accepts a user object and a list of tags as strings
 // returns a promise that fulfills to the binding SID on success; error details on failure
 function create_binding(user, tags, identity) {
 	if (!identity) {
-		identity = {};
+		identity = user.settings.email;
 	}
-	identity.first_name = user.first_name;
-	identity.last_name = user.last_name;
 	bindingType = user.type;
 	bindingAddress = user.username;
 	if (bindingType === 'fb') {
@@ -27,7 +26,7 @@ function create_binding(user, tags, identity) {
 	return new Promise(function(fulfill, reject){
 		service.bindings.create({
 			endpoint: 'votebot-api:'+config.environment+':'+user.id,
-			identity: JSON.stringify(identity),
+			identity: identity,
 			bindingType: bindingType,
 			address: bindingAddress,
 			tag: tags
@@ -45,22 +44,6 @@ function create_binding(user, tags, identity) {
 			reject(error);
 		});
 	});
-};
-
-// adds identity fields to a user's binding
-// accepts a user object and a identity object with new fields
-// returns a promise that fulfills to the new binding SID; error details on reject
-exports.add_identity = function(user, new_identity) {
-	fetch_binding(user)
-		.then(function(binding) {
-			var identity = JSON.parse(binding.identity);
-			for (var key in new_identity) {
-				if (new_identity.hasOwnProperty(key)) {
-					identity[key] = new_identity[key];
-				}
-			}
-			return create_binding(user, binding.tags, identity);
-		});
 };
 
 // adds tags to a user's binding
@@ -153,11 +136,9 @@ exports.replace_tags = function(user, tags_to_remove, tags_to_add) {
 
 exports.delete_binding = function(user) {
 	return new Promise(function(fulfill, reject){
-		service.bindings.remove({
-			endpoint: 'votebot-api:'+config.environment+':'+user.id,
-			address: user.username
-		}).then(function(response) {
-			log.info('notify: deleted binding for', user.username, 'with tags:', JSON.stringify(tags));
+		service.bindings(user.settings.notify_binding_sid).remove()
+		.then(function(response) {
+			log.info('notify: deleted binding for', user.username);
 			// store the binding SID with the user object
 			if (!user.settings) {
 				user.settings = {};

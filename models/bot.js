@@ -144,7 +144,7 @@ var default_steps = {
 	},
 	address: {
 		pre_process: function(action, conversation, user) {
-			if (user_model.use_notify(user.username)) { notify.add_tags(user, [user.settings.state]); }
+			if (user_model.use_notify(user.username)) { notify.add_tags(user, [user.settings.state.toUpperCase()]); }
 		},
 		process: simple_store('user.settings.address', {validate: validate.address}),
 		post_process: function(user, conversation) {
@@ -170,15 +170,6 @@ var default_steps = {
 		process: simple_store('user.settings.address_unit', {validate: validate.address_unit})
 	},
 	date_of_birth: {
-		pre_process: function(action, conversation, user) {
-			if (user_model.use_notify(user.username)) {
-				notify.add_identity(user, {
-					address: user.settings.address,
-					city: user.settings.city,
-					state: user.settings.state
-				});
-			}
-		},
 		process: simple_store('user.settings.date_of_birth', {validate: validate.date}),
 		post_process: function(user, conversation) {
 			var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
