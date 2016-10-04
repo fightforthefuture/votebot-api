@@ -14,7 +14,7 @@ if (config.twilio) {
 // returns a promise that fulfills to the binding SID on success; error details on failure
 function create_binding(user, tags, identity) {
 	if (!identity) {
-		identity = user.settings.email;
+		identity = user.settings.email || user.username;
 	}
 	bindingType = user.type;
 	bindingAddress = user.username;
@@ -45,6 +45,7 @@ function create_binding(user, tags, identity) {
 		});
 	});
 };
+exports.create_binding = create_binding;
 
 // adds tags to a user's binding
 // updates the binding SID for the user
