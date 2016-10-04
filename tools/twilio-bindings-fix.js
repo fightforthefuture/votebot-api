@@ -1,5 +1,7 @@
 var Promise = require('bluebird');
+var ProgressBar = require('progress');
 var config = require('../config');
+var log = require('../lib/logger');
 var db = require('../lib/db');
 var util = require('../lib/util');
 var language = require('../lib/language');
@@ -12,15 +14,20 @@ var USERS_TO_BE_FIXED = [
     'SELECT id',
     'FROM   users',
     'WHERE  complete = true',
-    //"AND    date(created) <= '2016-10-04'",
-    "AND    settings->>'fixed_notify' = 'true'",
-    "LIMIT 100",
+    "AND    settings->>'fixed_notify' is null",
 ];
+
+var bar = new ProgressBar('[:bar] :current / :total :etas', {
+            complete: '=',
+            incomplete: ' ',
+            total: 0,
+        });
 
 db.query(
     USERS_TO_BE_FIXED.join('\n'))
     .then(function(users) {
-        console.log('Found users: ', users.length);
+        console.log();
+        bar.total = users.length;
         return Promise.map(users, fix_notify_bindings, {concurrency: 10});
     }).then(function() {
         console.log('done, waiting for threads');
@@ -28,10 +35,12 @@ db.query(
         console.error(err);
     });
 
-var fix_notify_bindings = function(user) {
+var fix_notify_bindings = function(user, index, length) {
     return user_model.get(user.id).then(function(user) {
+        bar.tick();
+
         if (!user_model.use_notify(user.username)) {
-            console.log('- unable to fix bindings for ', user.username);
+            console.error('- unable to fix bindings for ', user.username);
             return;
         }
 
@@ -39,18 +48,14 @@ var fix_notify_bindings = function(user) {
         // re-check messages for STOP keyword
         return conversation_model.get_recent_by_user(user.id).then(function(conversation) {
             return msgs_model.get_by_conversation(conversation.id).then(function(messages) {
-                messages.reduce(function(canceled, m){
-                    if (language.is_cancel(m)) {
-                        console.log(m, 'cancel!');
-                        return true;
-                    }
-                    return canceled;
-                }, false)
+                return messages.reduce(function(canceled, m){
+                    return canceled || language.is_cancel(m.body);
+                }, false);
             });
         }).then(function(canceled) {
             if (canceled) {
                 user.active = false;
-                console.log(user.id, 'canceled');
+                log.info(user.username, 'CANCELED');
             } else {
                 user.active = true;
                 // user didn't mean to cancel...
@@ -60,11 +65,10 @@ var fix_notify_bindings = function(user) {
             if(user.active === false) {
                 // actually remove binding
                 return notify.delete_binding(user).then(function(sid) {
-                    console.log('- deleted binding', sid);
+                    log.info('- deleted binding', sid);
                     return;
                 }, function(error) {
-                    console.log(error);
-                    console.error('- unable to delete binding', user.id);
+                    log.error('- unable to delete binding', user.username);
                     user.settings.notify_binding_sid = null;
                     var update_user = util.object.set(user, 'settings.fixed_notify', true);
                     return user_model.update(user.id, update_user);
@@ -93,17 +97,16 @@ var fix_notify_bindings = function(user) {
                     } else if (form_type) {
                         tags_add.push('votebot-completed-ovr');
                     }
-                    console.log('- updating binding', user.id, tags_add, tags_del);
+                    log.info('- updating binding', user.username, tags_add, tags_del);
                 }
 
                 return notify.add_tags(user, tags_add).then(function(sid) {
                     return notify.remove_tags(user, tags_del);
                 }, function(error) {
-                    console.error('- replace binding for ', user.id);
+                    console.error('- replace binding for ', user.username);
                     notify.delete_binding(user);
                     return notify.create_binding(user, tags_add);
                 }).then(function(sid) {
-                    console.log('new sid', sid);
                     // mark fixed, so we don't double dip
                     var update_user = util.object.set(user, 'settings.fixed_notify', true);
                     return user_model.update(user.id, update_user);
