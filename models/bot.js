@@ -648,11 +648,20 @@ var default_steps = {
 		no_msg: true,
 
 		process: function(body, user, step, conversation) {
-			var msg = language.template(l10n('msg_ovr_failed', conversation.locale), user, conversation.locale);
+			var state = util.object.get(user, 'settings.state');
+			var too_late_for_mailer = us_election.is_too_late_for_mailer(state);
+
+			if (too_late_for_mailer) {
+				var msg = language.template(l10n('msg_ovr_failed_no_fallback', conversation.locale), user, conversation.locale);
+				var next = 'refer_external_ovr';
+			} else {
+				var msg = language.template(l10n('msg_ovr_failed', conversation.locale), user, conversation.locale);
+				var next = 'choose_nvra_delivery';
+			}
 			message_model.create(config.bot.user_id, conversation.id, {body: msg});
 			return Promise.delay(default_delay(conversation))
 				.then(function() {
-					return {'next': 'choose_nvra_delivery'}
+					return {'next': next}
 				});
 		},
 	},
