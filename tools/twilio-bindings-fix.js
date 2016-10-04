@@ -17,10 +17,11 @@ var USERS_TO_BE_FIXED = [
     "AND    settings->>'fixed_notify' is null",
 ];
 
-var bar = new ProgressBar('[:bar] :current / :total :etas', {
+var bar = new ProgressBar('[:bar] :current / :total :percent :etas', {
             complete: '=',
             incomplete: ' ',
-            total: 0,
+            width: 20,
+            total: 0, // update this below
         });
 
 db.query(
@@ -40,7 +41,7 @@ var fix_notify_bindings = function(user, index, length) {
         bar.tick();
 
         if (!user_model.use_notify(user.username)) {
-            console.error('- unable to fix bindings for ', user.username);
+            log.error('- unable to fix bindings for ', user.username);
             return;
         }
 
@@ -63,6 +64,7 @@ var fix_notify_bindings = function(user, index, length) {
             return user;
         }).then(function(user) {
             if(user.active === false) {
+                if (!user.settings.notify_binding_sid) { return; }
                 // actually remove binding
                 return notify.delete_binding(user).then(function(sid) {
                     log.info('- deleted binding', sid);
@@ -103,7 +105,7 @@ var fix_notify_bindings = function(user, index, length) {
                 return notify.add_tags(user, tags_add).then(function(sid) {
                     return notify.remove_tags(user, tags_del);
                 }, function(error) {
-                    console.error('- replace binding for ', user.username);
+                    log.info('- replace binding for ', user.username);
                     notify.delete_binding(user);
                     return notify.create_binding(user, tags_add);
                 }).then(function(sid) {
