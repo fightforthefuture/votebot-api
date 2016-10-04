@@ -240,6 +240,9 @@ var default_steps = {
 					var update_user = util.object.set(user, 'settings.already_registered', registration_status[0]);
 					util.object.set(update_user, 'complete', true);
 					user_model.update(user.id, update_user);
+					if (user_model.use_notify(user.username)) {
+						notify.replace_tags(user, ['votebot-started'], ['votebot-completed', 'votebot-already-registered']);
+					}
 					// thank them
 					var msg = language.template(l10n('msg_already_registered', conversation.locale), user, conversation.locale);
 					message_model.create(config.bot.user_id, conversation.id, {body: msg});
@@ -327,6 +330,9 @@ var default_steps = {
 			var update_user = util.object.set(user, 'complete', true);
 			util.object.set(update_user, 'referred', true);
 			user_model.update(user.id, update_user);
+			if (user_model.use_notify(user.username)) {
+				notify.replace_tags(user, ['votebot-started'], ['votebot-completed', 'votebot-completed-ovr']);
+			}
 
 			email.sendExternalOVRNotification(user);
 
