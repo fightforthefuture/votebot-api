@@ -15,14 +15,18 @@ exports.hook = function(app)
 var postback = function(req, res)
 {
 	var data = req.body,
+		query = req.query,
 		message = {
 			From: 'Revere:'+data.msisdn,
 			Body: data.mobileText
+		},
+		options = {
+			partner: req.query.client.toLowerCase()
 		};
 
-	log.info('revere: incoming: ', data);
+	log.info('revere: incoming: ', data, query);
 
-	message_model.incoming_message(message)
+	message_model.incoming_message(message, options)
 		.then(function() {
 			resutil.send(res, {
 				"endSession": false

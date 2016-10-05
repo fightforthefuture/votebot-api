@@ -83,7 +83,7 @@ exports.broadcast = function(conversation_id, message)
 						});
 				} else if (user.type == 'revere') {
 					log.info('messages: sending Revere Message to ', to_user);
-					return revere_model.message(to_user, message.body)
+					return revere_model.message(to_user, message.body, conversation_id)
 						.catch(function(error) {
 							log.error('message: failed to send to: '+ to_user, error);
 						});
@@ -103,9 +103,11 @@ exports.broadcast = function(conversation_id, message)
 		});
 };
 
-exports.incoming_message = function(data)
+exports.incoming_message = function(data, options)
 {
 	var user;
+	options || (options = {});
+
 	log.info('msg: incoming: from: '+data.From+' -- '+data.Body);
 	return user_model.upsert(user_model.parse_username(data.From))
 		.then(function(_user) {
@@ -115,13 +117,16 @@ exports.incoming_message = function(data)
 			return convo_model.get_recent_by_user(user.id);
 		})
 		.then(function(conversation) {
-			if(conversation && data.Body)
+			if(conversation)
 			{
 				log.info('msg: incoming: continuing existing conversation');
-				return exports.create(user.id, conversation.id, {body: data.Body})
-					.tap(function(message) {
-						return bot_model.next(user.id, conversation, message)
-					});
+				if (data.Body)
+					return exports.create(user.id, conversation.id, {body: data.Body})
+						.tap(function(message) {
+							return bot_model.next(user.id, conversation, message)
+						});
+				else
+					return true;
 			}
 			else
 			{
@@ -130,14 +135,19 @@ exports.incoming_message = function(data)
 				var convPartner = null,
 					trimBody = data.body ? data.Body.trim().toLowerCase() : '';
 
-				for (var partner in partners) {
-					if (partners.hasOwnProperty(partner)) {
-						if (trimBody == partners[partner].intro_shortcode) {
-							log.info('msg: body matches shortcode: ', partner);
-							convPartner = partner;
+				if (options.partner) {
+					convPartner = options.partner
+				} else {
+					for (var partner in partners) {
+						if (partners.hasOwnProperty(partner)) {
+							if (trimBody == partners[partner].intro_shortcode) {
+								log.info('msg: body matches shortcode: ', partner);
+								convPartner = partner;
+							}
 						}
 					}
 				}
+
 				var locale = 'en';
 				if (trimBody.indexOf('hola') !== -1)
 					locale = 'es';
