@@ -128,6 +128,10 @@ module.exports = {
         intro_shortcode: 'rtv',
         msg_intro: "(Hi, this is Rock the Vote and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
+    sacca: {
+        intro_shortcode: 'sacca',
+        msg_intro: "(Hi, this is Chris Sacca and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     salesforce: {
         intro_shortcode: 'votesalesforce',
         msg_intro: "(Hi, this is Salesforce and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
