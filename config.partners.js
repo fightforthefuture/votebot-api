@@ -46,7 +46,12 @@ module.exports = {
     headcount: {
         intro_shortcode: 'count',
         msg_intro: "(Hi, this is Headcount and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
-        msg_intro_es: "Hola, this could be localized."
+        msg_intro_es: "(Saludos, esto es HelloVote y HeadCount. Puedo revisar si está registrado o ayudarle a registrarse para votar. Sus respuestas seran privadas y seguras. Más información: hellovote.org)"
+    },
+    hellovotetesting: {
+        intro_shortcode: 'trololo',
+        msg_intro: "(Hi, this is the Revere testing interface for HelloVote. If you are reading this message, you are hopefully a developer.)",
+        revere_mobile_flow: '57d70806e4b0138820290006'
     },
     hunter: {
         intro_shortcode: 'hunter',
@@ -119,6 +124,7 @@ module.exports = {
     presente: {
         intro_shortcode: 'presente',
         msg_intro: "(Hi, this is Presente and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+        revere_mobile_flow: '57f53979e4b0962618cfecd0'
     },
     refinery29: {
         intro_shortcode: 'r29',
@@ -147,6 +153,11 @@ module.exports = {
     tab: {
         intro_shortcode: 'tab',
         msg_intro: "(Hi, this is The Tab and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    tab: {
+        intro_shortcode: 'teamsters',
+        msg_intro: "(Hi, this is Teamsters and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+        revere_mobile_flow: "57f53c2de4b0962618d0322c"
     },
     transportoakland: {
         intro_shortcode: 'oakland',

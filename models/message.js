@@ -9,6 +9,7 @@ var bot_model = require('./bot');
 var twilio = require('twilio')(config.twilio.account_sid, config.twilio.auth_token);
 var partners = require('../config.partners');
 var facebook_model = require('./facebook');
+var revere_model = require('./revere');
 
 Promise.promisifyAll(twilio.messages);
 
@@ -80,6 +81,12 @@ exports.broadcast = function(conversation_id, message)
 						.catch(function(error) {
 							log.error('message: failed to send to: '+ to_user, error);
 						});
+				} else if (user.type == 'revere') {
+					log.info('messages: sending Revere Message to ', to_user);
+					return revere_model.message(to_user, message.body, conversation_id)
+						.catch(function(error) {
+							log.error('message: failed to send to: '+ to_user, error);
+						});
 				} else {
 					log.info('messages: sending twilio message to ', to_user);
 
@@ -96,9 +103,11 @@ exports.broadcast = function(conversation_id, message)
 		});
 };
 
-exports.incoming_message = function(data)
+exports.incoming_message = function(data, options)
 {
 	var user;
+	options || (options = {});
+
 	log.info('msg: incoming: from: '+data.From+' -- '+data.Body);
 	return user_model.upsert(user_model.parse_username(data.From))
 		.then(function(_user) {
@@ -111,32 +120,36 @@ exports.incoming_message = function(data)
 			if(conversation)
 			{
 				log.info('msg: incoming: continuing existing conversation');
-				return exports.create(user.id, conversation.id, {body: data.Body})
-					.tap(function(message) {
-						if(conversation.type === 'p2p') {
-							// TODO, advance the bot for each user in turn?
-						} else {
+				if (data.Body)
+					return exports.create(user.id, conversation.id, {body: data.Body})
+						.tap(function(message) {
 							return bot_model.next(user.id, conversation, message)
-						}
-					});
+						});
+				else
+					return true;
 			}
 			else
 			{
 				log.info('msg: incoming: starting new conversation');
 
 				var convPartner = null,
-					trimBody = data.Body.trim().toLowerCase();
+					trimBody = data.body ? data.Body.trim().toLowerCase() : '';
 
-				for (var partner in partners) {
-					if (partners.hasOwnProperty(partner)) {
-						if (trimBody == partners[partner].intro_shortcode) {
-							log.info('msg: body matches shortcode: ', partner);
-							convPartner = partner;
+				if (options.partner) {
+					convPartner = options.partner
+				} else {
+					for (var partner in partners) {
+						if (partners.hasOwnProperty(partner)) {
+							if (trimBody == partners[partner].intro_shortcode) {
+								log.info('msg: body matches shortcode: ', partner);
+								convPartner = partner;
+							}
 						}
 					}
 				}
+
 				var locale = 'en';
-				if (data.Body.trim().toLowerCase().indexOf('hola') !== -1)
+				if (trimBody.indexOf('hola') !== -1)
 					locale = 'es';
 
 				return convo_model.create(config.bot.user_id, {

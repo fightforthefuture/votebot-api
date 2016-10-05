@@ -19,7 +19,7 @@ exports.create = function(user_id, data)
 	var message = data.message || {};
 	var options = data.options || {};
 	var partner = null;
-	var valid_data_types = ['sms', 'web', 'fb', 'p2p'];
+	var valid_data_types = ['sms', 'web', 'fb', 'p2p', 'revere'];
 	// sms means conversation was initiated by text message
 	// web means conversation was initiated by web call (from hellovote.org, or other client)
 	// fb means conversation was inititated by facebook messenger
