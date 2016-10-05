@@ -112,6 +112,10 @@ module.exports = {
         intro_shortcode: 'pia',
         msg_intro: "(Hi, this is PrivateInternetAccess and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
+    pearljam: {
+        intro_shortcode: 'pjam',
+        msg_intro: "(Hi, this is Pearl Jam and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     presente: {
         intro_shortcode: 'presente',
         msg_intro: "(Hi, this is Presente and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
