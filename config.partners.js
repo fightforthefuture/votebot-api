@@ -53,6 +53,10 @@ module.exports = {
         msg_intro: "(Hi, this is the Revere testing interface for HelloVote. If you are reading this message, you are hopefully a developer.)",
         revere_mobile_flow: '57d70806e4b0138820290006'
     },
+    hispanic_chamber: {
+        intro_shortcode: 'guac',
+        msg_intro: "(Hi, this is the Hispanic Chamber of Commerce and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     iapala: {
         intro_shortcode: 'iapala',
         msg_intro: "(Hi, this is IAPALA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -137,6 +141,10 @@ module.exports = {
     shaderoom: {
         intro_shortcode: 'theshaderoom',
         msg_intro: "(Hi, this is The Shade Room and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    surj: {
+        intro_shortcode: 'surj',
+        msg_intro: "(Hi, this is SURJ and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     tab: {
         intro_shortcode: 'tab',
