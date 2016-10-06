@@ -181,25 +181,52 @@ module.exports = {
     },
     
     // celeb partners
-    bj_novak: {},
-    chrissy_teigen: {},
-    daymond_john: {},
-    edward_norton: {},
+    bj_novak: {
+        intro_shortcode: 'bjnovak',
+        msg_intro: "(Hi, this is B.J. Novak and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",        
+    },
+    chrissy_teigen: {
+        intro_shortcode: 'chrissyteigen',
+        msg_intro: "(Hi, this is Chrissy Teigen and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",        
+    },
+    daymond_john: {
+        intro_shortcode: 'daymondjohn',
+        msg_intro: "(Hi, this is Daymond John and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",          
+    },
+    edward_norton: {
+        intro_shortcode: 'norton',
+        msg_intro: "(Hi, this is Edward Norton and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",          
+    },
     hunter: {
         intro_shortcode: 'hunter',
         msg_intro: "(Hi, this is Hunter Walk and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
-    john_legend: {},
-    kristen_bell: {},
+    john_legend: {
+        intro_shortcode: 'legend',
+        msg_intro: "(Hi, this is John Legend and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",          
+    },
+    kristen_bell: {
+        intro_shortcode: 'kristenbell',
+        msg_intro: "(Hi, this is Kristen Bell and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",          
+    },
     mindy: {
         intro_shortcode: 'mindy',
         msg_intro: "(Hi, this is Mindy Kaling and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
-    scooter_braun: {},
+    scooter_braun: {
+        intro_shortcode: 'scooterbraun',
+        msg_intro: "(Hi, this is Scooter Braun and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",          
+    },
     sacca: {
         intro_shortcode: 'sacca',
         msg_intro: "(Hi, this is Chris Sacca and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
-    sophia_bush: {},
-    tristan_walker: {},
+    sophia_bush: {
+        intro_shortcode: 'sophiabush',
+        msg_intro: "(Hi, this is Sophia Bush and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",          
+    },
+    tristan_walker: {
+        intro_shortcode: 'tristanwalker',
+        msg_intro: "(Hi, this is Tristan Walker and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",            
+    },
 };
