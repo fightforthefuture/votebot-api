@@ -31,6 +31,10 @@ module.exports = {
         intro_shortcode: 'dailykos',
         msg_intro: "(Hi, this is DailyKos and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
+    ecovote: {
+        intro_shortcode: 'ecovote',
+        msg_intro: "(Hi, this is CA LCV and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     fairnessproject: {
         intro_shortcode: 'fair',
         msg_intro: "(Hi, this is The Fairness Project and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
