@@ -48,10 +48,6 @@ module.exports = {
         msg_intro: "(Hi, this is Headcount and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
         msg_intro_es: "Hola, this could be localized."
     },
-    hunter: {
-        intro_shortcode: 'hunter',
-        msg_intro: "(Hi, this is Hunter Walk and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
-    },
     iapala: {
         intro_shortcode: 'iapala',
         msg_intro: "(Hi, this is IAPALA and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -75,10 +71,6 @@ module.exports = {
     lenny: {
         intro_shortcode: 'lenny',
         msg_intro: "(Hi, this is Lenny and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
-    },
-    mindy: {
-        intro_shortcode: 'mindy',
-        msg_intro: "(Hi, this is Mindy Kaling and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     mtv: {
         intro_shortcode: 'mtv',
@@ -128,10 +120,6 @@ module.exports = {
         intro_shortcode: 'rtv',
         msg_intro: "(Hi, this is Rock the Vote and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
-    sacca: {
-        intro_shortcode: 'sacca',
-        msg_intro: "(Hi, this is Chris Sacca and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
-    },
     salesforce: {
         intro_shortcode: 'votesalesforce',
         msg_intro: "(Hi, this is Salesforce and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -163,5 +151,28 @@ module.exports = {
     'wordpress.com': {
         intro_shortcode: 'wordpress',
         msg_intro: "(Hi, this is WordPress.com and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",  
-    }
+    },
+    
+    // celeb partners
+    bj_novak: {},
+    chrissy_teigen: {},
+    daymond_john: {},
+    edward_norton: {},
+    hunter: {
+        intro_shortcode: 'hunter',
+        msg_intro: "(Hi, this is Hunter Walk and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    john_legend: {},
+    kristen_bell: {},
+    mindy: {
+        intro_shortcode: 'mindy',
+        msg_intro: "(Hi, this is Mindy Kaling and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    scooter_braun: {},
+    sacca: {
+        intro_shortcode: 'sacca',
+        msg_intro: "(Hi, this is Chris Sacca and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    sophia_bush: {},
+    tristan_walker: {},
 };
