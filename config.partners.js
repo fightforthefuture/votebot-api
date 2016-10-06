@@ -31,6 +31,10 @@ module.exports = {
         intro_shortcode: 'dailykos',
         msg_intro: "(Hi, this is DailyKos and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
+    ecovote: {
+        intro_shortcode: 'ecovote',
+        msg_intro: "(Hi, this is CA LCV and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
     fairnessproject: {
         intro_shortcode: 'fair',
         msg_intro: "(Hi, this is The Fairness Project and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -53,9 +57,9 @@ module.exports = {
         msg_intro: "(Hi, this is the Revere testing interface for HelloVote. If you are reading this message, you are hopefully a developer.)",
         revere_mobile_flow: '57d70806e4b0138820290006'
     },
-    hunter: {
-        intro_shortcode: 'hunter',
-        msg_intro: "(Hi, this is Hunter Walk and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    hispanic_chamber: {
+        intro_shortcode: 'guac',
+        msg_intro: "(Hi, this is the Hispanic Chamber of Commerce and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     iapala: {
         intro_shortcode: 'iapala',
@@ -80,10 +84,6 @@ module.exports = {
     lenny: {
         intro_shortcode: 'lenny',
         msg_intro: "(Hi, this is Lenny and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
-    },
-    mindy: {
-        intro_shortcode: 'mindy',
-        msg_intro: "(Hi, this is Mindy Kaling and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     mtv: {
         intro_shortcode: 'mtv',
@@ -134,10 +134,6 @@ module.exports = {
         intro_shortcode: 'rtv',
         msg_intro: "(Hi, this is Rock the Vote and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
-    sacca: {
-        intro_shortcode: 'sacca',
-        msg_intro: "(Hi, this is Chris Sacca and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
-    },
     salesforce: {
         intro_shortcode: 'votesalesforce',
         msg_intro: "(Hi, this is Salesforce and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
@@ -149,6 +145,10 @@ module.exports = {
     shaderoom: {
         intro_shortcode: 'theshaderoom',
         msg_intro: "(Hi, this is The Shade Room and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    surj: {
+        intro_shortcode: 'surj',
+        msg_intro: "(Hi, this is SURJ and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
     },
     tab: {
         intro_shortcode: 'tab',
@@ -174,5 +174,28 @@ module.exports = {
     'wordpress.com': {
         intro_shortcode: 'wordpress',
         msg_intro: "(Hi, this is WordPress.com and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",  
-    }
+    },
+    
+    // celeb partners
+    bj_novak: {},
+    chrissy_teigen: {},
+    daymond_john: {},
+    edward_norton: {},
+    hunter: {
+        intro_shortcode: 'hunter',
+        msg_intro: "(Hi, this is Hunter Walk and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    john_legend: {},
+    kristen_bell: {},
+    mindy: {
+        intro_shortcode: 'mindy',
+        msg_intro: "(Hi, this is Mindy Kaling and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    scooter_braun: {},
+    sacca: {
+        intro_shortcode: 'sacca',
+        msg_intro: "(Hi, this is Chris Sacca and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",
+    },
+    sophia_bush: {},
+    tristan_walker: {},
 };
