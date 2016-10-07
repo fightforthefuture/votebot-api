@@ -133,7 +133,7 @@ exports.incoming_message = function(data, options)
 				log.info('msg: incoming: starting new conversation');
 
 				var convPartner = null,
-					trimBody = data.body ? data.Body.trim().toLowerCase() : '';
+					trimBody = data.Body ? data.Body.trim().toLowerCase() : '';
 
 				if (options.partner) {
 					convPartner = options.partner
