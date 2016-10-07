@@ -53,6 +53,25 @@ var default_steps = {
 	intro_facebook: {
 		process: function() { return Promise.resolve({'next': 'first_name'})}
 	},
+
+	// JL NOTE ~ how sad. //
+	intro_line_api: {
+		name: 'intro_line_api',
+		msg: l10n('msg_intro_line_api'),
+		advance: true,
+		next: 'intro',
+		process: function(body, user, step, conversation) {
+			var msg = l10n('msg_intro', conversation.locale);
+			message_model.create(config.bot.user_id, conversation.id, {body: msg});
+
+			return Promise.delay(default_delay(conversation))
+				.then(function() {
+					return Promise.resolve({next: 'first_name'});
+				});
+		}
+	},
+	////
+
 	first_name: {
 		pre_process: function(action, conversation, user) {
 			if (conversation.type == 'fb')

@@ -20,20 +20,24 @@ var postback = function(req, res)
 
 	var nope = function() { return resutil.send(res, { "error": "lol" }); }
 
-	if (!data.result
-		||
-		!data.result[0]
-		)
+	if (!data.result ||	!data.result[0])
 		return nope();
 
-	data = data.result[0]; // simplify it
+	for (var i=0; i<data.result.length; i++)
+		handleMessage(data.result[i]);
 
+	resutil.send(res, {
+		"hooray": true
+	});
+	
+}
+var handleMessage = function(data) {
 	switch (data.eventType) {
 
 		// user followed the app
 		case '138311609100106403':
 			if (!data.content || !data.content.params)
-				return nope();
+				return false;
 
 			var username = 'LINE:'+data.content.params[0];
 
@@ -47,21 +51,22 @@ var postback = function(req, res)
 					users_model.wipe(username);
 
 				default:
-					return nope();
+					return false;
 			}
 			break;
 
 		// user sent a message
 		case '138311609000106303':
 			if (!data.from || !data.content || !data.content.text || !data.content.from)
-				return nope();
+				return false;
 
 			var username = 'LINE:'+data.content.from;
 			var body = data.content.text;
 
 			break;
+
 		default:
-			return nope()
+			return false;
 			break;
 	}
 
@@ -71,17 +76,14 @@ var postback = function(req, res)
 	}
 	log.info('line controller passing message to message model: ', message);
 
-	message_model.incoming_message(message, {force_active: true})
+	message_model.incoming_message(message, {
+		force_active: true,
+		start: 'intro_line_api'
+	})
 		.then(function() {
-			resutil.send(res, {
-				"hooray": true
-			});
+			log.info('line controller done with one message');
 		})
 		.catch(function(err) {
-			log.error('messages: incoming: ', err);
-			resutil.error(res, 'Problem receiving message', err);
+			log.error('line controller: incoming: ', err);
 		});
-		
-
-	
 }

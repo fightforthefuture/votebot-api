@@ -157,7 +157,8 @@ exports.incoming_message = function(data, options)
 					partner: convPartner,
 					options: {
 						locale: locale,
-						force_active: options.force_active ? true : false
+						force_active: options.force_active ? true : false,
+						start: options.start ? options.start : null
 					},
 					recipients: [{username: user.username}]
 				});
