@@ -1,4 +1,5 @@
 var pg = require('pg');
+var moment = require('moment');
 pg.defaults.ssl = true;
 
 var query = [
@@ -17,20 +18,25 @@ var connstr = process.argv[3];
 query = query.join('\n').replace('{{partner}}', '\''+partner+'\'');
 
 var escape = function(str) {
-    return str ? str.replace(/\"/g, '\\"') : ""
+    try {
+        return str ? str.replace(/\"/g, '\\"') : ""
+    } catch(err) {
+        return str
+    }
 }
 
 pg.connect(connstr, function(err, client, done) {
     if(err) {
+        console.error(err);
         console.log('Error connecting to database!');
         process.exit(1);
     };
     client.query(query, {}, function(err, result) {
-        console.log('"first_name","last_name","email","phone","address","address_unit","city","state","zip","complete","partner"');
+        console.log('"timestamp","first_name","last_name","email","phone","address","address_unit","city","state","zip","age","already_registered","form_submitted","partner"');
         for (var i=0; i<result.rows.length; i++) {
             var row = result.rows[i];
             var line = '';
-
+            line += '"'+escape(moment(row.created), moment.ISO_8601).format('L LT')+'",';
             line += '"'+escape(row.first_name)+'",';
             line += '"'+escape(row.last_name)+'",';
             line += '"'+escape(row.settings.email)+'",';
@@ -40,7 +46,9 @@ pg.connect(connstr, function(err, client, done) {
             line += '"'+escape(row.settings.city)+'",';
             line += '"'+escape(row.settings.state)+'",';
             line += '"'+escape(row.settings.zip)+'",';
-            line += '"'+(row.complete ? 'complete' : '')+'",';
+            line += '"'+escape(moment().diff(moment(row.settings.date_of_birth,'YYYY-MM-DD'), 'years'))+'",';
+            line += '"'+escape(row.settings.already_registered)+'",';
+            line += '"'+escape(row.submit)+'",';
             line += '"'+escape(partner)+'"';
 
             console.log(line);
