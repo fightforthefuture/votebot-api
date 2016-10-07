@@ -10,6 +10,7 @@ var twilio = require('twilio')(config.twilio.account_sid, config.twilio.auth_tok
 var partners = require('../config.partners');
 var facebook_model = require('./facebook');
 var line_model = require('./line');
+var skype_model = require('./skype');
 
 Promise.promisifyAll(twilio.messages);
 
@@ -87,6 +88,12 @@ exports.broadcast = function(conversation_id, message)
 						.catch(function(error) {
 							log.error('message: failed to send to: '+ to_user, error);
 						});
+				} else if (user.type == 'skype') {
+					log.info('messages: sending Skype Message to ', to_user);
+					return skype_model.message(to_user, message.body, conversation_id)
+						.catch(function(error) {
+							log.error('message: failed to send to: '+ to_user, error);
+						});
 				} else {
 					log.info('messages: sending twilio message to ', to_user);
 
@@ -158,7 +165,8 @@ exports.incoming_message = function(data, options)
 					options: {
 						locale: locale,
 						force_active: options.force_active ? true : false,
-						start: options.start ? options.start : null
+						start: options.start ? options.start : null,
+						settings: options.conversation_settings ? options.conversation_settings : null
 					},
 					recipients: [{username: user.username}]
 				});

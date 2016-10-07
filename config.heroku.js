@@ -82,6 +82,11 @@ var config = {
     	api_key: process.env.LINE_API_KEY
     },
 
+    skype: {
+    	api_key: process.env.SKYPE_API_KEY,
+    	api_secret: process.env.SKYPE_API_SECRET
+    },
+
     votebot_api_key: process.env.VOTEBOT_API_KEY,
 
 	session: {

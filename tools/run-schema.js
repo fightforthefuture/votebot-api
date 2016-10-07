@@ -11,7 +11,7 @@ var schema = [
 
 	// start with tables
 	'create table if not exists users (id serial primary key, username varchar(64) not null, type varchar(64), first_name varchar(255), last_name varchar(255), settings json, active boolean default true, submit boolean default false, complete boolean default false, referred boolean default false, created timestamp);',
-	'create table if not exists conversations (id serial primary key, user_id bigint not null, type varchar(64), locale varchar(64) not null default \'en\', state json, partner varchar(64), active boolean default true, complete boolean default false, nudged boolean default false, created timestamp, updated timestamp);',
+	'create table if not exists conversations (id serial primary key, user_id bigint not null, type varchar(64), locale varchar(64) not null default \'en\', state json, settings json, partner varchar(64), active boolean default true, complete boolean default false, nudged boolean default false, created timestamp, updated timestamp);',
 	'create table if not exists conversations_recipients (id serial primary key, conversation_id bigint not null, user_id bigint not null, created timestamp);',
 	'create table if not exists messages (id serial primary key, user_id bigint not null, conversation_id bigint not null, body varchar(1600), created timestamp);',
 	'create table if not exists chains (id serial primary key, name varchar(64) not null, description text, default_start varchar(64) not null default \'intro_direct\', entries int default 0, exits int default 0, created timestamp);',
@@ -20,6 +20,7 @@ var schema = [
 	'create table if not exists submissions (id serial primary key, user_id bigint not null, conversation_id bigint not null, form_stuffer_reference varchar(255), form_stuffer_response json, form_stuffer_log_id bigint, status varchar(64) not null default \'pending\', created timestamp, ended timestamp);',
 	'create table if not exists slack_credentials (id serial primary key, team_name varchar(255), team_id varchar(255) not null, access_token varchar(255) not null, webhook_url varchar(255) not null, webhook_channel varchar(64) not null, config_url varchar(255) not null, bot_user_id varchar(255) not null, bot_access_token varchar(255) not null, created timestamp);',
 	'create table if not exists attrition_log (id serial primary key, admin_summary varchar(64), conversation_id bigint, step_name varchar(64), dropoff_time timestamp, recaptured boolean default false, created timestamp, updated timestamp);',
+	'create table if not exists skype_data (id serial primary key, name varchar(64), val text);',
 
 	// index our tables
 	'create unique index if not exists users_username on users (username);',
@@ -38,6 +39,7 @@ var schema = [
 	'create index if not exists validation_errors_meta_user_id on validation_errors ((meta->>\'user_id\'));',
 	'create index if not exists validation_errors_ts on validation_errors (ts desc);',
 	'create index if not exists slack_credentials_team_id on slack_credentials (team_id);',
+	'create unique index if not exists skype_field_name on skype_data (name);',
 
 	// create our first user (VoteBot) and set our auto-inc user id
 	'insert into users (id, username, type, first_name, last_name, created) values ('+config.bot.user_id+', \''+bot_number+'\', \'sms\', \'VoteBot\', \'\', now()) on conflict (id) do update set username = \''+bot_number+'\'',

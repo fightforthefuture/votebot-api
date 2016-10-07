@@ -28,6 +28,12 @@ exports.parse_username = function(username, options)
 			username: username,
 			type: 'revere'
 		}
+	} else if (username.startsWith('Skype:')) {
+		//is a web username
+		return {
+			username: username,
+			type: 'skype'
+		}
 	} else if (username.startsWith('LINE:')) {
 		//is a LINE username
 		return {
@@ -98,7 +104,7 @@ exports.wipe = function(username)
 		.then(function(user) {
 			if(!user) throw new Error('that user wasn\'t found');
 			if (user.id == config.bot.user_id) throw new Error('can\'t wipe the bot user');
-			
+
 			user_id = user.id;
 			var new_username = 'deleted:'+uuid.v4();
 

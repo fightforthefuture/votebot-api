@@ -43,6 +43,7 @@
     "twilio": "3.0.0-rc.5",
     "winston": "^2.2.0",
     "winston-postgresql": "^1.2.0",
-    "winston-sentry": "^0.1.4"
+    "winston-sentry": "^0.1.4",
+    "xml-escape": "^1.1.0"
   }
 }
