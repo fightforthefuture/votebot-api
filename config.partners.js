@@ -181,7 +181,7 @@ module.exports = {
     },
     
     // celeb partners
-    aasif: {
+    aasif_mandvi: {
         intro_shortcode: 'aasif',
         msg_intro: "(Hi, this is Aasif Mandvi and HelloVote! I can check to see if you’re registered, and then help you register to vote!)",        
     },
