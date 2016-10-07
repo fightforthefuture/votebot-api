@@ -32,9 +32,10 @@ exports.message = function(username, text, conversation_id) {
 			},
 			json: {
 				type: "message/text",
-				text: xmlescape(text)
+				text: xmlescape(text).replace(/\s(hellovote.org[\/\w]*)/g, ' <a href="$1">$1</a>')
 			},
 		}
+		log.info('skype: sending message: ', message);
 		return sendMessage(message, conversation.settings.skype_conversation_id);
 	});
 }

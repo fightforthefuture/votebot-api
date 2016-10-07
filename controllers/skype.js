@@ -7,6 +7,7 @@ var config = require('../config');
 var l10n = require('../lib/l10n');
 var message_model = require('../models/message');
 var users_model = require('../models/user');
+var striptags = require('striptags');
 
 exports.hook = function(app)
 {
@@ -64,7 +65,7 @@ var postback = function(req, res)
 			if (!data.text)
 				return nope();
 
-			var body = data.text;
+			var body = striptags(data.text);
 			break;
 
 		default:
