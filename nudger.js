@@ -55,7 +55,10 @@ var nudge = function(stack) {
         {conv_id: conversation.id}
     ).then(function(user) {
         console.log(' - user id is: ', user.user_id);
-        if (user.complete) {
+        if (!user) {
+            console.log(' - User was deleted from conversation. SKIPPING!');
+            return nudge(stack);
+        } if (user.complete) {
             console.log(' - USER IS MARKED COMPLETE! SKIPPING!');
             return nudge(stack);
         } else {

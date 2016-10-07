@@ -1,6 +1,7 @@
 var config = require('../config');
 var db = require('../lib/db');
 var phone = require('phone');
+var uuid = require('node-uuid');
 
 /**
  * takes a mobile number or chat username and turns it into a standard format
@@ -26,6 +27,12 @@ exports.parse_username = function(username, options)
 		return {
 			username: username,
 			type: 'revere'
+		}
+	} else if (username.startsWith('LINE:')) {
+		//is a LINE username
+		return {
+			username: username,
+			type: 'line'
 		}
 	} else {
 		parsed_phone = phone(username, options.country)[0];
@@ -90,20 +97,32 @@ exports.wipe = function(username)
 	return db.one('SELECT id FROM users WHERE username = {{username}}', {username: username})
 		.then(function(user) {
 			if(!user) throw new Error('that user wasn\'t found');
+			if (user.id == config.bot.user_id) throw new Error('can\'t wipe the bot user');
+			
 			user_id = user.id;
-			return db.query('SELECT conversation_id FROM conversations_recipients WHERE user_id = {{id}}', {id: user_id});
-		})
-		.then(function(convos) {
-			var ids = convos.map(function(c) { return c.conversation_id; });
-			if(!ids.length) return;
-			var convo_ids = ids.join(',');
-			return [
-				db.query('DELETE FROM conversations WHERE id IN ({{ids|raw}})', {ids: convo_ids}),
-				db.query('DELETE FROM conversations_recipients WHERE conversation_id IN ({{ids|raw}})', {ids: convo_ids})
-			];
+			var new_username = 'deleted:'+uuid.v4();
+
+			return db.query([
+				'UPDATE users ',
+				'SET 	username    = {{username}}, ',
+				'       first_name 	= NULL, ',
+				'		last_name  	= NULL, ',
+				'		settings   	= \'{}\', ',
+				'		active     	= False ',
+				'WHERE  id  	    = {{id}}',
+			].join('\n'), {username: new_username, id: user_id});
 		})
 		.then(function() {
-			return db.query('DELETE FROM users WHERE id = {{id}}', {id: user_id});
+			return db.query([
+				'DELETE FROM conversations_recipients ',
+				'WHERE user_id = {{id}}'
+			].join('\n'), {id: user_id});
+		})
+		.then(function() {
+			return db.query([
+				'DELETE FROM messages ',
+				'WHERE user_id = {{id}}'
+			].join('\n'), {id: user_id});
 		});
 };
 

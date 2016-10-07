@@ -9,7 +9,7 @@ var bot_model = require('./bot');
 var twilio = require('twilio')(config.twilio.account_sid, config.twilio.auth_token);
 var partners = require('../config.partners');
 var facebook_model = require('./facebook');
-var revere_model = require('./revere');
+var line_model = require('./line');
 
 Promise.promisifyAll(twilio.messages);
 
@@ -81,9 +81,9 @@ exports.broadcast = function(conversation_id, message)
 						.catch(function(error) {
 							log.error('message: failed to send to: '+ to_user, error);
 						});
-				} else if (user.type == 'revere') {
-					log.info('messages: sending Revere Message to ', to_user);
-					return revere_model.message(to_user, message.body, conversation_id)
+				} else if (user.type == 'line') {
+					log.info('messages: sending Line Message to ', to_user);
+					return line_model.message(to_user, message.body)
 						.catch(function(error) {
 							log.error('message: failed to send to: '+ to_user, error);
 						});
@@ -113,11 +113,11 @@ exports.incoming_message = function(data, options)
 		.then(function(_user) {
 			user = _user;
 			if(!user) throw error('couldn\'t create user');
-			if(!user.active) throw error('user is inactive');
+			if(!user.active && !options.force_active) throw error('user is inactive');
 			return convo_model.get_recent_by_user(user.id);
 		})
 		.then(function(conversation) {
-			if(conversation)
+			if(conversation && user.active)
 			{
 				log.info('msg: incoming: continuing existing conversation');
 				if (data.Body)
@@ -156,7 +156,8 @@ exports.incoming_message = function(data, options)
 					type: user.type,
 					partner: convPartner,
 					options: {
-						locale: locale
+						locale: locale,
+						force_active: options.force_active ? true : false
 					},
 					recipients: [{username: user.username}]
 				});

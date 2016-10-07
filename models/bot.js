@@ -7,6 +7,7 @@ var submission_model = require('./submission');
 var message_model = require('./message');
 var existing_registration = require('./existing_registration');
 var facebook_model = require('./facebook');
+var line_model = require('./line');
 var user_model = require('./user');
 var attrition_model = require('./attrition');
 var street_address_model = require('./street_address');
@@ -391,17 +392,24 @@ var default_steps = {
 				delay: default_delay(conversation)
 			}
 
-			if (conversation.type != 'fb') {
+			if (conversation.type != 'fb' && conversation.type != 'line') {
 				res.msg = full_disclosure;
 			} else {
-
-				// Facebook messenger doesn't support messages > 320 characters.
+				// Facebook Messenger and LINE have special character limits
 				// We need to split this up into chunks and send separate messages
-				var chunks = util.splitter(full_disclosure, 318);
+				if (conversation.type == 'fb') {
+					var maxChars = 318;
+					var specialModel = facebook_model;
+				} else {
+					var maxChars = 1000;
+					var specialModel = line_model;
+				}
+
+				var chunks = util.splitter(full_disclosure, maxChars);
 
 				var sendChunk = function(chunk, delay) {
 					setTimeout(function() {
-						facebook_model.message(user.username, chunk);
+						specialModel.message(user.username, chunk);
 					}, delay);
 				}
 

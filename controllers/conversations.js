@@ -15,8 +15,6 @@ exports.hook = function(app)
 	app.post('/conversations/:id/messages', new_message);
 	app.post('/conversations/incoming', incoming);
 	app.get('/conversations/:id/new', poll);
-	// TODO: move to users controller
-	app.delete('/users/:username', auth.basic, wipe);
 };
 
 var create = function(req, res)
@@ -95,17 +93,3 @@ var poll = function(req, res)
 			resutil.error(res, 'Problem grabbing messages', err);
 		});
 };
-
-var wipe = function(req, res)
-{
-	var username = req.params.username;
-	user_model.wipe(username)
-		.then(function(messages) {
-			resutil.send(res, true);
-		})
-		.catch(function(err) {
-			resutil.error(res, 'Problem wiping that user\'s data', err);
-		});
-	// TODO, also wipe notify bindings
-};
-
