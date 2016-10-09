@@ -233,6 +233,10 @@ module.exports = {
         intro_shortcode: 'debbie',
         msg_intro: "(Hi, this is Congresswoman Debbie Wasserman Schultz and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
     },
+    ryan_leslie: {
+        intro_shortcode: 'voteryan',
+        msg_intro: "(Hi, this is Ryan Leslie and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+    },
     sen_bill_nelson: {
         intro_shortcode: 'nelson',
         msg_intro: "(Hi, this is Senator Bill Nelson and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
