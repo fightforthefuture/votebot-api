@@ -229,6 +229,18 @@ module.exports = {
         intro_shortcode: 'mindy',
         msg_intro: "(Hi, this is Mindy Kaling and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
+    rep_hastings: {
+        intro_shortcode: 'hastings',
+        msg_intro: "(Hi, this is Congressman Alcee Hastings and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+    },
+    rep_frankel: {
+        intro_shortcode: 'frankel',
+        msg_intro: "(Hi, this is Congresswoman Lois Frankel and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+    },
+    rep_deutch: {
+        intro_shortcode: 'deutch',
+        msg_intro: "(Hi, this is Congressman Ted Deutch and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+    },
     rep_wasserman_schultz: {
         intro_shortcode: 'debbie',
         msg_intro: "(Hi, this is Congresswoman Debbie Wasserman Schultz and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
