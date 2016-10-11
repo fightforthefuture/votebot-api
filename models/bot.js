@@ -785,7 +785,20 @@ var default_steps = {
 					]
 				);
 			} else {
-				res.msg = l10n('msg_share', conversation.locale);				
+				var state = util.object.get(user, 'settings.state');
+
+				if (
+					us_election.state_share_urls[state]
+					&&
+					us_election.state_share_urls[state].tweet_url
+				   	)
+					var tweet_url = us_election.state_share_urls[state].tweet_url;
+				else
+					var tweet_url = 'hellovote.org/tweet';
+
+				var msg = l10n('msg_share', conversation.locale);
+				msg = msg.replace('{tweet_url}', tweet_url);
+				res.msg = msg;				
 			}
 			return res;
 		},
