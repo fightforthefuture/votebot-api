@@ -35,6 +35,15 @@ State systems and our software may fail, and your vote is too precious to risk.)
 {% endif %}
 </p>
 
+{% if custom_share %}
+<p>
+<strong><a href="{{ custom_share.tweet_url }}">
+Share this image to help get out the vote!
+</a></strong><br/>
+<a href="{{ custom_share.tweet_url }}"><img src="{{ custom_share.image }}" style="max-width: 100%; height: auto"></a>
+</p>
+{% endif %}
+
 <p>
 Thank you for using HelloVote!
 </p>
