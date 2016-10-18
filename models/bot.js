@@ -1303,15 +1303,19 @@ function simple_store(store, options)
 }
 
 var cancel_conversation = function(user, conversation) {
-	if (user_model.use_notify(user.username)) { notify.delete_binding(user); }
 
 	var stop_msg = l10n('msg_unsubscribed', conversation.locale);
 	return message_model.create(config.bot.user_id, conversation.id, {
 		body: language.template(stop_msg, null, conversation.locale)
 	}).then(function() {
 		// mark user inactive, so we don't share their info with partners
-		user_model.update(user.id, util.object.set(user, 'active', false));
-		convo_model.close(conversation.id);
+		return convo_model.close(conversation.id);
+	}).then(function() {
+		return user_model.update(user.id, util.object.set(user, 'active', false));
+	}).then(function(_user2) {
+		if (user_model.use_notify(_user2.username)) {
+			notify.delete_binding(_user2);
+		}
 	});
 };
 
@@ -1516,6 +1520,10 @@ exports.next = function(user_id, conversation, message)
 					log.info('bot: action:', JSON.stringify(action));
 
 					log_chain_step_exit(step.id);
+
+					if (action.switch_chain) {
+						return convo_model.switch_chain(action.switch_chain, user);
+					}
 
 					if(action.next == '_cancel') {
 						return cancel_conversation(user, conversation);
