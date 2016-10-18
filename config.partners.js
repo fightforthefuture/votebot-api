@@ -97,6 +97,10 @@ module.exports = {
         intro_shortcode: 'millionhoodies',
         msg_intro: "(Hi, this is Million Hoodies and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
+    millionvoters: {
+        intro_shortcode: 'MVP',
+        msg_intro: "(Hi, this is the Million Voters Project and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
+    },
     nextgen: {
         intro_shortcode: 'nextgen',
         msg_intro: "(Hi, this is NextGen and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
@@ -182,6 +186,12 @@ module.exports = {
     'wordpress.com': {
         intro_shortcode: 'wordpress',
         msg_intro: "(Hi, this is WordPress.com and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",  
+    },
+
+    // ads
+    florida_ads: {
+        intro_shortcode: 'florida',
+        msg_intro: "(Hi, this is HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     
     // celeb partners
