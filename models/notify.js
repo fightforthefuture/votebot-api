@@ -148,7 +148,7 @@ exports.delete_binding = function(user) {
 			user_model.update(user.id, user);
 			fulfill(response.sid);
 		}).catch(function(error) {
-			log.error('notify: failed to delete binding:', error);
+			log.error('notify: failed to delete binding for user: '+ user.id, error);
 			reject(error);
 		});
 	});
