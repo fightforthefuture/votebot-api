@@ -38,14 +38,14 @@ db.query(query).then(function(result) {
                     user = _user;
                     console.log(' - Deactivating...');
                     return user_model.update(row.id, {active: false});
-                }).then(function(_user) {
+                }).then(function(_user2) {
                     if (
-                        user_model.use_notify(_user.username)
+                        user_model.use_notify(user.username)
                         &&
-                        _user.settings.notify_binding_sid
+                        user.settings.notify_binding_sid
                     ) {
                         console.log(' - Deleting binding...');
-                        return notify.delete_binding(_user);
+                        return notify.delete_binding(user);
                     } else {
                         console.log(' - No binding to delete :)');
                         return true;
@@ -53,7 +53,7 @@ db.query(query).then(function(result) {
                 })
         }
     })).finally(function() {
-        console.log('total erroneously unsubscribed: ', total);
+        console.log('total erroneously still subscribed: ', total);
         console.log('california: ', ca);
         process.exit(0);
     });
