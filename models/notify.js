@@ -89,7 +89,7 @@ function fetch_binding(user) {
 			.then(function(response) {
 				fulfill(response);
 			}).catch(function(error) {
-				log.error('notify: error fetching binding: '+ user.username,, error);
+				log.error('notify: error fetching binding: '+ user.username, error);
 				reject(error);
 			});	
 		}
