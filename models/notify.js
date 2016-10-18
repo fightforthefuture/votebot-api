@@ -89,7 +89,7 @@ function fetch_binding(user) {
 			.then(function(response) {
 				fulfill(response);
 			}).catch(function(error) {
-				log.error('notify: error fetching binding:', error);
+				log.error('notify: error fetching binding: '+ user.username,, error);
 				reject(error);
 			});	
 		}
@@ -124,7 +124,7 @@ exports.replace_tags = function(user, tags_to_remove, tags_to_add) {
 					tags.push(tag_to_add);
 				}
 			}
-			// create a new binding with udpated tags
+			// create a new binding with updated tags
 			create_binding(user, tags)
 			.then(function(response_sid) {
 				fulfill(response_sid);
@@ -148,7 +148,7 @@ exports.delete_binding = function(user) {
 			user_model.update(user.id, user);
 			fulfill(response.sid);
 		}).catch(function(error) {
-			log.error('notify: failed to delete binding for user: '+ user.id, error);
+			log.error('notify: failed to delete binding for user: '+ user.username,, error);
 			reject(error);
 		});
 	});
