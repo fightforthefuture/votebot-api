@@ -36,9 +36,11 @@ var nudge = function(stack) {
         conversation.state.step == 'first_name'
         ||
         conversation.state.step == 'incomplete'
+        ||
+        conversation.state.step == 'final_tmp'
     ) 
     {
-        console.log('Skipping conversation ', conversation.id, ' in first_name state...');
+        console.log('Skipping conversation ', conversation.id, ' in finished-ish state...');
         return nudge(stack);
     }
 

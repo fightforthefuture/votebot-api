@@ -4,7 +4,12 @@ module.exports = {
     intro: {
         process: function() {
             log.info('bot: gotv: no message is ever sent for this step lol');
-            return Promise.resolve({'next': 'gotv_prompt_1'})
+            return Promise.resolve({
+                'next': 'gotv_prompt_1',
+                'store': {
+                    'user.settings.started_gotv': true
+                }
+            })
         }
     },
     gotv_prompt_1: {
