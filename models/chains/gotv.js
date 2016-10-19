@@ -1,7 +1,7 @@
 var log = require('../../lib/logger');
 
 module.exports = {
-    begin: {
+    intro: {
         process: function() {
             log.info('bot: gotv: no message is ever sent for this step lol');
             return Promise.resolve({'next': 'gotv_prompt_1'})

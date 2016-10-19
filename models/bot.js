@@ -86,38 +86,6 @@ function log_chain_step_exit(step_id) {
 	return db.query(qry, vars);
 }
 
-// a helper for very simple ask-and-store type questions.
-// can perform data validation as well.
-function simple_store(store, options)
-{
-	options || (options = {});
-
-	return function(body, user, step, conversation)
-	{
-		// if we get an empty body, error
-		if(!body.trim()) return validate.data_error(step.errormsg, {promise: true});
-
-		var obj = {};
-		obj[store] = body.trim();
-		var promise = Promise.resolve({next: step.next, store: obj});
-		if(options.validate)
-		{
-			promise = options.validate(body, user, conversation.locale)
-				.spread(function(body, extra_store) {
-					log.info('bot: validated body: ', body, '; extra_store: ', extra_store);
-					extra_store || (extra_store = {});
-					extra_store[store] = body;
-					return {
-						next: step.next,
-						store: extra_store,
-						advance: options.advance ? true : false
-					};
-				});
-		}
-		return promise;
-	};
-}
-
 var cancel_conversation = function(user, conversation) {
 
 	var stop_msg = l10n('msg_unsubscribed', conversation.locale);

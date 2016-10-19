@@ -210,24 +210,9 @@ exports.switch_chain = function(chain, user) {
 				step: 'intro'
 			}
 		}).then(function(_updated_convo) {
+			log.info('conversation: switched to new chain: ', chain, _updated_convo);
 			bot_model.next(user.id, _updated_convo);
 		});
-		/*
-		log.info('conversation: cancelling conversation: ', conversation.id);
-		return exports.close(conversation.id).then(function() {
-			log.info('conversation: start new conversation on chain: ', chain);
-			return exports.create(
-				config.bot.user_id,
-				{
-					chain: chain,
-					type: conversation.type,
-					partner: conversation.partner,
-					locale: conversation.locale,
-					recipients: [{username: user.username}]
-				}
-			);
-		});
-		*/
 	});
 };
 
