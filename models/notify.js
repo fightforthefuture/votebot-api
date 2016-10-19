@@ -137,6 +137,7 @@ exports.replace_tags = function(user, tags_to_remove, tags_to_add) {
 
 exports.delete_binding = function(user) {
 	return new Promise(function(fulfill, reject){
+		if (!user.settings.notify_binding_sid) { return fulfill(); }
 		service.bindings(user.settings.notify_binding_sid).remove()
 		.then(function(response) {
 			log.info('notify: deleted binding for', user.username);
