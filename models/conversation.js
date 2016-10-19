@@ -7,6 +7,7 @@ var user_model = require('./user');
 var bot_model = require('./bot');
 var partners = require('../config.partners');
 var log = require('../lib/logger');
+var config = require('../config');
 
 exports.get = function(id)
 {
@@ -93,7 +94,7 @@ exports.create = function(user_id, data)
 				.tap(function(conversation) {
 					// start bot!
 					return bot_model.start(
-						'vote_1',
+						data.chain ? data.chain : 'vote_1',
 						users[0].id,
 						conversation.id,
 						{
@@ -201,6 +202,35 @@ exports.poll = function(user_id, conversation_id, last_id, username, options)
 	return next();
 };
 
+exports.switch_chain = function(chain, user) {
+	return exports.get_recent_by_user(user.id).then(function(conversation) {
+		return exports.update(conversation.id, {
+			state: {
+				type: chain,
+				step: 'intro'
+			}
+		}).then(function(_updated_convo) {
+			bot_model.next(user.id, _updated_convo);
+		});
+		/*
+		log.info('conversation: cancelling conversation: ', conversation.id);
+		return exports.close(conversation.id).then(function() {
+			log.info('conversation: start new conversation on chain: ', chain);
+			return exports.create(
+				config.bot.user_id,
+				{
+					chain: chain,
+					type: conversation.type,
+					partner: conversation.partner,
+					locale: conversation.locale,
+					recipients: [{username: user.username}]
+				}
+			);
+		});
+		*/
+	});
+};
+
 /**
  * end a conversation (set it to inactive)
  */
@@ -209,3 +239,12 @@ exports.close = function(conversation_id)
 	return db.update('conversations', conversation_id, {active: false});
 };
 
+/**
+ *	get the default delay for a conversation
+ */
+exports.default_delay = function(conversation) {
+    if (conversation.type == 'fb')
+        return config.bot.advance_delay_fb;
+    else
+        return config.bot.advance_delay
+}
