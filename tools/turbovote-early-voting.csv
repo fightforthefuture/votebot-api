@@ -1,0 +1,39 @@
+State,EV/AIP/DB,Standard hours?,# of jurisdictions,EV begins
+Alaska,EV,N,27,10/24/16
+Arizona,EV,N,15,10/12/16
+Arkansas,EV,N,75,10/24/16
+California,EV,N,58,10/10/16
+Colorado,VSPC + DB,N,64,10/24/16
+D.C.,EV,Y,1,10/29/16
+Florida,EV,N,67,10/24/16
+Georgia,EV,N,159,10/17/16
+Hawaii,EV,Y,4,10/25/16
+Idaho,AIP,,44,9/24/16
+Illinois,EV,,102,10/24/16
+Indiana,AIP,,92,10/11/16
+Iowa,AIP,,99,9/29/16
+Kansas,EV,N,105,10/19/16
+Louisiana,EV,Y,64,10/25/16
+Maine,AIP,N,506,9/24/16
+Maryland,EV,Y,24,10/27/16
+Massachusetts,EV,,351,10/29/16
+Minnesota,AIP,Y,87,9/23/16
+Montana,AIP,,56,10/9/16
+Nebraska,EV,Y,93,10/9/16
+Nevada,EV,N,17,10/22/16
+New Jersey,AIP,,21,9/24/16
+New Mexico,EV,,33,10/22/16
+North Carolina,EV,Y,100,10/27/16
+North Dakota,EV,N,53,9/29/16
+Ohio,AIP,Y,88,10/12/16
+Oklahoma,AIP,Y,77,11/3/16
+Oregon,DB,N,36,
+South Dakota,AIP,,66,9/23/16
+Tennessee,EV,Y,95,10/19/16
+Texas,EV,Y,254,10/22/16
+Utah,EV,Y,29,10/25/16
+Vermont,AIP,Y,246,9/24/16
+Washington,DB,Y,39,
+West Virginia,EV,Y,55,10/26/16
+Wisconsin,AIP,N,1909,10/25/16
+Wyoming,AIP,Y,23,9/29/16
