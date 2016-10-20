@@ -2,7 +2,7 @@ var Promise = require('bluebird');
 var request = require('request');
 var config = require('../config');
 
-exports.forecast_adjective = function(city, state, days_out)
+exports.forecast = function(city, state, days_out)
 {
     return new Promise(function(resolve, reject) {
          var req_url = 'http://api.apixu.com'
@@ -25,9 +25,9 @@ exports.forecast_adjective = function(city, state, days_out)
                 var obj = JSON.parse(body) || {};
                 var forecast_day = obj.forecast.forecastday[days_out - 1];
                 if (forecast_day && forecast_day.day) {
-                    var condition = forecast_day.day.condition.text;
+                    var condition = forecast_day.day.condition.text.toLowerCase();
                     // simplify apixu conditions, remove uncertainty
-                    simple_text.replace('patchy', '')
+                    var simple_text = condition.replace('patchy', '')
                         .replace('outbreaks', '')
                         .replace('light', '')
                         .replace('moderate', '')

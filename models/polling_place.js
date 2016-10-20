@@ -2,6 +2,11 @@ var Promise = require('bluebird');
 var request = require('request');
 var config = require('../config');
 
+function toTitleCase(str)
+{
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
 exports.lookup = function(street, city, state)
 {
     return new Promise(function(resolve, reject) {
@@ -23,6 +28,8 @@ exports.lookup = function(street, city, state)
                 var polling_place = obj.pollingLocations[0];
 
                 if (polling_place) {
+                    // google data is all upper case, transform city to TitleCase
+                    polling_place.address.city = toTitleCase(polling_place.address.city);
                     return resolve(polling_place);
                 }
             }
