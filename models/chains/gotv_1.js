@@ -1,8 +1,12 @@
+var config = require('../../config');
 var log = require('../../lib/logger');
 var language = require('../../lib/language');
 var polling_place_model = require('../polling_place');
 var weather_model = require('../weather_report');
 var user_model = require('../user');
+var message_model = require('../message');
+var convo_model = require('../conversation');
+
 var util = require('../../lib/util');
 var moment = require('moment');
 var parse_messy_time = require('parse-messy-time');
@@ -113,7 +117,7 @@ module.exports = {
                 }
 
                 var msg = "Okay great. I'll send you a reminder at {{vote_time}} with directions. "+
-                "It might be {{weather.advjective}} {{weather.emoji}} so {{weather.action}}! {{weather.action_emoji}} "+
+                "It might be {{weather.adjective}} {{weather.emoji}} so {{weather.action}}! {{weather.action_emoji}} "+
                 "Click here to tell friends you'll be voting! {{share_link}}";
 
                 var data = {
@@ -123,7 +127,7 @@ module.exports = {
                 };
             } else {
                 var msg = "Okay great. I'll send you a reminder at {{vote_time}} with directions. "+
-                "It might be {{weather.advjective}} {{weather.emoji}} so {{weather.action}}! {{weather.action_emoji}} "+
+                "It might be {{weather.adjective}} {{weather.emoji}} so {{weather.action}}! {{weather.action_emoji}} "+
                 "Click here to tell friends you'll be voting! {{share_link}}";
 
                 var data = {
@@ -138,11 +142,17 @@ module.exports = {
     share_weather: {
         pre_process: function(action, conversation, user) {
             var share_msg = "Help your friends get to the polls by making sure they know the weather too. "+
-            "Share on Facebook hello or forward this to them: "
-            var fwd_msg = "Hey, it's going to be {{weather.conditions}} on election day in {{settings.state}}."+
+            "Share on Facebook http://fftf.io/hellovote_weather or forward this to them: "
+            var fwd_msg = "Hey, it's going to be {{results.weather_forecast.adjective}} on election day in {{settings.state}}. "+
             "This bot can share voting day weather forecasts and other voting info to help you vote too: http://hellovote.org";
 
-
+            // send our share msg immediately
+            message_model.create(config.bot.user_id, conversation.id, {body: share_msg});
+            // and delay forward message
+            return { 'next': 'final',
+                    'msg': fwd_msg,
+                    'delay': convo_model.default_delay(conversation),
+                };
         }
     },
 }
