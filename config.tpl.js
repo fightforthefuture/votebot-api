@@ -48,6 +48,15 @@ var config = {
 		advance_delay_fb: 1000
 	},
 
+	apixu: {
+		key: process.env.APIXU_KEY,
+	},
+
+	google_civic: {
+		election_id: 5000,
+		api_key: process.env.GOOGLE_API_KEY,
+	},
+
 	smarty_streets: {
         auth_id: process.env.SMARTY_STREETS_ID,
         auth_token: process.env.SMARTY_STREETS_TOKEN,

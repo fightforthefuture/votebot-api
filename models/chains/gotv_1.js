@@ -6,11 +6,10 @@ var weather_model = require('../weather_report');
 var user_model = require('../user');
 var message_model = require('../message');
 var convo_model = require('../conversation');
-
+var short_url = require('../short_url');
 var util = require('../../lib/util');
 var moment = require('moment');
 var parse_messy_time = require('parse-messy-time');
-// var google_url = require('google-url');
 var emojiweather = require('emojiweather');
 
 
@@ -38,13 +37,13 @@ module.exports = {
             return polling_place_model.lookup(user.settings.address, user.settings.city, user.settings.state)
             .then(function(polling_place) {
                 var gttp_link = "https://gttp.votinginfoproject.org/#"+
-                encodeURIComponent(user.settings.address+' '+user.settings.city+' '+user.settings.state);
-                // TODO, shorten with goo.gl
-                polling_place.link = gttp_link;
-
-                var update_user = util.object.set(user, 'results.polling_place', polling_place);
-                return user_model.update(user.id, update_user).then(function() {
-                    return Promise.resolve({'next': 'schedule_polling_place'});
+                    encodeURIComponent(user.settings.address+' '+user.settings.city+' '+user.settings.state);
+                return short_url.shorten(gttp_link).then(function(short_link) {
+                    polling_place.link = short_link;
+                    var update_user = util.object.set(user, 'results.polling_place', polling_place);
+                    return user_model.update(user.id, update_user).then(function() {
+                        return Promise.resolve({'next': 'schedule_polling_place'});
+                    });
                 });
             });
         }
@@ -53,7 +52,7 @@ module.exports = {
         pre_process: function(action, conversation, user) {
             if (util.object.get(user, 'results.polling_place')) {
                 var msg = "Hey {{first_name}}, it's HelloVote! Election day is tomorrow! "+
-                "Your polling place is at {{results.polling_place.address.locationName}} in {{results.polling_place.address.city}}.\n{{results.polling_place.link}}\n"+
+                "Your polling place is the {{results.polling_place.address.locationName}} in {{results.polling_place.address.city}}.\n{{results.polling_place.link}}\n"+
                 "What time will you vote?";
             } else {
                  var msg = "Hey {{first_name}}, it's HelloVote! Election day is tomorrow! "+
@@ -140,8 +139,13 @@ module.exports = {
         pre_process: function(action, conversation, user) {
             var share_msg = "Help your friends get to the polls by making sure they know the weather too. "+
             "Share on Facebook http://fftf.io/hellovote_weather or forward this to them: "
-            var fwd_msg = "Hey, it's going to be {{results.weather_forecast.adjective}} on election day in {{settings.state}}. "+
-            "This bot can share voting day weather forecasts and other voting info to help you vote too: http://hellovote.org";
+
+            if (util.object.get(user, 'results.weather_forecast')) {
+                var fwd_msg = "Hey, it's going to be {{results.weather_forecast.adjective}} on election day in {{settings.state}}. "+
+                "This bot can share voting day weather forecasts and other voting info to help you vote too: http://hellovote.org";
+            } else {
+                var fwd_msg = "This bot can share voting day weather forecasts and other voting info to help you vote too: http://hellovote.org";   
+            }
 
             // send our share msg immediately
             message_model.create(config.bot.user_id, conversation.id, {body: share_msg});
