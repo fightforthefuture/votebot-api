@@ -86,8 +86,6 @@ module.exports = {
                 var weather = { adjective: weather_forecast.adjective };
                 weather.emoji = emojiweather(weather_forecast.simple_text);
 
-                console.log(weather);
-
                 switch(weather_forecast.simple_text) {
                     case 'sunny':
                     case 'clear':
@@ -127,7 +125,6 @@ module.exports = {
                 };
             } else {
                 var msg = "Okay great. I'll send you a reminder at {{vote_time}} with directions. "+
-                "It might be {{weather.adjective}} {{weather.emoji}} so {{weather.action}}! {{weather.action_emoji}} "+
                 "Click here to tell friends you'll be voting! {{share_link}}";
 
                 var data = {
