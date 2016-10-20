@@ -15,10 +15,10 @@ var partners = require('../config.partners');
 
 var default_steps = {};
 default_steps['vote_1'] = require('./chains/vote_1');
-default_steps['gotv_1'] = require('./chains/gotv_1_schedule');
-default_steps['gotv_2'] = require('./chains/gotv_2_start');
-default_steps['gotv_3'] = require('./chains/gotv_3_vote');
-default_steps['gotv_4'] = require('./chains/gotv_4_reporting');
+default_steps['gotv_1'] = require('./chains/gotv_1');
+default_steps['gotv_2'] = require('./chains/gotv_2');
+default_steps['gotv_3'] = require('./chains/gotv_3');
+default_steps['gotv_4'] = require('./chains/gotv_4');
 
 function get_chain(type) {
 	var vars = {type: type};

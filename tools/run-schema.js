@@ -10,7 +10,7 @@ var schema = [
 	// 'CREATE TYPE user_type AS ENUM (\'sms\', \'facebook-messenger\');',
 
 	// start with tables
-	'create table if not exists users (id serial primary key, username varchar(64) not null, type varchar(64), first_name varchar(255), last_name varchar(255), settings json, active boolean default true, submit boolean default false, complete boolean default false, referred boolean default false, created timestamp);',
+	'create table if not exists users (id serial primary key, username varchar(64) not null, type varchar(64), first_name varchar(255), last_name varchar(255), settings json, results json, active boolean default true, submit boolean default false, complete boolean default false, referred boolean default false, created timestamp);',
 	'create table if not exists conversations (id serial primary key, user_id bigint not null, type varchar(64), locale varchar(64) not null default \'en\', state json, settings json, partner varchar(64), active boolean default true, complete boolean default false, nudged boolean default false, created timestamp, updated timestamp);',
 	'create table if not exists conversations_recipients (id serial primary key, conversation_id bigint not null, user_id bigint not null, created timestamp);',
 	'create table if not exists messages (id serial primary key, user_id bigint not null, conversation_id bigint not null, body varchar(1600), created timestamp);',
@@ -586,8 +586,8 @@ var chains = [
 	},
 	{
 		chain: {
-			name: 'gotv',
-			description: 'Get out the vote!',
+			name: 'gotv_1',
+			description: 'Get out the vote! Schedule a time to go to the polls',
 			default_start: 'intro',
 			entries: 0,
 			exits: 0,
@@ -596,18 +596,34 @@ var chains = [
 		steps: [
 			{
 				name: 'intro',
-				msg: 'OK Now lets get out the vote lol',
+				msg: '',
+				no_msg: true,
 				errormsg: '',
 				next: 'gotv_prompt_1',
 				advance: true,	// this only makes any difference in bot.start!
 				admin_order: 0,
 			},
 			{
-				name: 'gotv_prompt_1',
-				msg: 'What is your favorite color',
+				name: 'schedule_polling_place',
+				msg: '',
 				errormsg: '',
-				next: 'gotv_prompt_1',
+				next: 'schedule_weather',
 				admin_order: 1,
+			},
+			{
+				name: 'schedule_weather',
+				msg: '',
+				errormsg: '',
+				next: 'share_weather',
+				admin_order: 2,
+			},
+			{
+				name: 'final',
+				msg: '',
+				errormsg: '',
+				next: '(final)',
+				final: true,
+				admin_order: 3,
 			}
 		]
 	}

@@ -1,8 +1,6 @@
 var log = require('../../lib/logger');
 var language = require('../../lib/language');
 var polling_place_model = require('../polling_place');
-var google_url = require('google-url');
-
 
 module.exports = {
     intro: {
