@@ -208,7 +208,8 @@ exports.switch_chain = function(chain, user) {
 			state: {
 				type: chain,
 				step: 'intro'
-			}
+			},
+			active: true
 		}).then(function(_updated_convo) {
 			log.info('conversation: switched to new chain: ', chain, _updated_convo);
 			bot_model.next(user.id, _updated_convo);

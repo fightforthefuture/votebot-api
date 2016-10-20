@@ -4,10 +4,12 @@ var l10n = require('./lib/l10n');
 var convo_model = require('./models/conversation');
 var user_model = require('./models/user');
 var moment = require('moment');
-var notifications = require('./config.notifications');
+var notifications = require('./lib/notifications');
+var log = require('./lib/logger');
+
 
 var RUN_DELAY = 60000;
-var RUN_DELAY = 1000;
+var NOTIFY_TIMEOUT = 10000;
 var QUERY = [
     'SELECT *',
     'FROM   users',
@@ -21,37 +23,37 @@ var run = function() {
         startTime = moment('14:00:00', 'hh:mm:ss'),
         endTime = moment('23:59:59', 'hh:mm:ss');
     
-    console.log('The time is: ', time.toString());
+    log.info('The time is: ', time.toString());
     if (!time.isBetween(startTime, endTime)) {
-        console.log(' - Time is not between 9am PST and 8pm EST! Waiting...');
+        log.info(' - Time is not between 9am PST and 8pm EST! Waiting...');
         return setTimeout(run, RUN_DELAY);
     }
  
     db.query(
         QUERY.join('\n'))
         .then(function(users) {
-            console.log('Found users: ', users.length);
+            log.info('Found users: ', users.length);
             return executeUserNotifications(users);
         });
 };
 
 var executeUserNotifications = function(userStack) {
     if (userStack.length == 0) {
-        console.log('No more users to notify. waiting a minute...');
+        log.info('No more users to notify. waiting a minute...');
         return setTimeout(run, RUN_DELAY);
     }
 
     var processNotification = function(notification) {
 
-        console.log(' - Notification: ', notification.type);
+        log.info(' - Notification: ', notification.type);
 
         var nextNotification = function() {
             completed++;
             if (completed == notifications.length) {
-                console.log(' - DONE. Running next user...');
+                log.info(' - DONE. Running next user...');
                 return executeUserNotifications(userStack);
             } else if (completed > notifications.length) {
-                console.error(' - COMPLETE AFTER TIMEOUT. WOW.');
+                log.error(' - COMPLETE AFTER TIMEOUT. WOW.');
                 return 'whatever';
             } else {
                 return processNotification(notifications[completed]);
@@ -66,7 +68,7 @@ var executeUserNotifications = function(userStack) {
             &&
             user.notifications.sent.indexOf(notification.type) > -1
         ) {
-            console.log('    - USER TAGGED WITH THIS NOTIFICATION. NEXT!');
+            log.info('    - USER TAGGED WITH THIS NOTIFICATION. NEXT!');
             return nextNotification();
         }
 
@@ -78,11 +80,11 @@ var executeUserNotifications = function(userStack) {
             }
 
             var failTimeout = setTimeout(function() {
-                console.error(' - REACHED FAILURE TIMEOUT. PROCEEDING...');
+                log.error(' - REACHED FAILURE TIMEOUT. PROCEEDING...');
                 return doNext();
-            }, 10000);
+            }, NOTIFY_TIMEOUT);
 
-            if (false && result.chain || result.mark_sent) {
+            if (result.chain || result.mark_sent) {
 
                 // first mark the user as having been sent this notification
                 if (!user.notifications)
@@ -93,27 +95,26 @@ var executeUserNotifications = function(userStack) {
 
                 user.notifications.sent.push(notification.type);
 
-                console.log('    - Marking user as sent: ', notification.type);
+                log.info('    - Marking user as sent: ', notification.type);
 
                 user_model.update(user.id, {notifications: user.notifications})
                     .then(function(_user) {
                         if (result.chain) {
-                            console.log('    - Switch chain: ', result.chain);
+                            log.info('    - Switch chain: ', result.chain);
                             convo_model.switch_chain(result.chain, user)
                                 .then(function() {
                                     return doNext();
                                 }).catch(function(err) {
-                                    console.error('    - ERROR SWITCHING. OMG');
+                                    log.error('    - ERROR SWITCHING. OMG');
                                     return doNext();
                                 });
                         } else {
                             return doNext();
                         }
                     }).catch(function(err) {
-                        console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!1!');
-                        console.error('FAILED UPDATE USER NOTIFICATIONS FLAG');
-                        console.error(err);
-                        console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!1!');
+                        log.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!1!');
+                        log.error('FAILED UPDATE USER NOTIFICATIONS FLAG', err);
+                        log.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!1!');
                         return process.exit(1);
                     });
             
@@ -126,7 +127,7 @@ var executeUserNotifications = function(userStack) {
     var user = userStack.shift(),
         completed = 0;
 
-    console.log('Processing notifications for user: ', user.id);
+    log.info('Processing notifications for user: ', user.id);
 
     return processNotification(notifications[0]);
 }
