@@ -6,15 +6,15 @@ var attrition_model = require('./models/attrition');
 var bot_model = require('./models/bot');
 var message_model = require('./models/message');
 
-var ATTRITION_ADMIN_SUMMARY = '23_hours';
+var ATTRITION_ADMIN_SUMMARY = '15_minutes';
 var ATTRITION_QUERY = [
     'SELECT *',
     'FROM   conversations',
     'WHERE  nudged = false',
     'AND    complete = false',
     'AND    active = true',
-    'AND    updated < now() - \'23 hours\'::interval',
-    'AND    updated > now() - \'24 hours\'::interval',
+    'AND    updated < now() - \'15 minutes\'::interval',
+    'AND    updated > now() - \'30 minutes\'::interval',
 ];
 
 db.query(
