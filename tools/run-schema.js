@@ -634,6 +634,40 @@ var chains = [
 			}
 		]
 	},
+	{
+		chain: {
+			name: 'gotv_2',
+			description: 'Election Day! Polling place reminder',
+			default_start: 'intro',
+			entries: 0,
+			exits: 0,
+			created: db.now()
+		},
+		steps: [
+			{
+				name: 'intro',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'election_day_hotline',
+				advance: true,	// this only makes any difference in bot.start!
+				admin_order: 0,
+			},
+			{
+				name: 'election_day_hotline',
+				msg: '[[msg_election_day_hotline]]',
+				errormsg: '',
+				next: 'election_day_directions',
+				admin_order: 1,
+			},
+			{
+				name: 'election_day_directions',
+				msg: '[[msg_election_day_directions]]',
+				errormsg: '',
+				next: 'final',
+				admin_order: 2,
+			},
+			{
 				name: 'final',
 				msg: '',
 				errormsg: '',

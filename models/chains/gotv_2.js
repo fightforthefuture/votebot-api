@@ -1,34 +1,27 @@
 var log = require('../../lib/logger');
 var language = require('../../lib/language');
-var polling_place_model = require('../polling_place');
-
+var util = require('../../lib/util');
 
 module.exports = {
     intro: {
-        process: function() {
+        process: function(body, user, step, conversation) {
             log.info('bot: gotv 2: intro');
-            return Promise.resolve({'next': 'election_day_hotline'})
+
+            if (!util.object.get(user, 'results.polling_place')) {
+                return Promise.resolve({'switch_chain': 'gotv_1'});
+            };
+
+            return Promise.resolve({'next': 'election_day_hotline'});
         }
     },
     election_day_hotline: {
-        pre_process: function(action, conversation, user) {
-            log.info('bot: gotv: looking up polling place info');
-
-            return {msg: language.template(msg, user)};
-        },
         process: function(body, user, step, conversation) {
-            var vote_time = parse_messy_time.parse(body.trim());
-
-            return Promise.resolve({next: 'vote_time_confirm'})
+            return Promise.resolve({next: 'election_day_directions', delay: 10*1000})
         }
     },
-    election_day_polling_place: {
-        pre_process: function(action, conversation, user) {
-            var msg = "";
-            return {msg: msg};
-        },
+    election_day_directions: {
         process: function(body, user, step, conversation) {
-            return Promise.resolve({next: 'next'})
+            return Promise.resolve({next: 'final'})
         }
     },
 }
