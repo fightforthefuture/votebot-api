@@ -12,7 +12,6 @@ var moment = require('moment');
 var momentTZ = require('moment-timezone');
 var timezone_model = require('../timezone');
 var parse_messy_time = require('parse-messy-time');
-var emojiweather = require('emojiweather');
 var l10n = require('../../lib/l10n');
 var validate = require('../../lib/validate');
 
@@ -108,12 +107,9 @@ module.exports = {
     },
     schedule_weather: {
         pre_process: function(action, conversation, user) {
-            var weather_forecast = util.object.get(user, 'results.weather_forecast');
-            if (weather_forecast) {
-                var weather = { adjective: weather_forecast.adjective };
-                weather.emoji = emojiweather(weather_forecast.simple_text);
-
-                switch(weather_forecast.simple_text) {
+            var weather = util.object.get(user, 'results.weather_forecast');
+            if (weather) {
+                switch(weather.simple_text) {
                     case 'sunny':
                     case 'clear':
                     case 'mostlysunny':

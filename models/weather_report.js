@@ -1,6 +1,7 @@
 var Promise = require('bluebird');
 var request = require('request');
 var config = require('../config');
+var emojiweather = require('emojiweather');
 
 exports.forecast = function(city, state, days_out)
 {
@@ -63,9 +64,13 @@ exports.forecast = function(city, state, days_out)
                             adj = simple_text; break;
                     }
 
+                    // and emoji
+                    var emoji = emojiweather(simple_text);
+
                     return resolve({condition: condition,
                                     simple_text: simple_text,
-                                    adjective: adj});
+                                    adjective: adj,
+                                    emoji: emoji});
                 }
             }
             catch(e)
