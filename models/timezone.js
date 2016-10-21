@@ -2,20 +2,30 @@ var Promise = require('bluebird');
 var request = require('request');
 var config = require('../config');
 
-exports.lookup = function(city, state)
+var zipcodes = require('../lib/zipcodes');
+
+exports.from_zipcode = function(zipcode)
 {
+    return new Promise(function(resolve, reject) {
+        var z = zipcodes.lookup[zipcode];
+        if (z) {
+            return resolve(z.timezone);
+        } else {
+            return reject(zipcode);
+        }
+    });
+};
+
+exports.from_city_state = function(city, state) {
     return new Promise(function(resolve, reject) {
         var req_url = 'https://api.timezonedb.com/'
             +'/v2/get-time-zone?format=json&key=' + config.timezonedb.key;
 
-        // if (city && state) {
-        //     req_url += '&by=city'+'&city='+city+'%20'+state+'&country=US';
-        // } else {
-            // temp testing location
-            var lat = 37.8;
-            var lng = -122.26;
-            +'&by=position'+'&lat='+lat+'&lng='+lng;
-        //}
+        if (city && state) {
+            req_url += '&by=city'+'&city='+city+'%20'+state+'&country=US';
+        } else {
+            return reject('need city and state to look up timezone online');
+        }
 
         request(req_url, function(err, res, body) {
             if(err) return reject(err);

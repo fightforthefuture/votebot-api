@@ -67,7 +67,7 @@ module.exports = {
 
             // look up local city timezone
             log.info('bot: gotv: looking up timezone');
-            return timezone.lookup(user.settings.city, user.settings.state).then(function(local_tz_name) {
+            return timezone_model.from_zipcode(user.settings.zip).then(function(local_tz_name) {
                  // convert user local time to UTC on election day
                 var election_day = moment(config.election.date, 'YYYY-MM-DD');
                 log.info('bot: gotv: election day is '+election_day.format('L'));
@@ -95,7 +95,14 @@ module.exports = {
                     return user_model.update(user.id, update_user).then(function() {
                         return Promise.resolve({next: 'schedule_weather'});
                     });
+                }).catch(function(weather_error) {
+                    log.error('bot: gotv: unable to look up weather for '+user.settings.city+' '+user.settings.state);
+                    return user_model.update(user.id, update_user).then(function() {
+                        return Promise.resolve({next: 'schedule_weather'});
+                    });
                 });
+            }).catch(function(tz_err) {
+                return validate.data_error('[[error_zip]]', {next: 'zip', promise: true});
             });
         }
     },
