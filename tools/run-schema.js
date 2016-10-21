@@ -599,12 +599,12 @@ var chains = [
 				msg: '',
 				no_msg: true,
 				errormsg: '',
-				next: 'schedule_polling_place',
+				next: 'schedule_vote_time',
 				advance: true,	// this only makes any difference in bot.start!
 				admin_order: 0,
 			},
 			{
-				name: 'schedule_polling_place',
+				name: 'schedule_vote_time',
 				msg: '',
 				errormsg: '[[error_schedule_time]]',
 				next: 'schedule_weather',
@@ -625,12 +625,47 @@ var chains = [
 				admin_order: 3,
 			},
 			{
+				name: 'first_name',
+				msg: '[[prompt_first_name_friendly]]',
+				errormsg: '[[error_first_name]]',
+				next: 'intro',
+				admin_order: 3,
+			},
+			{
+				name: 'zip',
+				msg: '[[prompt_zip]]',
+				errormsg: '[[error_zip]]',
+				next: 'city',
+				admin_order: 4,
+			},
+			{
+				name: 'city',
+				msg: '[[prompt_city]]',
+				errormsg: '[[error_city]]',
+				next: 'state',
+				admin_order: 5,
+			},
+			{
+				name: 'state',
+				msg: '[[prompt_state]]',
+				errormsg: '[[error_state]]', 
+				next: 'address', 
+				admin_order: 6,
+			},
+			{
+				name: 'address',
+				msg: '[[prompt_address]]',
+				errormsg: '[[error_address]]',
+				next: 'intro',
+				admin_order: 7,
+			},
+			{
 				name: 'final',
 				msg: '',
 				errormsg: '',
 				next: '(final)',
 				final: true,
-				admin_order: 4,
+				admin_order: 8,
 			}
 		]
 	},

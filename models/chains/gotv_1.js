@@ -1,27 +1,35 @@
 var config = require('../../config');
 var log = require('../../lib/logger');
 var language = require('../../lib/language');
+var l10n = require('../../lib/l10n');
+var util = require('../../lib/util');
+var validate = require('../../lib/validate');
+
 var polling_place_model = require('../polling_place');
 var weather_model = require('../weather_report');
 var user_model = require('../user');
 var message_model = require('../message');
+var notify = require('../notify.js');
 var convo_model = require('../conversation');
 var short_url = require('../short_url');
-var util = require('../../lib/util');
+
 var moment = require('moment');
 var momentTZ = require('moment-timezone');
 var timezone_model = require('../timezone');
 var parse_messy_time = require('parse-messy-time');
-var l10n = require('../../lib/l10n');
-var validate = require('../../lib/validate');
-
 
 module.exports = {
     intro: {
         process: function(body, user, step, conversation) {
             log.info('bot: gotv 1: intro');
+            if (!util.object.get(user, 'first_name')) {
+                return Promise.resolve({'next': 'first_name'});
+            };
+            if (!util.object.get(user, 'settings.zip')) {
+                return Promise.resolve({'next': 'zip'});
+            };
             if (!util.object.get(user, 'settings.address')) {
-                return Promise.resolve({'switch_chain': 'vote_1'})
+                return Promise.resolve({'next': 'address'});
             };
 
             log.info('bot: gotv: looking up polling place info');
@@ -34,25 +42,31 @@ module.exports = {
                     polling_place.link = short_link;
                     var update_user = util.object.set(user, 'results.polling_place', polling_place);
                     return user_model.update(user.id, update_user).then(function() {
-                        return Promise.resolve({'next': 'schedule_polling_place'});
+                        return Promise.resolve({'next': 'schedule_vote_time'});
                     });
                 });
+            }).catch(function(error) {
+                return Promise.resolve({'next': 'schedule_vote_time'});
             });
         }
     },
-    schedule_polling_place: {
+    schedule_vote_time: {
         pre_process: function(action, conversation, user) {
             // TODO, convert election_day offset to human time
             // so we don't assume it's "tomorrow"
 
-            if (util.object.get(user, 'results.polling_place')) {
-                var msg = "Hey {{first_name}}, it's HelloVote! Election day is tomorrow! "+
-                "Your polling place is the {{results.polling_place.address.locationName}} in {{results.polling_place.address.city}}.\n{{results.polling_place.link}}\n"+
-                "What time will you vote?";
+            if (user.first_name) {
+                var msg = "Hey {{first_name}}, Election day is tomorrow!";
             } else {
-                 var msg = "Hey {{first_name}}, it's HelloVote! Election day is tomorrow! "+
-                "What time will you vote?";
+                var msg = "Election day is tomorrow!";
+            };
+
+            if (util.object.get(user, 'results.polling_place')) {
+                msg = msg + " Your polling place is the {{results.polling_place.address.locationName}} in {{results.polling_place.address.city}}.\n{{results.polling_place.link}}\n";
+            } else {
+                msg = msg + " You can look up your polling place at http://gettothepolls.com\n";
             }
+            msg = msg + "What time will you vote?";
 
             return {msg: language.template(msg, user)}
         },
@@ -101,7 +115,7 @@ module.exports = {
                     });
                 });
             }).catch(function(tz_err) {
-                return validate.data_error('[[error_zip]]', {next: 'zip', promise: true});
+                return {next: 'zip'}
             });
         }
     },
@@ -180,4 +194,103 @@ module.exports = {
                 };
         }
     },
+    zip: {
+        process: simple_store('user.settings.zip', {validate: validate.zip})
+    },
+    city: {
+        pre_process: function(action, conversation, user) {
+            if(util.object.get(user, 'settings.city')) return {next: 'state'};
+        },
+        process: simple_store('user.settings.city', {validate: validate.city})
+    },
+    state: {
+        pre_process: function(action, conversation, user) {
+            return this.check_state(user);
+        },
+        check_state: function(user) {
+            var state = util.object.get(user, 'settings.state');
+            if (state) {
+                return {next: 'address'};
+            }
+        },
+        process: simple_store('user.settings.state', {validate: validate.state}),
+        post_process: function(user, conversation) {
+            // need to also check state here, in case we didn't short circuit with pre_process
+            return this.check_eligibility(user);
+        },
+    },
+    address: {
+        pre_process: function(action, conversation, user) {
+            if (user_model.use_notify(user.username)) { notify.add_tags(user, [user.settings.state.toUpperCase()]); }
+        },
+        process: simple_store('user.settings.address', {validate: validate.address, advance: true}),
+        post_process: function(user, conversation) {
+
+            if (util.object.get(user, 'settings.address_appears_bogus')) {
+                var err_meta = {
+                    address: util.object.get(user, 'settings.address'),
+                    zip: util.object.get(user, 'settings.zip'),
+                    user_id: user.id.toString()
+                }
+                log.notice('bot: vote_1: ADDRESS WARNING', err_meta);
+                return {msg: l10n('msg_address_appears_bogus', conversation.locale)};
+            } else {
+                return {}
+            }
+        }
+    },
+    first_name: {
+        pre_process: function(action, conversation, user) {
+            if (!user.settings.address) {
+                // they're a new user, and they probably need the intro message again
+                return { msg: l10n('msg_intro', conversation.locale) }
+            }
+        },
+        process: function(body, user, step, conversation) {
+            if (language.is_yes(body.trim())) {
+                return Promise.resolve({
+                    next: 'first_name',
+                    msg: l10n('error_first_name', conversation.locale)
+                });
+            } else {
+                return Promise.resolve({
+                    next: 'intro',
+                    store: { 'user.first_name': body.trim() },
+                    advance: true
+                });
+            }
+        },
+    }
+}
+
+// a helper for very simple ask-and-store type questions.
+// can perform data validation as well.
+function simple_store(store, options)
+{
+    options || (options = {});
+
+    return function(body, user, step, conversation)
+    {
+        // if we get an empty body, error
+        if(!body.trim()) return validate.data_error(step.errormsg, {promise: true});
+
+        var obj = {};
+        obj[store] = body.trim();
+        var promise = Promise.resolve({next: step.next, store: obj});
+        if(options.validate)
+        {
+            promise = options.validate(body, user, conversation.locale)
+                .spread(function(body, extra_store) {
+                    log.info('bot: validated body: ', body, '; extra_store: ', extra_store);
+                    extra_store || (extra_store = {});
+                    extra_store[store] = body;
+                    return {
+                        next: step.next,
+                        store: extra_store,
+                        advance: options.advance ? true : false
+                    };
+                });
+        }
+        return promise;
+    };
 }

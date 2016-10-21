@@ -31,6 +31,8 @@ exports.lookup = function(street, city, state)
                     // google data is all upper case, transform city to TitleCase
                     polling_place.address.city = toTitleCase(polling_place.address.city);
                     return resolve(polling_place);
+                } else {
+                    return reject(new Error('no_address_given'));
                 }
             }
             catch(e)
