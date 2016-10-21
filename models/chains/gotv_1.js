@@ -9,6 +9,7 @@ var convo_model = require('../conversation');
 var short_url = require('../short_url');
 var util = require('../../lib/util');
 var moment = require('moment');
+var timezone = require('../timezone');
 var parse_messy_time = require('parse-messy-time');
 var emojiweather = require('emojiweather');
 
@@ -39,6 +40,9 @@ module.exports = {
     },
     schedule_polling_place: {
         pre_process: function(action, conversation, user) {
+            // TODO, convert election_day offset to human time
+            // so we don't assume it's "tomorrow"
+
             if (util.object.get(user, 'results.polling_place')) {
                 var msg = "Hey {{first_name}}, it's HelloVote! Election day is tomorrow! "+
                 "Your polling place is the {{results.polling_place.address.locationName}} in {{results.polling_place.address.city}}.\n{{results.polling_place.link}}\n"+
@@ -51,18 +55,39 @@ module.exports = {
             return {msg: language.template(msg, user)}
         },
         process: function(body, user, step, conversation) {
-            var vote_time = parse_messy_time(body.trim());
-            // TODO, schedule gotv_2 chain to trigger just before parsed vote_time
+            // use parse_messy_time to turn human strings into date object
+            var parsed_local_time = parse_messy_time(body.trim());
 
-            var update_user = util.object.set(user, 'settings.vote_time', vote_time);
+            // look up local city timezone
+            log.info('bot: gotv: looking up timezone');
+            return timezone.lookup(user.settings.city, user.settings.state).then(function(local_tz_name) {
+                 // convert user local time to UTC on election day
+                var election_day = moment(config.election.date, 'YYYY-MM-DD');
+                log.info('bot: gotv: election day is '+election_day.format('L'));
+                var vote_time_local = moment(parsed_local_time, local_tz_name)
+                    .set({year:election_day.year(), month:election_day.month(), day:election_day.day()});
+                log.info('bot: gotv: user will vote at '+vote_time_local.format('LT L Z'));
 
-            // look up weather for next step in process, bc we can't do async in pre_process  
-            // TODO, calculate days_out from vote_time minus current_time
-            log.info('bot: gotv: looking up weather');
-            return weather_model.forecast(user.settings.city, user.settings.state).then(function(forecast) {
-                update_user = util.object.set(update_user, 'results.weather_forecast', forecast);
-                return user_model.update(user.id, update_user).then(function() {
-                    return Promise.resolve({next: 'schedule_weather'});
+                // schedule gotv_2 chain to trigger 30 min before vote_time_schedule_utc
+                var vote_time_utc = vote_time_local.clone().tz("UTC");
+                var vote_time_schedule_utc = vote_time_utc.subtract(30, 'minutes');
+                log.info('bot: gotv: scheduled govt_2 for '+vote_time_schedule_utc.format('LT L Z'));
+
+                // store timezone name and UTC times to user
+                var update_user = util.object.set(user, 'settings.timezone', local_tz_name);
+                var update_user = util.object.set(update_user, 'settings.vote_time', vote_time_utc);
+                var update_user = util.object.set(update_user, 'settings.vote_time_schedule', vote_time_schedule_utc);
+
+                // look up weather for next step in process, bc we can't do async in pre_process  
+                // calculate days_out from vote_time on election_day minus current_time
+                var now = moment();
+                var days_out = election_day.diff(now, 'days');
+                log.info('bot: gotv: looking up weather '+days_out+' days out');
+                return weather_model.forecast(user.settings.city, user.settings.state, days_out).then(function(forecast) {
+                    update_user = util.object.set(update_user, 'results.weather_forecast', forecast);
+                    return user_model.update(user.id, update_user).then(function() {
+                        return Promise.resolve({next: 'schedule_weather'});
+                    });
                 });
             });
         }
@@ -102,21 +127,21 @@ module.exports = {
                         weather.action_emoji = '\u{1F5F3}';
                 }
 
-                var msg = "Okay great. I'll send you a reminder at {{vote_time}} with directions. "+
+                var msg = "Okay great. I'll send you a reminder at {{vote_time_local}} with directions. "+
                 "It might be {{weather.adjective}} {{weather.emoji}} so {{weather.action}}! {{weather.action_emoji}} "+
                 "Click here to tell friends you'll be voting! {{share_link}}";
 
                 var data = {
-                    vote_time: moment(user.settings.vote_time).format('LT'),
+                    vote_time_local: moment(user.settings.vote_time).tz(user.settings.timezone).format('LT'),
                     weather: weather,
                     share_link: 'https://fftf.io/hellovote_gotv'
                 };
             } else {
-                var msg = "Okay great. I'll send you a reminder at {{vote_time}} with directions. "+
+                var msg = "Okay great. I'll send you a reminder at {{vote_time_local}} with directions. "+
                 "Click here to tell friends you'll be voting! {{share_link}}";
 
                 var data = {
-                    vote_time: moment(user.settings.vote_time).format('L'),
+                    vote_time_local: moment(user.settings.vote_time).tz(user.settings.timezone).format('LT'),
                     share_link: 'https://fftf.io/hellovote_gotv'
                 };
             }
