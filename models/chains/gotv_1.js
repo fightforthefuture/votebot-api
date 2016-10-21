@@ -150,7 +150,7 @@ module.exports = {
             // send our share msg immediately
             message_model.create(config.bot.user_id, conversation.id, {body: share_msg});
             // and delay forward message
-            return { 'next': 'final',
+            return {'next': 'final',
                     'msg': fwd_msg,
                     'delay': convo_model.default_delay(conversation),
                 };

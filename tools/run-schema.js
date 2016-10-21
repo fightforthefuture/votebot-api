@@ -599,7 +599,7 @@ var chains = [
 				msg: '',
 				no_msg: true,
 				errormsg: '',
-				next: 'gotv_prompt_1',
+				next: 'schedule_polling_place',
 				advance: true,	// this only makes any difference in bot.start!
 				admin_order: 0,
 			},
@@ -618,6 +618,22 @@ var chains = [
 				admin_order: 2,
 			},
 			{
+				name: 'share_weather',
+				msg: '',
+				errormsg: '',
+				next: 'final',
+				admin_order: 3,
+			},
+			{
+				name: 'final',
+				msg: '',
+				errormsg: '',
+				next: '(final)',
+				final: true,
+				admin_order: 4,
+			}
+		]
+	},
 				name: 'final',
 				msg: '',
 				errormsg: '',
