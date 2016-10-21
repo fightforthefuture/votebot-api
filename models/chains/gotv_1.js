@@ -18,18 +18,7 @@ module.exports = {
         process: function(body, user, step, conversation) {
             log.info('bot: gotv 1: intro');
             if (!util.object.get(user, 'settings.address')) {
-                
-                // temp, fill in with testing data
-                log.notice('GOTV_1 OPERATING WITH TEMP DATA');
-                var update_user = util.object.set(user, 'settings', {
-                    address: '1461 Alice St',
-                    city: 'Oakland',
-                    state: 'CA',
-                });
-                user.first_name = "Josh";
-                user_model.update(user.id, update_user);
-
-                //return Promise.resolve({'switch_chain': 'vote_1'})
+                return Promise.resolve({'switch_chain': 'vote_1'})
             };
 
             log.info('bot: gotv: looking up polling place info');
