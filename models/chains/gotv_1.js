@@ -114,7 +114,7 @@ module.exports = {
                     case 'sleet':
                     case 'snow':
                     case 'flurries':
-                        weather.action = 'bring your skates'; // alt, build a snowman?
+                        weather.action = 'bring your skates'; // alt, build a snowman? or bring a sled? bring your sled dogs!
                         weather.action_emoji = '\u{26F8}';
                         break;
                     case 'rain':
