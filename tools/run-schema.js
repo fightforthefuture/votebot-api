@@ -606,7 +606,7 @@ var chains = [
 			{
 				name: 'schedule_polling_place',
 				msg: '',
-				errormsg: '',
+				errormsg: '[[error_schedule_time]]',
 				next: 'schedule_weather',
 				admin_order: 1,
 			},

@@ -9,9 +9,12 @@ var convo_model = require('../conversation');
 var short_url = require('../short_url');
 var util = require('../../lib/util');
 var moment = require('moment');
-var timezone = require('../timezone');
+var momentTZ = require('moment-timezone');
+var timezone_model = require('../timezone');
 var parse_messy_time = require('parse-messy-time');
 var emojiweather = require('emojiweather');
+var l10n = require('../../lib/l10n');
+var validate = require('../../lib/validate');
 
 
 module.exports = {
@@ -57,6 +60,10 @@ module.exports = {
         process: function(body, user, step, conversation) {
             // use parse_messy_time to turn human strings into date object
             var parsed_local_time = parse_messy_time(body.trim());
+            // unfortunately it doesn't throw error if it can't parse, just returns midnight
+            if (!parsed_local_time.getHours() && !parsed_local_time.getMinutes()) {
+                return validate.data_error(step.errormsg, {promise: true});
+            }
 
             // look up local city timezone
             log.info('bot: gotv: looking up timezone');
