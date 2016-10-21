@@ -16,6 +16,7 @@ exports.forecast = function(city, state, days_out)
         }
 
         if(!days_out) { days_out = 1; }
+        if(days_out > 7) { days_out = 7; }
 
         request(req_url, function(err, res, body) {
             if(err) return reject(err);
