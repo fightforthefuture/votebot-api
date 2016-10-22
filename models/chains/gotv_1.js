@@ -5,6 +5,7 @@ var l10n = require('../../lib/l10n');
 var util = require('../../lib/util');
 var validate = require('../../lib/validate');
 
+var bot_model = require('../bot');
 var polling_place_model = require('../polling_place');
 var weather_model = require('../weather_report');
 var user_model = require('../user');
@@ -195,13 +196,13 @@ module.exports = {
         }
     },
     zip: {
-        process: simple_store('user.settings.zip', {validate: validate.zip})
+        process: bot_model.simple_store('user.settings.zip', {validate: validate.zip})
     },
     city: {
         pre_process: function(action, conversation, user) {
             if(util.object.get(user, 'settings.city')) return {next: 'state'};
         },
-        process: simple_store('user.settings.city', {validate: validate.city})
+        process: bot_model.simple_store('user.settings.city', {validate: validate.city})
     },
     state: {
         pre_process: function(action, conversation, user) {
@@ -213,7 +214,7 @@ module.exports = {
                 return {next: 'address'};
             }
         },
-        process: simple_store('user.settings.state', {validate: validate.state}),
+        process: bot_model.simple_store('user.settings.state', {validate: validate.state}),
         post_process: function(user, conversation) {
             // need to also check state here, in case we didn't short circuit with pre_process
             return this.check_eligibility(user);
@@ -223,7 +224,7 @@ module.exports = {
         pre_process: function(action, conversation, user) {
             if (user_model.use_notify(user.username)) { notify.add_tags(user, [user.settings.state.toUpperCase()]); }
         },
-        process: simple_store('user.settings.address', {validate: validate.address, advance: true}),
+        process: bot_model.simple_store('user.settings.address', {validate: validate.address, advance: true}),
         post_process: function(user, conversation) {
 
             if (util.object.get(user, 'settings.address_appears_bogus')) {
@@ -261,36 +262,4 @@ module.exports = {
             }
         },
     }
-}
-
-// a helper for very simple ask-and-store type questions.
-// can perform data validation as well.
-function simple_store(store, options)
-{
-    options || (options = {});
-
-    return function(body, user, step, conversation)
-    {
-        // if we get an empty body, error
-        if(!body.trim()) return validate.data_error(step.errormsg, {promise: true});
-
-        var obj = {};
-        obj[store] = body.trim();
-        var promise = Promise.resolve({next: step.next, store: obj});
-        if(options.validate)
-        {
-            promise = options.validate(body, user, conversation.locale)
-                .spread(function(body, extra_store) {
-                    log.info('bot: validated body: ', body, '; extra_store: ', extra_store);
-                    extra_store || (extra_store = {});
-                    extra_store[store] = body;
-                    return {
-                        next: step.next,
-                        store: extra_store,
-                        advance: options.advance ? true : false
-                    };
-                });
-        }
-        return promise;
-    };
 }

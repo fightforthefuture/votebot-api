@@ -2,6 +2,7 @@ var Promise = require('bluebird');
 var config = require('../../config');
 var db = require('../../lib/db');
 var email = require('../../lib/email');
+var bot_model = require('../bot');
 var convo_model = require('../conversation');
 var submission_model = require('../submission');
 var message_model = require('../message');
@@ -19,10 +20,12 @@ var validate = require('../../lib/validate');
 var us_election = require('../../lib/us_election');
 var us_states = require('../../lib/us_states');
 var request = require('request-promise');
-var notify = require('../notify.js');
+var notify = require('../notify');
 var moment = require('moment');
 var momentTZ = require('moment-timezone');
 var l10n = require('../../lib/l10n');
+
+var simple_store = bot_model.simple_store;
 
 module.exports = {
     intro: {
@@ -65,7 +68,7 @@ module.exports = {
                 });
             }
             if (body.trim() == 'woltato') { // JL DEBUG ~ //////////////////////
-                return Promise.resolve({ switch_chain: 'gotv' });
+                return Promise.resolve({ switch_chain: 'gotv_1' });
             } //////////////////////////////////////////////////////////////////
             var result = {
                 next: 'last_name',
@@ -1174,36 +1177,3 @@ module.exports = {
 
 
 };
-
-
-// a helper for very simple ask-and-store type questions.
-// can perform data validation as well.
-function simple_store(store, options)
-{
-    options || (options = {});
-
-    return function(body, user, step, conversation)
-    {
-        // if we get an empty body, error
-        if(!body.trim()) return validate.data_error(step.errormsg, {promise: true});
-
-        var obj = {};
-        obj[store] = body.trim();
-        var promise = Promise.resolve({next: step.next, store: obj});
-        if(options.validate)
-        {
-            promise = options.validate(body, user, conversation.locale)
-                .spread(function(body, extra_store) {
-                    log.info('bot: validated body: ', body, '; extra_store: ', extra_store);
-                    extra_store || (extra_store = {});
-                    extra_store[store] = body;
-                    return {
-                        next: step.next,
-                        store: extra_store,
-                        advance: options.advance ? true : false
-                    };
-                });
-        }
-        return promise;
-    };
-}
