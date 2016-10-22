@@ -56,18 +56,18 @@ module.exports = {
             // TODO, convert election_day offset to human time
             // so we don't assume it's "tomorrow"
 
+            var msg = '';
             if (user.first_name) {
-                var msg = "Hey {{first_name}}, Election day is tomorrow!";
-            } else {
-                var msg = "Election day is tomorrow!";
-            };
+                var msg = "Hey {{first_name}}, ";
+            }
+            msg = msg + l10n('msg_election_day_tomorrow', conversation.locale);
 
             if (util.object.get(user, 'results.polling_place')) {
-                msg = msg + " Your polling place is the {{results.polling_place.address.locationName}} in {{results.polling_place.address.city}}.\n{{results.polling_place.link}}\n";
+                msg = msg + l10n('msg_polling_place', conversation.locale);
             } else {
-                msg = msg + " You can look up your polling place at http://gettothepolls.com\n";
+                msg = msg + l10n('msg_lookup_polling_place', conversation.locale);
             }
-            msg = msg + "What time will you vote?";
+            msg = msg + l10n('prompt_schedule_vote_time', conversation.locale);
 
             return {msg: language.template(msg, user)}
         },
@@ -89,10 +89,10 @@ module.exports = {
                     .set({year:election_day.year(), month:election_day.month(), day:election_day.day()});
                 log.info('bot: gotv: user will vote at '+vote_time_local.format('LT L Z'));
 
-                // schedule gotv_2 chain to trigger 30 min before vote_time_schedule_utc
+                // schedule gotv_3 chain to trigger 30 min before vote_time_schedule_utc
                 var vote_time_utc = vote_time_local.clone().tz("UTC");
                 var vote_time_schedule_utc = vote_time_utc.subtract(30, 'minutes');
-                log.info('bot: gotv: scheduled govt_2 for '+vote_time_schedule_utc.format('LT L Z'));
+                log.info('bot: gotv: scheduled govt_3 for '+vote_time_schedule_utc.format('LT L Z'));
 
                 // store timezone name and UTC times to user
                 var update_user = util.object.set(user, 'settings.timezone', local_tz_name);
