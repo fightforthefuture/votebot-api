@@ -217,7 +217,7 @@ module.exports = {
         process: bot_model.simple_store('user.settings.state', {validate: validate.state}),
         post_process: function(user, conversation) {
             // need to also check state here, in case we didn't short circuit with pre_process
-            return this.check_eligibility(user);
+            return this.check_state(user);
         },
     },
     address: {
