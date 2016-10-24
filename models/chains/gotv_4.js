@@ -71,6 +71,9 @@ module.exports = {
 
             // send to electionland
             var url = 'https://electionland-reporting.herokuapp.com/api/incoming/hello-vote';
+            if (config.electionland_api_key) {
+                url = url + '?key=' + config.electionland_api_key;
+            }
             var post_data = {
                 'phone_number': user_model.parse_username(user).username,
                 'first_name': user.first_name,
@@ -87,13 +90,7 @@ module.exports = {
                 body: post_data, 
                 json: true              
             };
-            if (config.electionland_api_key) {
-                var username = (config.electionland_api_key || '');
-                var password = '';
-                form_submit.headers = {
-                    'Authorization': 'Basic ' + new Buffer(username+':'+password).toString('base64')                  
-                  }
-            }
+            
             return request(story_submit);
         }
     },
