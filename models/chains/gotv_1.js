@@ -47,6 +47,7 @@ module.exports = {
                     });
                 });
             }).catch(function(error) {
+                log.error('shorten_url error', error);
                 return Promise.resolve({'next': 'schedule_vote_time'});
             });
         }
