@@ -58,16 +58,16 @@ module.exports = {
 
             var msg = '';
             if (user.first_name) {
-                var msg = "Hey {{first_name}}, ";
+                var msg = "Hey {{first_name}},";
             }
-            msg = msg + l10n('msg_election_day_tomorrow', conversation.locale);
+            msg = msg + ' ' + l10n('msg_election_day_tomorrow', conversation.locale);
 
             if (util.object.get(user, 'results.polling_place')) {
-                msg = msg + l10n('msg_polling_place', conversation.locale);
+                msg = msg + ' ' +l10n('msg_polling_place', conversation.locale);
             } else {
-                msg = msg + l10n('msg_lookup_polling_place', conversation.locale);
+                msg = msg + ' ' + l10n('msg_lookup_polling_place', conversation.locale);
             }
-            msg = msg + l10n('prompt_schedule_vote_time', conversation.locale);
+            msg = msg + ' ' + l10n('prompt_schedule_vote_time', conversation.locale);
 
             return {msg: language.template(msg, user)}
         },
