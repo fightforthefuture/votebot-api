@@ -72,7 +72,7 @@ module.exports = {
                 return {};
             }
         },
-        process: simple_store('user.settings.phone', {validate: validate.phone})
+        process: bot_model.simple_store('user.settings.phone', {validate: validate.phone})
     },
     send_to_electionland: {
         pre_process: function(action, conversation, user) {
@@ -134,8 +134,10 @@ module.exports = {
                 return that.send_data(post_data)
                 .then(function(response) {
                     log.info('electionland response', response);
-                    // save status?
-                    return Promise.resolve({msg: 'A journalist may follow up with you for more information on your story.'});
+                    var update_user = util.object.set(user, 'results.reporting.saved', response.saved);
+                    return user_model.update(user.id, update_user).then(function() {
+                        return Promise.resolve({next: 'final', msg: '[[msg_reporting_followup]]'});
+                    });
                 })
                 .catch(function(error) {
                     log.error('unable send story to electionland', error);
