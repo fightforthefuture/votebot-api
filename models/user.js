@@ -88,6 +88,7 @@ exports.batch_create = function(usernames, options)
 	return Promise.all((usernames || []).map(function(username) {
 		var new_user = exports.parse_username(username);
 		new_user.settings = {};
+		new_user.results = {};
 		new_user.created = db.now();
 
 		if (options.force_active)
