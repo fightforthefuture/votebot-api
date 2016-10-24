@@ -16,7 +16,7 @@ exports.validate = function(street, city, state, zip)
         
         request(req_url, function(err, res, body) {
             if(err) return reject(err);
-            if(res.statusCode >= 400) return reject(new Error('not_found'));
+            if(res.statusCode >= 400) return reject(new Error('street_address_not_found'));
             try
             {
                 var obj = JSON.parse(body) || {};
