@@ -63,7 +63,7 @@ module.exports = {
             }
             msg = msg + ' ' + l10n('msg_election_day_tomorrow', conversation.locale);
 
-            if (util.object.get(user, 'results.polling_place')) {
+            if (util.object.get(user, 'results.polling_place.address')) {
                 msg = msg + ' ' +l10n('msg_polling_place', conversation.locale);
             } else {
                 msg = msg + ' ' + l10n('msg_lookup_polling_place', conversation.locale);
