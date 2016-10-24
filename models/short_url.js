@@ -8,8 +8,6 @@ exports.shorten = function(url)
         var req_url = 'https://go.hello.vote'
             +'/api/create/?url=' + encodeURIComponent(url);
 
-        console.log('shorten_url', url);
-
         request(req_url, function(err, res, body) {
             if(err) return reject(err);
             if(res.statusCode >= 400) return reject(new Error('not_found'));
