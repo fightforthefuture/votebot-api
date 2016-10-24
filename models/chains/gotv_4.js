@@ -5,6 +5,7 @@ var language = require('../../lib/language');
 var validate = require('../../lib/validate');
 var util = require('../../lib/util');
 
+var moment = require('moment');
 var request = require('request-promise');
 
 module.exports = {
@@ -49,6 +50,10 @@ module.exports = {
             };
         },
         process: bot_model.simple_store('user.results.reporting.story', {validate: validate.not_empty}),
+        post_process: function(user, conversation) {
+            var update_user = util.object.set(user, 'results.reporting.received', moment().utc().format());
+            return user_model.update(user.id, update_user);
+        },
     },
     reporting_contact_ok: {
         process: bot_model.simple_store('user.results.reporting.contact_ok', {validate: validate.boolean}),
@@ -65,14 +70,21 @@ module.exports = {
             }
 
             // send to electionland
-            var url = 'http://example.com'; //TBD
-            var reporting_data = util.object.get(user, 'results.reporting');
-            reporting_data.phone = user_model.parse_username(user).username;
-            reporting_data.first_name = user.first_name;
+            var url = 'https://electionland-reporting.herokuapp.com/api/incoming/hello-vote';
+            var post_data = {
+                'phone_number': user_model.parse_username(user).username,
+                'first_name': user.first_name,
+                'polling_location': util.object.get(user, 'results.polling_location.address'),
+                'reporting_wait_time': util.object.get(user, 'results.reporting.wait_time'),
+                'reporting_story': util.object.get(user, 'results.reporting.story'),
+                'reporting_contact_ok': util.object.get(user, 'results.reporting.contact_ok'),
+                'received': util.object.get(user, 'results.reporting.received'),
+            };
+            
             var story_submit = {
                 method: 'POST',
                 uri: url,
-                body: reporting_data, 
+                body: post_data, 
                 json: true              
             };
             if (config.electionland_api_key) {
