@@ -821,8 +821,23 @@ var chains = [
 				name: 'reporting_contact_ok',
 				msg: '[[prompt_reporting_contact_ok]]',
 				errormsg: '',
-				next: 'final',
+				next: 'phone',
 				admin_order: 5,
+			},
+			{
+				name: 'phone',
+				msg: '[[prompt_phone]]',
+				errormsg: '[[error_phone]]',
+				next: 'send_to_electionland',
+				admin_order: 5,
+			},
+			{
+				name: 'send_to_electionland',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'final',
+				admin_order: 6,
 			},
 			{
 				name: 'final',
@@ -830,7 +845,7 @@ var chains = [
 				errormsg: '',
 				next: '(final)',
 				final: true,
-				admin_order: 6,
+				admin_order: 7,
 			}
 		]
 	}
