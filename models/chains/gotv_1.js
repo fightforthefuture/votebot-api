@@ -154,8 +154,7 @@ module.exports = {
                 }
 
                 var msg = "Okay great. I'll send you a reminder at {{vote_time_local}} with directions. "+
-                "It might be {{weather.adjective}} {{weather.emoji}} so {{weather.action}}! {{weather.action_emoji}} "+
-                "Click here to tell friends you'll be voting! {{share_link}}";
+                "It might be {{weather.adjective}} {{weather.emoji}} so {{weather.action}}! {{weather.action_emoji}}";
 
                 var data = {
                     vote_time_local: moment(user.settings.vote_time).tz(user.settings.timezone).format('LT'),
@@ -172,7 +171,7 @@ module.exports = {
                 };
             }
 
-            return {msg: language.template(msg, data), next: 'share_weather', advance: true};
+            return {msg: language.template(msg, data), next: 'share_weather', delay: 3000};
         },
     },
     share_weather: {

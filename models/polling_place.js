@@ -25,7 +25,7 @@ exports.lookup = function(street, city, state)
             try
             {
                 var obj = JSON.parse(body) || {};
-                var polling_place = obj.pollingLocations[0] || {};
+                var polling_place = obj.pollingLocations ? polling_locations[0] : {};
 
                 if (obj.earlyVoteSites) {
                     // save early_voting to polling place as sub-object
@@ -35,7 +35,9 @@ exports.lookup = function(street, city, state)
                 if (polling_place) {
                     // google data is all upper case, transform city to TitleCase
                     polling_place.address.city = toTitleCase(polling_place.address.city);
-                    polling_place.early.address.city = toTitleCase(polling_place.early.address.city);
+                    if (polling_place.early) {
+                        polling_place.early.address.city = toTitleCase(polling_place.early.address.city);
+                    }
                     return resolve(polling_place);
                 } else {
                     return reject(new Error('no_polling_place'));

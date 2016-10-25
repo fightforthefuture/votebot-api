@@ -55,7 +55,7 @@ module.exports = {
         }
     },
     i_voted: {
-        process: bot_model.simple_store('user.settings.ivoted', {validate: validate.always_true, advance: true})
+        process: bot_model.simple_store('user.settings.ivoted', {validate: validate.always_true})
     },
     share_gotv: {
         process: function(body, user, step, conversation) {
