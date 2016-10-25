@@ -11,10 +11,11 @@ var log = require('./lib/logger');
 var RUN_DELAY = 60000;
 var NOTIFY_TIMEOUT = 10000;
 var QUERY = [
-    'SELECT *',
-    'FROM   users',
-    'WHERE  active = true',
-//    'AND    created < now() - \'24 hours\'::interval',
+    'SELECT     *',
+    'FROM       users',
+    'WHERE      active = true',
+//    'AND      created < now() - \'24 hours\'::interval',
+    'ORDER BY   id',
 ];
 
 var run = function() {
@@ -42,6 +43,11 @@ var executeUserNotifications = function(userStack) {
         log.info('No more users to notify. waiting a minute...');
         return setTimeout(run, RUN_DELAY);
     }
+
+    var user = userStack.shift(),
+        completed = 0;
+
+    log.info('Processing notifications for user: ', user.id);
 
     var processNotification = function(notification) {
 
@@ -78,13 +84,22 @@ var executeUserNotifications = function(userStack) {
                 if (failTimeout) clearTimeout(failTimeout);
                 return nextNotification();
             }
+            var skipToNextUser = function() {
+                log.info(' - Triggered!!! Skipping to next user...');
+                if (failTimeout) clearTimeout(failTimeout);
+                return executeUserNotifications(userStack)
+            }
 
             var failTimeout = setTimeout(function() {
                 log.error(' - REACHED FAILURE TIMEOUT. PROCEEDING...');
                 return doNext();
             }, NOTIFY_TIMEOUT);
 
-            if (result.chain || result.mark_sent) {
+            if (!result.chain && !result.mark_sent) {
+
+                return doNext();
+
+            } else {
 
                 // first mark the user as having been sent this notification
                 if (!user.notifications)
@@ -99,35 +114,29 @@ var executeUserNotifications = function(userStack) {
 
                 user_model.update(user.id, {notifications: user.notifications})
                     .then(function(_user) {
+
                         if (result.chain) {
                             log.info('    - Switch chain: ', result.chain);
                             convo_model.switch_chain(result.chain, user)
                                 .then(function() {
-                                    return doNext();
+                                    return skipToNextUser();
                                 }).catch(function(err) {
                                     log.error('    - ERROR SWITCHING. OMG');
-                                    return doNext();
+                                    return skipToNextUser();
                                 });
                         } else {
-                            return doNext();
+                            return skipToNextUser();
                         }
                     }).catch(function(err) {
-                        log.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!1!');
+                        log.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!1!11!1');
                         log.error('FAILED UPDATE USER NOTIFICATIONS FLAG', err);
-                        log.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!1!');
+                        log.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!1!1!!1');
                         return process.exit(1);
                     });
             
-            } else {
-                return doNext();
             }
         });
     }
-
-    var user = userStack.shift(),
-        completed = 0;
-
-    log.info('Processing notifications for user: ', user.id);
 
     return processNotification(notifications[0]);
 }

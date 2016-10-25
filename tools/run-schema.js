@@ -587,8 +587,8 @@ var chains = [
 	},
 	{
 		chain: {
-			name: 'gotv',
-			description: 'Get out the vote!',
+			name: 'early_voting',
+			description: 'Early voting',
 			default_start: 'intro',
 			entries: 0,
 			exits: 0,
@@ -597,21 +597,111 @@ var chains = [
 		steps: [
 			{
 				name: 'intro',
-				msg: 'OK Now lets get out the vote lol',
+				msg: '',
+				no_msg: true,
 				errormsg: '',
-				next: 'gotv_prompt_1',
+				next: 'early_voting_prompt',
 				advance: true,	// this only makes any difference in bot.start!
 				admin_order: 0,
 			},
 			{
-				name: 'gotv_prompt_1',
-				msg: 'What is your favorite color',
+				name: 'early_voting_prompt',
+				msg: '',
+				no_msg: true,
 				errormsg: '',
-				next: 'gotv_prompt_1',
+				next: 'get_to_the_polls',
+				admin_order: 1,
+			},
+			{
+				name: 'get_to_the_polls',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'get_to_the_polls',
+				admin_order: 1,
+			},
+			{
+				name: 'city',
+				msg: '[[prompt_city]]',
+				errormsg: '[[error_city]]',
+				next: 'state',
+				admin_order: 5,
+			},
+			{
+				name: 'state',
+				msg: '[[prompt_state]]',
+				errormsg: '[[error_state]]', 
+				next: 'address', 
+				admin_order: 6,
+			},
+			{
+				name: 'address',
+				msg: '[[prompt_address]]',
+				errormsg: '[[error_address]]',
+				next: 'early_voting_prompt',
+				admin_order: 7,
+			},
+			
+		]
+	},
+	{
+		chain: {
+			name: 'mail_in',
+			description: 'Mail in',
+			default_start: 'intro',
+			entries: 0,
+			exits: 0,
+			created: db.now()
+		},
+		steps: [
+			{
+				name: 'intro',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'mail_in_prompt',
+				advance: true,	// this only makes any difference in bot.start!
+				admin_order: 0,
+			},
+			{
+				name: 'mail_in_prompt',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'mail_in_prompt',
 				admin_order: 1,
 			}
 		]
-	}
+	},
+	{
+		chain: {
+			name: 'i_voted',
+			description: 'I voted!!',
+			default_start: 'intro',
+			entries: 0,
+			exits: 0,
+			created: db.now()
+		},
+		steps: [
+			{
+				name: 'intro',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'i_voted_prompt',
+				advance: true,	// this only makes any difference in bot.start!
+				admin_order: 0,
+			},
+			{
+				name: 'i_voted_prompt',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'i_voted_prompt',
+				admin_order: 1,
+			}
+		]
+	},
 ];
 
 

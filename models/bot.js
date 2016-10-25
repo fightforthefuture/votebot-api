@@ -13,9 +13,42 @@ var notify = require('./notify.js');
 var l10n = require('../lib/l10n');
 var partners = require('../config.partners');
 
+exports.simple_store = function(store, options)
+{
+    options || (options = {});
+
+    return function(body, user, step, conversation)
+    {
+        // if we get an empty body, error
+        if(!body.trim()) return validate.data_error(step.errormsg, {promise: true});
+
+        var obj = {};
+        obj[store] = body.trim();
+        var promise = Promise.resolve({next: step.next, store: obj});
+        if(options.validate)
+        {
+            promise = options.validate(body, user, conversation.locale)
+                .spread(function(body, extra_store) {
+                    log.info('bot: validated body: ', body, '; extra_store: ', extra_store);
+                    extra_store || (extra_store = {});
+                    extra_store[store] = body;
+                    return {
+                        next: step.next,
+                        store: extra_store,
+                        advance: options.advance ? true : false
+                    };
+                });
+        }
+        return promise;
+    };
+}
+
 var default_steps = {};
 default_steps['vote_1'] = require('./chains/vote_1');
-default_steps['gotv'] = require('./chains/gotv');
+default_steps['early_voting'] = require('./chains/early_voting');
+default_steps['mail_in'] = require('./chains/mail_in');
+default_steps['share'] = require('./chains/share');
+default_steps['i_voted'] = require('./chains/i_voted');
 
 function get_chain(type) {
 	var vars = {type: type};
@@ -137,6 +170,13 @@ var find_next_step = function(action, conversation, user)
 				var processed_next = res.next;
 			if (res && res.delay)
 				var processed_next_delay = res.delay;
+			if (res && res.switch_chain) {
+				return Promise.delay(convo_model.default_delay(conversation))
+					.then(function() {
+						convo_model.switch_chain(res.switch_chain, user);
+						return {switch_chain: true}
+					});
+			}
 		}
 
 		// same for post_process
@@ -402,6 +442,10 @@ exports.next = function(user_id, conversation, message)
 							return find_next_step(action, conversation, user);
 						})
 						.then(function(found) {
+							if (found.switch_chain) {
+								state._switch_chain = true;
+								return false;
+							}
 							var nextstep = found.step;
 
 							// destructively modify our conversation state object,
@@ -420,7 +464,11 @@ exports.next = function(user_id, conversation, message)
 							// save our current state into the conversation so's
 							// we know where we left off when the next message
 							// comes in
-							return convo_model.update(conversation.id, {state: state});
+							if (state._switch_chain) {
+								log.info('bot: chain switch -- not updating conversation');
+							} else {
+								return convo_model.update(conversation.id, {state: state});
+							}
 						});
 
 					if(action.advance) {
