@@ -50,7 +50,7 @@ module.exports = {
         },
     },
     reporting_contact_ok: {
-        process: bot_model.simple_store('user.results.reporting.contact_ok', {validate: validate.boolean, advance: true}),
+        process: bot_model.simple_store('user.results.reporting.contact_ok', {validate: validate.boolean}),
     },
     phone: {
         pre_process: function(action, conversation, user) {
@@ -59,22 +59,17 @@ module.exports = {
             if (username.type === 'sms') {
                 var update_user = util.object.set(user, 'settings.phone', username.username);
                 user_model.update(user.id, update_user);
-                return {next: 'send_to_electionland'};
+                return {next: 'send_to_electionland', advance: true};
             } else {
                 return {};
             }
         },
-        process: bot_model.simple_store('user.settings.phone', {validate: validate.phone})
+        process: bot_model.simple_store('user.settings.phone', {validate: validate.phone, advance: true})
     },
     send_to_electionland: {
-        pre_process: function(action, conversation, user) {
-            if (util.object.get(user, 'results.reporting.contact_ok') == false) {
-                return {next: 'final'};
-            };
-        },
         send_data: function(post_data) {
                 // send to electionland
-                var url = 'https://electionland-reporting.herokuapp.com/api/incoming/hello-vote';
+                var url = 'https://reporting.election.land/api/incoming/hello-vote';
                 if (config.electionland.api_key) {
                     url = url + '?key=' + config.electionland.api_key;
                 }
