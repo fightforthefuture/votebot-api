@@ -27,15 +27,7 @@ module.exports = {
                 return {'next': 'final'};
             };
         },
-        process: function(body, user, step, conversation) {
-            // TODO, parse duration from free text
-            var wait_minutes = body.trim();
-
-            var update_user = util.object.set(user, 'results.reporting.wait_time', wait_minutes);
-            return user_model.update(user.id, update_user).then(function() {
-                return Promise.resolve({next: 'reporting_problems'});
-            });
-        }
+        process: bot_model.simple_store('user.results.reporting.start', {validate: validate.number}),
     },
     reporting_problems: {
         pre_process: function(action, conversation, user) {
