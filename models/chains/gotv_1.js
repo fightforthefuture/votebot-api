@@ -241,12 +241,6 @@ module.exports = {
         }
     },
     first_name: {
-        pre_process: function(action, conversation, user) {
-            if (!user.settings.address) {
-                // they're a new user, and they probably need the intro message again
-                return { msg: l10n('msg_intro', conversation.locale) }
-            }
-        },
         process: function(body, user, step, conversation) {
             if (language.is_yes(body.trim())) {
                 return Promise.resolve({
@@ -256,6 +250,7 @@ module.exports = {
             } else {
                 return Promise.resolve({
                     next: 'intro',
+                    no_msg: true,
                     store: { 'user.first_name': body.trim() },
                     advance: true
                 });

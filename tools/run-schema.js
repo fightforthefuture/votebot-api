@@ -596,7 +596,7 @@ var chains = [
 		steps: [
 			{
 				name: 'intro',
-				msg: '',
+				msg: '[[msg_gotv_intro]]',
 				no_msg: true,
 				errormsg: '',
 				next: 'schedule_vote_time',
@@ -681,7 +681,7 @@ var chains = [
 		steps: [
 			{
 				name: 'intro',
-				msg: '',
+				msg: '[[msg_gotv_intro]]',
 				no_msg: true,
 				errormsg: '',
 				next: 'election_day_hotline',
@@ -782,7 +782,7 @@ var chains = [
 		steps: [
 			{
 				name: 'intro',
-				msg: '',
+				msg: '[[msg_gotv_intro]]',
 				no_msg: true,
 				errormsg: '',
 				next: 'reporting_start',
