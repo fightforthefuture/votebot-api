@@ -1,6 +1,6 @@
 var log = require('../../lib/logger');
 var l10n = require('../../lib/l10n');
-var rp = require('request-promise');
+var shorten = require('../../lib/shortener');
 var bot_model = require('../bot');
 var user_model = require('../user');
 var validate = require('../../lib/validate');
@@ -50,11 +50,11 @@ module.exports = {
                 zip = util.object.get(user, 'settings.zip'),
                 url = 'https://gttp.votinginfoproject.org/',
                 encoded = encodeURIComponent('#'+address+', '+city+', '+state+', '+zip),
-                url = 'https://go.hello.vote/api/create/?url=' + url + encoded;
+                url = url + encoded;
 
             log.info('bot: early_voting: shortening URL: ', url);
 
-            return rp(url)
+            return shorten(url)
                 .then(function (htmlString) {
                     log.info('bot: early_voting: got shortened URL: ', htmlString);
 

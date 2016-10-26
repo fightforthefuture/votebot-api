@@ -1,5 +1,6 @@
 var log = require('../../lib/logger');
 var language = require('../../lib/language');
+var l10n = require('../../lib/l10n');
 
 module.exports = {
     intro: {
@@ -15,11 +16,11 @@ module.exports = {
     },
     i_voted_prompt: {
         pre_process: function(action, conversation, user) {
-            return { msg: 'omg you are so cool!!' }
+            return { msg: l10n('msg_i_voted_selfie', conversation.locale) }
         },
         process: function(body, user, step, conversation) {
             return Promise.resolve({
-                next: 'i_voted_prompt'
+                switch_chain: 'share'
             })
         }
     }

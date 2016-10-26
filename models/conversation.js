@@ -4,6 +4,7 @@ var error = require('../lib/error');
 var hasher = require('../lib/hasher');
 var message_model = require('./message');
 var user_model = require('./user');
+var chains_log = require('./chains_log');
 var bot_model = require('./bot');
 var partners = require('../config.partners');
 var log = require('../lib/logger');
@@ -204,10 +205,12 @@ exports.poll = function(user_id, conversation_id, last_id, username, options)
 
 exports.switch_chain = function(chain, user) {
 	return exports.get_recent_by_user(user.id).then(function(conversation) {
+		chains_log.log(user.id, conversation.state.type, chain);
 		return exports.update(conversation.id, {
 			state: {
 				type: chain,
-				step: 'intro'
+				step: 'intro',
+				from: conversation.state.type
 			},
 			active: true
 		}).then(function(_updated_convo) {

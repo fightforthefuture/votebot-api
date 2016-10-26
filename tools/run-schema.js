@@ -21,6 +21,8 @@ var schema = [
 	'create table if not exists slack_credentials (id serial primary key, team_name varchar(255), team_id varchar(255) not null, access_token varchar(255) not null, webhook_url varchar(255) not null, webhook_channel varchar(64) not null, config_url varchar(255) not null, bot_user_id varchar(255) not null, bot_access_token varchar(255) not null, created timestamp);',
 	'create table if not exists attrition_log (id serial primary key, admin_summary varchar(64), conversation_id bigint, step_name varchar(64), dropoff_time timestamp, recaptured boolean default false, created timestamp, updated timestamp);',
 	'create table if not exists skype_data (id serial primary key, name varchar(64), val text);',
+	'create table if not exists share_log (id serial primary key, user_id bigint not null, from_chain varchar(64), url varchar(255), created timestamp);',
+	'create table if not exists chains_log (id serial primary key, user_id bigint not null, from_chain varchar(64), to_chain varchar(64), created timestamp);',
 
 	// index our tables
 	'create unique index if not exists users_username on users (username);',
