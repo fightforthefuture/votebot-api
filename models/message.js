@@ -120,10 +120,21 @@ exports.incoming_message = function(data, options)
 		.then(function(_user) {
 			user = _user;
 			if(!user) throw error('couldn\'t create user');
-			if(!user.active && !options.force_active) throw error('user is inactive');
 			return convo_model.get_recent_by_user(user.id);
 		})
 		.then(function(conversation) {
+			// we must ALWAYS handle STOP/HELP messages in english, regardless of user activity or locale
+			if (data.Body.toUpperCase().trim() === "STOP") { 
+				var stop_msg = l10n('msg_unsubscribed_default', 'en');
+				return exports.create(config.bot.user_id, conversation.id, {body: language.template(stop_msg, null, 'en')});
+			}
+			if (data.Body.toUpperCase().trim() === "HELP") { 
+				var help_msg = l10n('msg_help_default', 'en');
+				return exports.create(config.bot.user_id, conversation.id, {body: language.template(help_msg, null, 'en')});
+			}
+
+			if(!user.active && !options.force_active) throw error('user is inactive');
+
 			if(conversation && user.active)
 			{
 				log.info('msg: incoming: continuing existing conversation');
