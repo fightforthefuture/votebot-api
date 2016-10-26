@@ -5,6 +5,7 @@ var bot_model = require('../bot');
 var user_model = require('../user');
 var validate = require('../../lib/validate');
 var util = require('../../lib/util');
+var notify = require('../notify');
 
 var simple_store = bot_model.simple_store;
 

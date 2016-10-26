@@ -9,7 +9,7 @@ var util = require('../lib/util');
 var language = require('../lib/language');
 var log = require('../lib/logger');
 var validate = require('../lib/validate');
-var notify = require('./notify.js');
+var notify = require('./notify');
 var l10n = require('../lib/l10n');
 var partners = require('../config.partners');
 
