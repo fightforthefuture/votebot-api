@@ -127,7 +127,7 @@ exports.incoming_message = function(data, options)
 		.then(function(conversation) {
 			// we must ALWAYS handle STOP/HELP messages in english, regardless of user activity or locale
 			if (data.Body.toUpperCase().trim() === "STOP") { 
-				return cancel_conversation(user, conversation);
+				return convo_model.cancel_conversation(user, conversation);
 			}
 			if (data.Body.toUpperCase().trim() === "HELP") { 
 				var help_msg = l10n('msg_help_default', 'en');
