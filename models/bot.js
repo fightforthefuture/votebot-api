@@ -122,7 +122,8 @@ function log_chain_step_exit(step_id) {
 exports.cancel_conversation = function(user, conversation) {
 	var stop_msg = l10n('msg_unsubscribed_default', conversation.locale);
 	return message_model.create(config.bot.user_id, conversation.id, {
-		body: language.template(stop_msg, null, conversation.locale)
+		body: language.template(stop_msg, null, conversation.locale),
+		force_send: true
 	}).then(function() {
 		// mark user inactive, so we don't share their info with partners
 		return convo_model.close(conversation.id);
@@ -284,9 +285,15 @@ exports.next = function(user_id, conversation, message)
 		state;
 
 	if (conversation.active == false) {
-		// refuse to send anything, even if prompted
-		log.info('bot: recv msg, but conversation inactive');
-		return;
+		// refuse to send anything but help and stop, until new opt in from web
+		if (language.is_help(message.body)) {
+			log.info('bot: recv HELP msg, respond even if convo is inactive');
+		} else if (language.is_cancel(message.body)) {
+			log.info('bot: recv STOP msg, respond even if convo is inactive');
+		} else {
+			log.info('bot: recv msg, but conversation inactive');
+			return;
+		}
 	}
 
 	if (!message)

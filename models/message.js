@@ -26,7 +26,7 @@ exports.create = function(user_id, conversation_id, data)
 	};
 	return db.create('messages', new_message)
 		.tap(function(message) {
-			return exports.broadcast(conversation_id, message);
+			return exports.broadcast(conversation_id, message, data.force_send || false);
 		});
 };
 
@@ -60,15 +60,15 @@ exports.get_recipients = function(conversation_id)
  *
  * TODO: queue me for each recipient
  */
-exports.broadcast = function(conversation_id, message)
+exports.broadcast = function(conversation_id, message, force_send)
 {
 	log.info('broadcast: '+conversation_id+': ', message.body);
 	return exports.get_recipients(conversation_id)
 		.then(function(users) {
 			users = users.filter(function(u) {
-				// only send to active users (and not the user that sent the msg
-				// originally)
-				return (u.id != message.user_id && u.active)
+				// only send to active users (and not the user that sent the msg originally)
+				// unless it was a STOP or HELP message, and force_send is true
+				return ((u.id != message.user_id) && (u.active || force_send))
 			});
 
 			log.info('messages: broadcast to: ', JSON.stringify(users.map(function(u) { return u.id; })));
@@ -125,13 +125,15 @@ exports.incoming_message = function(data, options)
 			return convo_model.get_recent_by_user(user.id);
 		})
 		.then(function(conversation) {
-			// we must ALWAYS handle STOP/HELP messages in english, regardless of user activity or locale
+			// we must ALWAYS handle STOP/HELP messages over SMS in english, regardless of user activity or locale
 			if (data.Body.toUpperCase().trim() === "STOP") { 
+				log.info('incoming_message: recv STOP msg, send reply and cancel conversation');
 				return bot_model.cancel_conversation(user, conversation);
 			}
-			if (data.Body.toUpperCase().trim() === "HELP") { 
+			if (data.Body.toUpperCase().trim() === "HELP" && !user.active) {
+				log.info('incoming_message: recv HELP msg, send carrier-approved reply');
 				var help_msg = l10n('msg_help_default', 'en');
-				return exports.create(config.bot.user_id, conversation.id, {body: language.template(help_msg, null, 'en')});
+				return exports.create(config.bot.user_id, conversation.id, {body: language.template(help_msg, null, 'en'), force_send: true});
 			}
 
 			if(!user.active && !options.force_active) throw error('user is inactive');
