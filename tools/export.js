@@ -14,6 +14,7 @@ var query = [
 
 var partner = process.argv[2];
 var connstr = process.argv[3];
+var include_dob = (process.argv[4] === 'include_dob');
 
 query = query.join('\n').replace('{{partner}}', '\''+partner+'\'');
 
@@ -32,7 +33,8 @@ pg.connect(connstr, function(err, client, done) {
         process.exit(1);
     };
     client.query(query, {}, function(err, result) {
-        console.log('"timestamp","first_name","last_name","email","phone","address","address_unit","city","state","zip","age","already_registered","form_submitted","partner"');
+        var age_or_dob = include_dob ? "date_of_birth" : "age";
+        console.log('"timestamp","first_name","last_name","email","phone","address","address_unit","city","state","zip",'+age_or_dob+',"already_registered","form_submitted","partner"');
         for (var i=0; i<result.rows.length; i++) {
             var row = result.rows[i];
             var line = '';
@@ -46,7 +48,11 @@ pg.connect(connstr, function(err, client, done) {
             line += '"'+escape(row.settings.city)+'",';
             line += '"'+escape(row.settings.state)+'",';
             line += '"'+escape(row.settings.zip)+'",';
-            line += '"'+escape(moment().diff(moment(row.settings.date_of_birth,'YYYY-MM-DD'), 'years'))+'",';
+            if (include_dob) {
+                line += '"'+escape(row.settings.date_of_birth)+'",';
+            } else {
+                line += '"'+escape(moment().diff(moment(row.settings.date_of_birth,'YYYY-MM-DD'), 'years'))+'",';
+            }
             line += '"'+escape(row.settings.already_registered)+'",';
             line += '"'+escape(row.submit)+'",';
             line += '"'+escape(partner)+'"';
