@@ -121,7 +121,7 @@ function log_chain_step_exit(step_id) {
 
 var cancel_conversation = function(user, conversation) {
 
-	var stop_msg = l10n('msg_unsubscribed_default', conversation.locale);
+	var stop_msg = l10n('msg_unsubscribed', conversation.locale);
 	return message_model.create(config.bot.user_id, conversation.id, {
 		body: language.template(stop_msg, null, conversation.locale)
 	}).then(function() {
@@ -355,7 +355,7 @@ exports.next = function(user_id, conversation, message)
 					}
 
 					if(action.next == '_help') {
-						var help_msg = l10n('msg_help_default', conversation.locale);
+						var help_msg = l10n('msg_help', conversation.locale);
 						message_model.create(config.bot.user_id, conversation.id, {body: language.template(help_msg, null, conversation.locale)});
 						// let user continue
 						action.next = action.prev; 
