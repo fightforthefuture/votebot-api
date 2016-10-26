@@ -32,16 +32,21 @@ exports.lookup = function(street, city, state)
                     polling_place.early = obj.earlyVoteSites[0];
                 }
 
-                if (polling_place) {
+                if (!polling_place) {
+                    return reject(new Error('no_polling_place'));
+                }
+
+                if (polling_place && polling_place.address) {
                     // google data is all upper case, transform city to TitleCase
                     polling_place.address.city = toTitleCase(polling_place.address.city);
+                }
+                if (polling_place && polling_place.early) {
                     if (polling_place.early) {
                         polling_place.early.address.city = toTitleCase(polling_place.early.address.city);
                     }
-                    return resolve(polling_place);
-                } else {
-                    return reject(new Error('no_polling_place'));
                 }
+
+                return resolve(polling_place);
             }
             catch(e)
             {

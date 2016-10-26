@@ -80,15 +80,20 @@ module.exports = {
                 return validate.data_error(step.errormsg, {promise: true});
             }
 
+            if (parsed_local_time.getHours() < 7 && body.toUpperCase().indexOf('AM') < 0) {
+                return validate.data_error('Did you really mean '+parsed_local_time.getHours()+'AM? Please enter the time with AM/PM', {promise: true});
+            }
+            log.info('bot: gotv: parsed local time '+moment(parsed_local_time).format());
+
             // look up local city timezone
             log.info('bot: gotv: looking up timezone');
             return timezone_model.from_zipcode(user.settings.zip).then(function(local_tz_name) {
                  // convert user local time to UTC on election day
                 var election_day = moment(config.election.date, 'YYYY-MM-DD');
                 log.info('bot: gotv: election day is '+election_day.format('L'));
-                var vote_time_local = moment(parsed_local_time, local_tz_name)
+                var vote_time_local = moment(parsed_local_time).tz(local_tz_name)
                     .set({year:election_day.year(), month:election_day.month(), day:election_day.day()});
-                log.info('bot: gotv: user will vote at '+vote_time_local.format('LT L Z'));
+                log.info('bot: gotv: user will vote at '+vote_time_local.format());
 
                 // schedule gotv_3 chain to trigger 30 min before vote_time_schedule_utc
                 var vote_time_utc = vote_time_local.clone().tz("UTC");
@@ -97,8 +102,8 @@ module.exports = {
 
                 // store timezone name and UTC times to user
                 var update_user = util.object.set(user, 'settings.timezone', local_tz_name);
-                var update_user = util.object.set(update_user, 'settings.vote_time', vote_time_utc);
-                var update_user = util.object.set(update_user, 'settings.vote_time_schedule', vote_time_schedule_utc);
+                var update_user = util.object.set(update_user, 'settings.vote_time', vote_time_utc.format());
+                var update_user = util.object.set(update_user, 'settings.vote_time_schedule', vote_time_schedule_utc.format());
 
                 // look up weather for next step in process, bc we can't do async in pre_process  
                 // calculate days_out from vote_time on election_day minus current_time
@@ -170,6 +175,8 @@ module.exports = {
                     share_link: 'https://fftf.io/hellovote_gotv'
                 };
             }
+
+            log.info('bot: gotv: schedule_weather', data);
 
             return {msg: language.template(msg, data), next: 'share_weather', delay: 3000};
         },

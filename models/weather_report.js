@@ -41,6 +41,7 @@ exports.forecast = function(city, state, days_out)
                         .replace('nearby', '')
                         .replace('in area', '')
                         .replace('at times', '')
+                        .replace('possible', '')
                         .replace('or', '')
                         // .replace('with', '')
                         .trim();

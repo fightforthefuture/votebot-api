@@ -633,7 +633,7 @@ var chains = [
 			},
 			{
 				name: 'zip',
-				msg: '[[prompt_zip]]',
+				msg: '[[prompt_zip_gotv]]',
 				errormsg: '[[error_zip]]',
 				next: 'city',
 				admin_order: 4,
