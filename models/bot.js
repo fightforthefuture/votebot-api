@@ -120,8 +120,7 @@ function log_chain_step_exit(step_id) {
 }
 
 var cancel_conversation = function(user, conversation) {
-
-	var stop_msg = l10n('msg_unsubscribed', conversation.locale);
+	var stop_msg = l10n('msg_unsubscribed_default', conversation.locale);
 	return message_model.create(config.bot.user_id, conversation.id, {
 		body: language.template(stop_msg, null, conversation.locale)
 	}).then(function() {
