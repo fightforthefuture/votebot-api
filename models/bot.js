@@ -312,7 +312,7 @@ exports.next = function(user_id, conversation, message)
 
 			// only get the restart step if we're on the final step, lol
 			if (step.final)
-				return get_chain_step(state.type, 'restart');
+				return get_chain_step('vote_1', 'restart'); // JL HACK ~
 			else
 				return null;
 		})
@@ -330,8 +330,9 @@ exports.next = function(user_id, conversation, message)
 			{
 				log.info('bot: recv msg, but conversation finished');
 				if (language.is_yes(body)) {
-					log.info('bot: user wants to restart');
-					step = _restart;
+					log.info('bot: user wants to restart: ', _restart);
+					// step = _restart;									// JL HACK ~
+					return convo_model.switch_chain('vote_1', user);	// JL HACK ~
 				} else {
 					log.info('bot: prompt to restart');
 					var restart_msg = l10n('prompt_restart_after_complete', conversation.locale)
