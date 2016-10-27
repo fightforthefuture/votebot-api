@@ -152,7 +152,7 @@ module.exports = {
                 "It might be {{weather.adjective}} {{weather.emoji}} so {{weather.action}}! {{weather.action_emoji}}";
 
                 var data = {
-                    vote_time_local: moment(user.settings.vote_time).tz(user.settings.timezone).format('LT'),
+                    vote_time_local: moment.tz(user.settings.vote_time, 'UTC').tz(user.settings.timezone).format('LT'),
                     weather: weather,
                     share_link: 'https://fftf.io/hellovote_gotv'
                 };
@@ -161,7 +161,7 @@ module.exports = {
                 "Click here to tell friends you'll be voting! {{share_link}}";
 
                 var data = {
-                    vote_time_local: moment(user.settings.vote_time).tz(user.settings.timezone).format('LT'),
+                    vote_time_local: moment.tz(user.settings.vote_time, 'UTC').tz(user.settings.timezone).format('LT'),
                     share_link: 'https://fftf.io/hellovote_gotv'
                 };
             }
