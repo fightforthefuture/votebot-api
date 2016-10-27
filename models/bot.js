@@ -50,6 +50,7 @@ default_steps['vote_1'] = require('./chains/vote_1');
 default_steps['early_voting'] = require('./chains/early_voting');
 default_steps['mail_in'] = require('./chains/mail_in');
 default_steps['share'] = require('./chains/share');
+default_steps['commit_to_vote'] = require('./chains/commit_to_vote');
 default_steps['gotv_1'] = require('./chains/gotv_1');
 default_steps['gotv_2'] = require('./chains/gotv_2');
 default_steps['gotv_3'] = require('./chains/gotv_3');

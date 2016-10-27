@@ -941,6 +941,50 @@ var chains = [
 	},
 	{
 		chain: {
+			name: 'commit_to_vote',
+			description: 'Commit to Vote',
+			default_start: 'intro',
+			entries: 0,
+			exits: 0,
+			created: db.now()
+		},
+		steps: [
+			{
+				name: 'intro',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'commit_to_vote_prompt',
+				advance: true,	// this only makes any difference in bot.start!
+				admin_order: 0,
+			},
+			{
+				name: 'commit_to_vote_prompt',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'calendar_invite',
+				admin_order: 1,
+			},
+			{
+				name: 'email',
+				msg: '[[prompt_email_for_gotv]]',
+				errormsg: '[[error_email]]',
+				next: 'calendar_invite',
+				admin_order: 2,
+			},
+			{
+				name: 'calendar_invite',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'final_tmp',
+				admin_order: 3,
+			}
+		]
+	},
+	{
+		chain: {
 			name: 'i_voted',
 			description: 'I voted!!',
 			default_start: 'intro',
