@@ -12,7 +12,7 @@ var user_model = require('../user');
 var message_model = require('../message');
 var notify = require('../notify.js');
 var convo_model = require('../conversation');
-var short_url = require('../short_url');
+var shorten = require('../../lib/shortener');
 
 var moment = require('moment');
 var momentTZ = require('moment-timezone');
@@ -39,7 +39,7 @@ module.exports = {
             .then(function(polling_place) {
                 var gttp_link = "https://gttp.votinginfoproject.org/#"+
                     encodeURIComponent(user.settings.address+' '+user.settings.city+' '+user.settings.state);
-                return short_url.shorten(gttp_link).then(function(short_link) {
+                return shorten(gttp_link).then(function(short_link) {
                     polling_place.link = short_link;
                     var update_user = util.object.set(user, 'results.polling_place', polling_place);
                     return user_model.update(user.id, update_user).then(function() {
