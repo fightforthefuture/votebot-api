@@ -39,8 +39,7 @@ module.exports = {
                 });
             } else {
                 return Promise.resolve({
-                    next: 'final',
-                    final: true,
+                    switch_chain: 'voting_info'
                 });
             }
         }
@@ -60,8 +59,10 @@ module.exports = {
                 var update_user = util.object.set(user, 'results.polling_place', polling_place);
                 return user_model.update(user.id, update_user);
             }).then(function(user) {
-                var gttp_link = "https://gttp.votinginfoproject.org/#"+
-                    encodeURIComponent(user.settings.address+' '+user.settings.city+' '+user.settings.state);
+                var gttp_link = "https://gttp.votinginfoproject.org/#";
+                if (user.settings.address) {
+                    gttp_link += encodeURIComponent(user.settings.address+' '+user.settings.city+' '+user.settings.state);
+                }
                 var polling_place = util.object.get(user, 'results.polling_place');
                 if (polling_place && polling_place.address) {
                     var location = polling_place.address.locationName
@@ -87,16 +88,12 @@ module.exports = {
                     ],
                 };
 
-                return email.sendCalendarInvite(user, calendar_attributes);
+                return email.sendCalendarInvite(user, calendar_attributes).then(function() {
+                    return Promise.resolve({
+                        switch_chain: 'share'
+                    });
+                })
             });
         }
-    },
-    final: {
-        name: 'final',
-        msg: '',
-        no_msg: true,
-        errormsg: '',
-        next: '(final)',
-        final: true
-    },
+    }
 }
