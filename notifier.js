@@ -14,6 +14,8 @@ var QUERY = [
     'SELECT     *',
     'FROM       users',
     'WHERE      active = true',
+    'AND        created > \'2016-10-10\'',
+    'AND        created < \'2016-10-11\'',
 //    'AND      created < now() - \'24 hours\'::interval',
     'ORDER BY   id',
 ];
@@ -116,7 +118,7 @@ var executeUserNotifications = function(userStack) {
                     .then(function(_user) {
 
                         if (result.chain) {
-                            log.info('    - Switch chain: ', result.chain);
+                            log.notice('    - Switch chain: ', _user.id, result.chain);
                             convo_model.switch_chain(result.chain, user)
                                 .then(function() {
                                     return skipToNextUser();
