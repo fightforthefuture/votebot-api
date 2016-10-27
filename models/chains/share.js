@@ -9,7 +9,7 @@ var message_model = require('../message');
 module.exports = {
     intro: {
         process: function() {
-            log.info('bot: mail_in: no message is ever sent for this step lol');
+            log.info('bot: share: no message is ever sent for this step lol');
             return Promise.resolve({
                 'next': 'share_prompt',
                 'store': {

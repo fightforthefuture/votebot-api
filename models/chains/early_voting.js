@@ -62,7 +62,7 @@ module.exports = {
                     return {
                         next: 'get_to_the_polls',
                         store: {
-                            'user.settings.polling_url': htmlString,
+                            'user.results.polling_url': htmlString,
                             'user.settings.response_early_voting': body
                         }
                     }
@@ -112,7 +112,7 @@ module.exports = {
     },
     get_to_the_polls: {
         pre_process: function(action, conversation, user) {
-            var polling_url = util.object.get(user, 'settings.polling_url');
+            var polling_url = util.object.get(user, 'results.polling_url');
             return {
                 msg: l10n('msg_ev_polling_url', conversation.locale).replace('{url}', polling_url),
                 switch_chain: 'share'
