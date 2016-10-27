@@ -9,7 +9,7 @@ var util = require('../lib/util');
 var language = require('../lib/language');
 var log = require('../lib/logger');
 var validate = require('../lib/validate');
-var notify = require('./notify.js');
+var notify = require('./notify');
 var l10n = require('../lib/l10n');
 var partners = require('../config.partners');
 
@@ -47,10 +47,14 @@ exports.simple_store = function(store, options)
 
 var default_steps = {};
 default_steps['vote_1'] = require('./chains/vote_1');
+default_steps['early_voting'] = require('./chains/early_voting');
+default_steps['mail_in'] = require('./chains/mail_in');
+default_steps['share'] = require('./chains/share');
 default_steps['gotv_1'] = require('./chains/gotv_1');
 default_steps['gotv_2'] = require('./chains/gotv_2');
 default_steps['gotv_3'] = require('./chains/gotv_3');
 default_steps['gotv_4'] = require('./chains/gotv_4');
+default_steps['i_voted'] = require('./chains/i_voted');
 
 function get_chain(type) {
 	var vars = {type: type};
@@ -121,11 +125,11 @@ function log_chain_step_exit(step_id) {
 	return db.query(qry, vars);
 }
 
-var cancel_conversation = function(user, conversation) {
-
-	var stop_msg = l10n('msg_unsubscribed', conversation.locale);
+exports.cancel_conversation = function(user, conversation) {
+	var stop_msg = l10n('msg_unsubscribed_default', conversation.locale);
 	return message_model.create(config.bot.user_id, conversation.id, {
-		body: language.template(stop_msg, null, conversation.locale)
+		body: language.template(stop_msg, null, conversation.locale),
+		force_send: true
 	}).then(function() {
 		// mark user inactive, so we don't share their info with partners
 		return convo_model.close(conversation.id);
@@ -172,6 +176,13 @@ var find_next_step = function(action, conversation, user)
 				var processed_next = res.next;
 			if (res && res.delay)
 				var processed_next_delay = res.delay;
+			if (res && res.switch_chain) {
+				return Promise.delay(convo_model.default_delay(conversation))
+					.then(function() {
+						convo_model.switch_chain(res.switch_chain, user);
+						return {switch_chain: true}
+					});
+			}
 		}
 
 		// same for post_process
@@ -280,9 +291,15 @@ exports.next = function(user_id, conversation, message)
 		state;
 
 	if (conversation.active == false) {
-		// refuse to send anything, even if prompted
-		log.info('bot: recv msg, but conversation inactive');
-		return;
+		// refuse to send anything but help and stop, until new opt in from web
+		if (language.is_help(message.body)) {
+			log.info('bot: recv HELP msg, respond even if convo is inactive');
+		} else if (language.is_cancel(message.body)) {
+			log.info('bot: recv STOP msg, respond even if convo is inactive');
+		} else {
+			log.info('bot: recv msg, but conversation inactive');
+			return;
+		}
 	}
 
 	if (!message)
@@ -307,7 +324,7 @@ exports.next = function(user_id, conversation, message)
 
 			// only get the restart step if we're on the final step, lol
 			if (step.final)
-				return get_chain_step(state.type, 'restart');
+				return get_chain_step('vote_1', 'restart'); // JL HACK ~
 			else
 				return null;
 		})
@@ -317,7 +334,7 @@ exports.next = function(user_id, conversation, message)
 
 			// handle stop messages first
 			if(language.is_cancel(body)) {
-				return cancel_conversation(user, conversation);
+				return exports.cancel_conversation(user, conversation);
 			}
 
 			// we've reached the final step
@@ -325,8 +342,9 @@ exports.next = function(user_id, conversation, message)
 			{
 				log.info('bot: recv msg, but conversation finished');
 				if (language.is_yes(body)) {
-					log.info('bot: user wants to restart');
-					step = _restart;
+					log.info('bot: user wants to restart: ', _restart);
+					// step = _restart;									// JL HACK ~
+					return convo_model.switch_chain('vote_1', user);	// JL HACK ~
 				} else {
 					log.info('bot: prompt to restart');
 					var restart_msg = l10n('prompt_restart_after_complete', conversation.locale)
@@ -345,7 +363,7 @@ exports.next = function(user_id, conversation, message)
 					}
 
 					if(action.next == '_cancel') {
-						return cancel_conversation(user, conversation);
+						return exports.cancel_conversation(user, conversation);
 					}
 
 					if(action.next == '_help') {
@@ -437,6 +455,10 @@ exports.next = function(user_id, conversation, message)
 							return find_next_step(action, conversation, user);
 						})
 						.then(function(found) {
+							if (found.switch_chain) {
+								state._switch_chain = true;
+								return false;
+							}
 							var nextstep = found.step;
 
 							// destructively modify our conversation state object,
@@ -455,7 +477,11 @@ exports.next = function(user_id, conversation, message)
 							// save our current state into the conversation so's
 							// we know where we left off when the next message
 							// comes in
-							return convo_model.update(conversation.id, {state: state});
+							if (state._switch_chain) {
+								log.info('bot: chain switch -- not updating conversation');
+							} else {
+								return convo_model.update(conversation.id, {state: state});
+							}
 						});
 
 					if(action.advance) {

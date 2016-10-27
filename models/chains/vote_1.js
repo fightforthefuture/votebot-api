@@ -99,7 +99,26 @@ module.exports = {
         pre_process: function(action, conversation, user) {
             if (user_model.use_notify(user.username)) { notify.add_tags(user, ['votebot-started']); }
         },
-        process: simple_store('user.settings.zip', {validate: validate.zip})
+        // process: simple_store('user.settings.zip', {validate: validate.zip})
+        process: function(body, user, step, conversation) {
+            return validate.zip(body, user, conversation.locale)
+                .spread(function(body, extra_store) {
+                    var update_user = user;
+
+                    util.object.set(update_user, 'settings.zip', body.trim());
+
+                    if (extra_store['user.settings.state'])
+                        util.object.set(update_user, 'settings.state', extra_store['user.settings.state']);
+
+                    if (extra_store['user.settings.city'])
+                        util.object.set(update_user, 'settings.city', extra_store['user.settings.city']);
+
+                    return user_model.update(user.id, update_user)
+                        .then(function(_updated) {
+                            return maybe_switch_chains(_updated, 'city');
+                        });                    
+                });
+        }
     },
     city: {
         pre_process: function(action, conversation, user) {
@@ -124,23 +143,19 @@ module.exports = {
                         delay: config.bot.advance_delay
                     }
                 }
-
-                // and online registration deadlines
-                // JL NOTE ~ not yet
-                /*
-                if (deadline_str = us_election.get_ovr_deadline(state)['online']) {
-                    var ovr_deadline = moment(deadline_str, 'YYYY-MM-DD');
-                    var today = moment();
-                    if (today.isAfter(ovr_deadline, 'day')) {
-                        return {msg: l10n('error_state_deadline_expired', conversation.locale), next: 'share'}
-                    }
-                }
-                */
-
                 return {next: 'address'};
             }
         },
-        process: simple_store('user.settings.state', {validate: validate.state}),
+        process: function(body, user, step, conversation) {
+            return validate.us_state(body, user, conversation.locale)
+                .spread(function(us_state) {
+                    var update_user = util.object.set(user, 'settings.state', us_state);
+                    return user_model.update(user.id, update_user)
+                        .then(function(_updated) {
+                            return maybe_switch_chains(_updated, 'address');
+                        });
+                })
+        },
         post_process: function(user, conversation) {
             // need to also check state eligibility here, in case we didn't short circuit with pre_process
             return this.check_eligibility(user);
@@ -1177,3 +1192,59 @@ module.exports = {
 
 
 };
+
+function maybe_switch_chains(user, defaultNext) {
+    if (!user || !user.settings || !user.settings.state)
+        return { next: defaultNext };
+
+    var state = user.settings.state,
+        deadlines = us_election.get_ovr_deadline(state),
+        ev_status = us_election.get_early_voting_or_mail_in(state),
+        today = moment();
+
+    if (deadlines) {
+
+        if (deadlines['online']) {
+            var ovr_deadline = moment(deadlines['online'], 'YYYY-MM-DD');
+
+            if (!today.isAfter(ovr_deadline, 'day')) {
+
+                log.info('bot: vote_1: still time to register online!');
+
+                if (us_election.state_integrated_ovr[state]) {
+                    return { next: defaultNext };
+                } else {
+                    return { next: 'refer_external_ovr' };
+                }
+            }
+        } else {
+
+            var too_late_to_mail = us_election.is_too_late_to_mail(state);
+
+            if (!too_late_to_mail) {
+                log.info('bot: vote_1: still time to vote by mail!');
+
+                return { next: defaultNext };
+            }
+        }
+    }
+
+    log.info('bot: vote_1: user.settings: ', user.settings);
+    log.info('bot: vote_1: ev_status: ', ev_status);
+
+    switch (ev_status) {
+        case 'early-voting':
+            return { switch_chain: 'early_voting' };
+            break;
+        case 'vote-by-mail':
+            return { switch_chain: 'mail_in' };
+            break;
+        case 'none':
+        case 'absentee-in-person':
+            return { next: defaultNext };
+            break;
+        default:
+            return { next: defaultNext };
+            break;
+    }
+}

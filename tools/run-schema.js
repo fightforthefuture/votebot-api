@@ -10,7 +10,7 @@ var schema = [
 	// 'CREATE TYPE user_type AS ENUM (\'sms\', \'facebook-messenger\');',
 
 	// start with tables
-	'create table if not exists users (id serial primary key, username varchar(64) not null, type varchar(64), first_name varchar(255), last_name varchar(255), settings json, results json, active boolean default true, submit boolean default false, complete boolean default false, referred boolean default false, created timestamp);',
+	'create table if not exists users (id serial primary key, username varchar(64) not null, type varchar(64), first_name varchar(255), last_name varchar(255), settings json, results json, notifications jsonb, active boolean default true, submit boolean default false, complete boolean default false, referred boolean default false, created timestamp);',
 	'create table if not exists conversations (id serial primary key, user_id bigint not null, type varchar(64), locale varchar(64) not null default \'en\', state json, settings json, partner varchar(64), active boolean default true, complete boolean default false, nudged boolean default false, created timestamp, updated timestamp);',
 	'create table if not exists conversations_recipients (id serial primary key, conversation_id bigint not null, user_id bigint not null, created timestamp);',
 	'create table if not exists messages (id serial primary key, user_id bigint not null, conversation_id bigint not null, body varchar(1600), created timestamp);',
@@ -21,9 +21,12 @@ var schema = [
 	'create table if not exists slack_credentials (id serial primary key, team_name varchar(255), team_id varchar(255) not null, access_token varchar(255) not null, webhook_url varchar(255) not null, webhook_channel varchar(64) not null, config_url varchar(255) not null, bot_user_id varchar(255) not null, bot_access_token varchar(255) not null, created timestamp);',
 	'create table if not exists attrition_log (id serial primary key, admin_summary varchar(64), conversation_id bigint, step_name varchar(64), dropoff_time timestamp, recaptured boolean default false, created timestamp, updated timestamp);',
 	'create table if not exists skype_data (id serial primary key, name varchar(64), val text);',
+	'create table if not exists share_log (id serial primary key, user_id bigint not null, from_chain varchar(64), url varchar(255), created timestamp);',
+	'create table if not exists chains_log (id serial primary key, user_id bigint not null, from_chain varchar(64), to_chain varchar(64), created timestamp);',
 
 	// index our tables
 	'create unique index if not exists users_username on users (username);',
+	'create index if not exists sent_notifications on users USING gin ((notifications->\'sent\'));',
 	'create index if not exists messages_conversation_id on messages (conversation_id);',
 	'create index if not exists conversations_recipients_userconv on conversations_recipients (user_id, conversation_id);',
 	'create index if not exists conversations_recipients_convuser on conversations_recipients (conversation_id, user_id);',
@@ -584,6 +587,93 @@ var chains = [
 			}
 		]
 	},
+		{
+		chain: {
+			name: 'early_voting',
+			description: 'Early voting',
+			default_start: 'intro',
+			entries: 0,
+			exits: 0,
+			created: db.now()
+		},
+		steps: [
+			{
+				name: 'intro',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'early_voting_prompt',
+				advance: true,	// this only makes any difference in bot.start!
+				admin_order: 0,
+			},
+			{
+				name: 'early_voting_prompt',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'get_to_the_polls',
+				admin_order: 1,
+			},
+			{
+				name: 'get_to_the_polls',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'get_to_the_polls',
+				admin_order: 1,
+			},
+			{
+				name: 'city',
+				msg: '[[prompt_city]]',
+				errormsg: '[[error_city]]',
+				next: 'state',
+				admin_order: 5,
+			},
+			{
+				name: 'state',
+				msg: '[[prompt_state]]',
+				errormsg: '[[error_state]]', 
+				next: 'address', 
+				admin_order: 6,
+			},
+			{
+				name: 'address',
+				msg: '[[prompt_address]]',
+				errormsg: '[[error_address]]',
+				next: 'early_voting_prompt',
+				admin_order: 7,
+			},
+			
+		]
+	},
+	{
+		chain: {
+			name: 'mail_in',
+			description: 'Mail in',
+			default_start: 'intro',
+			entries: 0,
+			exits: 0,
+			created: db.now()
+		},
+		steps: [
+			{
+				name: 'intro',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'mail_in_prompt',
+				advance: true,	// this only makes any difference in bot.start!
+				admin_order: 0,
+			},
+			{
+				name: 'mail_in_prompt',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'mail_in_prompt',
+			}
+		]
+	},
 	{
 		chain: {
 			name: 'gotv_1',
@@ -748,7 +838,7 @@ var chains = [
 			},
 			{
 				name: 'i_voted',
-				msg: '[[msg_i_voted]]',
+				msg: '[[msg_i_voted_selfie]]',
 				errormsg: '',
 				next: 'share_gotv',
 				admin_order: 2,
@@ -848,7 +938,36 @@ var chains = [
 				admin_order: 7,
 			}
 		]
-	}
+	},
+	{
+		chain: {
+			name: 'i_voted',
+			description: 'I voted!!',
+			default_start: 'intro',
+			entries: 0,
+			exits: 0,
+			created: db.now()
+		},
+		steps: [
+			{
+				name: 'intro',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'i_voted_prompt',
+				advance: true,	// this only makes any difference in bot.start!
+				admin_order: 0,
+			},
+			{
+				name: 'i_voted_prompt',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'i_voted_prompt',
+				admin_order: 1,
+			}
+		]
+	},
 ];
 
 
