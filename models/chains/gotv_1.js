@@ -17,7 +17,6 @@ var shorten = require('../../lib/shortener');
 var moment = require('moment');
 var momentTZ = require('moment-timezone');
 var timezone_model = require('../timezone');
-var parse_messy_time = require('parse-messy-time');
 
 module.exports = {
     intro: {
@@ -73,56 +72,47 @@ module.exports = {
             return {msg: language.template(msg, user)}
         },
         process: function(body, user, step, conversation) {
-            // use parse_messy_time to turn human strings into date object
-            var parsed_local_time = parse_messy_time(body.trim());
-            // unfortunately it doesn't throw error if it can't parse, just returns midnight
-            if (!parsed_local_time.getHours() && !parsed_local_time.getMinutes()) {
-                return validate.data_error(step.errormsg, {promise: true});
-            }
-
-            if (parsed_local_time.getHours() < 7 && body.toUpperCase().indexOf('AM') < 0) {
-                return validate.data_error('Did you really mean '+parsed_local_time.getHours()+'AM? Please enter the time with AM/PM', {promise: true});
-            }
-            log.info('bot: gotv: parsed local time '+moment(parsed_local_time).format());
-
-            // look up local city timezone
+            // look up user local timezone
             log.info('bot: gotv: looking up timezone');
             return timezone_model.from_zipcode(user.settings.zip).then(function(local_tz_name) {
-                 // convert user local time to UTC on election day
-                var election_day = moment(config.election.date, 'YYYY-MM-DD');
-                log.info('bot: gotv: election day is '+election_day.format('L'));
-                var vote_time_local = moment(parsed_local_time).tz(local_tz_name)
-                    .set({year:election_day.year(), month:election_day.month(), day:election_day.day()});
-                log.info('bot: gotv: user will vote at '+vote_time_local.format());
+                // parse time with moment, and place it on election day
+                return validate.time(body, user, conversation.locale).then(function(parsed_time) {
+                    var vote_time_local = moment.tz(config.election.date+' '+parsed_time, local_tz_name);
+                    log.info('bot: gotv: user will vote at '+vote_time_local.format());
 
-                // schedule gotv_3 chain to trigger 30 min before vote_time_schedule_utc
-                var vote_time_utc = vote_time_local.clone().tz("UTC");
-                var vote_time_schedule_utc = vote_time_utc.subtract(30, 'minutes');
-                log.info('bot: gotv: scheduled govt_3 for '+vote_time_schedule_utc.format('LT L Z'));
+                    // schedule gotv_3 chain to trigger one hour before vote_time_schedule_utc
+                    var vote_time_utc = vote_time_local.clone().utc();
+                    log.info('bot: gotv: user will vote at '+vote_time_utc.format());
+                    var vote_time_schedule_utc = vote_time_utc.subtract(1, 'h');
+                    log.info('bot: gotv: scheduled govt_3 for '+vote_time_schedule_utc.format());
 
-                // store timezone name and UTC times to user
-                var update_user = util.object.set(user, 'settings.timezone', local_tz_name);
-                var update_user = util.object.set(update_user, 'settings.vote_time', vote_time_utc.format());
-                var update_user = util.object.set(update_user, 'settings.vote_time_schedule', vote_time_schedule_utc.format());
-
+                    // store timezone name and UTC times to user
+                    var update_user = util.object.set(user, 'settings.timezone', local_tz_name);
+                    var update_user = util.object.set(update_user, 'settings.vote_time', vote_time_utc.format());
+                    var update_user = util.object.set(update_user, 'settings.vote_time_schedule', vote_time_schedule_utc.format());
+                    
+                    return user_model.update(user.id, update_user);
+                });
+            }).then(function(user) {
+                if (!user) { 
+                    return;
+                }
+                var vote_time = util.object.get(user, 'settings.vote_time');
+                if (!vote_time) {
+                    // fake it, assume election day
+                    var vote_time = moment(config.election.date, 'YYYY-MM-DD');
+                }
                 // look up weather for next step in process, bc we can't do async in pre_process  
-                // calculate days_out from vote_time on election_day minus current_time
+                // calculate days_out from vote_time minus current_time
                 var now = moment();
-                var days_out = election_day.diff(now, 'days');
+                var days_out = moment(vote_time).diff(now.utc(), 'days');
                 log.info('bot: gotv: looking up weather '+days_out+' days out');
                 return weather_model.forecast(user.settings.city, user.settings.state, days_out).then(function(forecast) {
-                    update_user = util.object.set(update_user, 'results.weather_forecast', forecast);
-                    return user_model.update(user.id, update_user).then(function() {
-                        return Promise.resolve({next: 'schedule_weather'});
-                    });
-                }).catch(function(weather_error) {
-                    log.error('bot: gotv: unable to look up weather for '+user.settings.city+' '+user.settings.state);
+                    var update_user = util.object.set(user, 'results.weather_forecast', forecast);
                     return user_model.update(user.id, update_user).then(function() {
                         return Promise.resolve({next: 'schedule_weather'});
                     });
                 });
-            }).catch(function(tz_err) {
-                return {next: 'zip'}
             });
         }
     },
