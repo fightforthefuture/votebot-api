@@ -714,7 +714,7 @@ var chains = [
 				msg: '',
 				no_msg: true,
 				errormsg: '',
-				next: 'final_tmp',
+				next: '',
 				admin_order: 3,
 			}
 		]
