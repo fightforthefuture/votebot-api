@@ -971,6 +971,7 @@ var chains = [
 				msg: '[[prompt_email_for_gotv]]',
 				errormsg: '[[error_email]]',
 				next: 'calendar_invite',
+				advance: true,
 				admin_order: 2,
 			},
 			{
@@ -980,6 +981,34 @@ var chains = [
 				errormsg: '',
 				next: '',
 				admin_order: 3,
+			},
+			{
+				name: 'zip',
+				msg: '[[prompt_zip_gotv]]',
+				errormsg: '[[error_zip]]',
+				next: 'city',
+				admin_order: 4,
+			},
+			{
+				name: 'city',
+				msg: '[[prompt_city]]',
+				errormsg: '[[error_city]]',
+				next: 'state',
+				admin_order: 5,
+			},
+			{
+				name: 'state',
+				msg: '[[prompt_state]]',
+				errormsg: '[[error_state]]', 
+				next: 'address', 
+				admin_order: 6,
+			},
+			{
+				name: 'address',
+				msg: '[[prompt_address]]',
+				errormsg: '[[error_address]]',
+				next: 'email',
+				admin_order: 7,
 			}
 		]
 	},
