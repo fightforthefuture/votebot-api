@@ -14,9 +14,11 @@ var QUERY = [
     'SELECT     *',
     'FROM       users',
     'WHERE      active = true',
+    /*
     'AND        created > \'2016-10-10\'',
     'AND        created < \'2016-10-11\'',
-//    'AND      created < now() - \'24 hours\'::interval',
+    */
+    'AND      created < now() - \'24 hours\'::interval',
     'ORDER BY   id',
 ];
 
@@ -26,7 +28,7 @@ var run = function() {
         startTime = moment('16:00:00', 'hh:mm:ss'),
         endTime = moment('23:59:59', 'hh:mm:ss');
     
-    log.info('CURRENT time is: ', time.toString());
+    log.notice('CURRENT time is: ', time.toString());
     log.info('Start time is: ', startTime.toString());
     log.info('End time is: ', endTime.toString());
 
@@ -45,7 +47,7 @@ var run = function() {
 
 var executeUserNotifications = function(userStack) {
     if (userStack.length == 0) {
-        log.info('No more users to notify. waiting a minute...');
+        log.notice('No more users to notify. waiting a minute...');
         return setTimeout(run, RUN_DELAY);
     }
 
