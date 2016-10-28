@@ -23,10 +23,13 @@ var QUERY = [
 var run = function() {
 
     var time = moment(),
-        startTime = moment('14:00:00', 'hh:mm:ss'),
+        startTime = moment('16:00:00', 'hh:mm:ss'),
         endTime = moment('23:59:59', 'hh:mm:ss');
     
-    log.info('The time is: ', time.toString());
+    log.info('CURRENT time is: ', time.toString());
+    log.info('Start time is: ', startTime.toString());
+    log.info('End time is: ', endTime.toString());
+
     if (!time.isBetween(startTime, endTime)) {
         log.info(' - Time is not between 9am PST and 8pm EST! Waiting...');
         return setTimeout(run, RUN_DELAY);
