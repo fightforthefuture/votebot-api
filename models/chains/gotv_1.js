@@ -1,3 +1,4 @@
+var Promise = require('bluebird');
 var config = require('../../config');
 var log = require('../../lib/logger');
 var language = require('../../lib/language');
@@ -230,7 +231,7 @@ module.exports = {
                     zip: util.object.get(user, 'settings.zip'),
                     user_id: user.id.toString()
                 }
-                log.notice('bot: vote_1: ADDRESS WARNING', err_meta);
+                log.notice('bot: gotv_1: ADDRESS WARNING', err_meta);
                 return {msg: l10n('msg_address_appears_bogus', conversation.locale)};
             } else {
                 return {}
