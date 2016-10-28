@@ -9,6 +9,7 @@ var validate = require('../../lib/validate');
 
 var bot_model = require('../bot');
 var polling_place_model = require('../polling_place');
+var notify = require('../notify');
 var user_model = require('../user');
 
 module.exports = {

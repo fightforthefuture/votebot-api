@@ -11,7 +11,7 @@ var polling_place_model = require('../polling_place');
 var weather_model = require('../weather_report');
 var user_model = require('../user');
 var message_model = require('../message');
-var notify = require('../notify.js');
+var notify = require('../notify');
 var convo_model = require('../conversation');
 var shorten = require('../../lib/shortener');
 
