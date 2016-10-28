@@ -25,7 +25,7 @@ exports.lookup = function(street, city, state)
             try
             {
                 var obj = JSON.parse(body) || {};
-                var polling_place = obj.pollingLocations ? polling_locations[0] : {};
+                var polling_place = obj.pollingLocations ? obj.pollingLocations[0] : {};
 
                 if (obj.earlyVoteSites) {
                     // save early_voting to polling place as sub-object

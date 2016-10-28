@@ -17,7 +17,8 @@ Election day is on {{election_day}} in {{state_name|default('the United States')
 Get ready to vote at {{polling_place.address.locationName}} in {{polling_place.address.city}}.
 {% if polling_place.pollingHours %}
 The polls will be open: {{polling_place.pollingHours}}
-{% endif %}
+{% else %}
+Look your polling place at <a href="https://gttp.votinginfoproject.org">https://gettothepolls.com/</a>
 </p>
 {% endif %}
 
