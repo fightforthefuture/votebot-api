@@ -87,7 +87,7 @@ module.exports = {
 
                 var calendar_attributes = {
                     start: config.election.date,
-                    end: config.election.date,
+                    end: moment(config.election.date, 'YYYY-MM-DD').add(1, 'day').format('YYYY-MM-DD'),
                     title: 'Election Day!',
                     description: 'Get ready to vote with HelloVote',
                     location: location || '',
