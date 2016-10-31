@@ -971,7 +971,6 @@ var chains = [
 				msg: '[[prompt_email_for_gotv]]',
 				errormsg: '[[error_email]]',
 				next: 'calendar_invite',
-				advance: true,
 				admin_order: 2,
 			},
 			{

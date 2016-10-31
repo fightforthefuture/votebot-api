@@ -6,6 +6,7 @@ var language = require('../../lib/language');
 var l10n = require('../../lib/l10n');
 var util = require('../../lib/util');
 var validate = require('../../lib/validate');
+var moment = require('moment-timezone');
 
 var bot_model = require('../bot');
 var polling_place_model = require('../polling_place');
@@ -79,16 +80,18 @@ module.exports = {
                 var polling_place = util.object.get(user, 'results.polling_place');
                 if (polling_place && polling_place.address) {
                     var location = polling_place.address.locationName
-                        + " " + polling_place.address.line1
-                        + " " + polling_place.address.line2
+                        + " " + polling_place.address.line1 || ''
+                        + " " + polling_place.address.line2 || ''
                         + " " + polling_place.address.city
                         + ", " + polling_place.address.state
                         + " " + polling_place.address.zip;
                 };
 
+                var election_day = moment(config.election.date, 'YYYY-MM-DD');
                 var calendar_attributes = {
-                    start: config.election.date,
-                    end: config.election.date,
+                    start: election_day.format('YYYY-MM-DD'),
+                    end: election_day.add(1, 'day').format('YYYY-MM-DD'),
+                    timeZone: 'America/New_York', // not for the whole US, but close enough for an all-day event
                     title: 'Election Day!',
                     description: 'Get ready to vote with HelloVote',
                     location: location || '',
