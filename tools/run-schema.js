@@ -10,7 +10,7 @@ var schema = [
 	// 'CREATE TYPE user_type AS ENUM (\'sms\', \'facebook-messenger\');',
 
 	// start with tables
-	'create table if not exists users (id serial primary key, username varchar(64) not null, type varchar(64), first_name varchar(255), last_name varchar(255), settings json, notifications jsonb, active boolean default true, submit boolean default false, complete boolean default false, referred boolean default false, created timestamp);',
+	'create table if not exists users (id serial primary key, username varchar(64) not null, type varchar(64), first_name varchar(255), last_name varchar(255), settings json, notifications jsonb, active boolean default true, submit boolean default false, complete boolean default false, referred boolean default false, voted boolean default false, created timestamp);',
 	'create table if not exists conversations (id serial primary key, user_id bigint not null, type varchar(64), locale varchar(64) not null default \'en\', state json, settings json, partner varchar(64), active boolean default true, complete boolean default false, nudged boolean default false, created timestamp, updated timestamp);',
 	'create table if not exists conversations_recipients (id serial primary key, conversation_id bigint not null, user_id bigint not null, created timestamp);',
 	'create table if not exists messages (id serial primary key, user_id bigint not null, conversation_id bigint not null, body varchar(1600), created timestamp);',
