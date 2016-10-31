@@ -9,7 +9,8 @@ module.exports = {
             return Promise.resolve({
                 'next': 'i_voted_prompt',
                 'store': {
-                    'user.settings.started_i_voted': true
+                    'user.settings.started_i_voted': true,
+                    'user.voted': true
                 }
             })
         }
