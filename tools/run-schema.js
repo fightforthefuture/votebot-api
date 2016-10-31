@@ -976,8 +976,7 @@ var chains = [
 			},
 			{
 				name: 'calendar_invite',
-				msg: '',
-				no_msg: true,
+				msg: '[[msg_calendar_invite]]',
 				errormsg: '',
 				next: '',
 				admin_order: 3,
