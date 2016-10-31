@@ -126,11 +126,11 @@ exports.incoming_message = function(data, options)
 		})
 		.then(function(conversation) {
 			// we must ALWAYS handle STOP/HELP messages over SMS in english, regardless of user activity or locale
-			if (data.Body.toUpperCase().trim() === "STOP") { 
+			if (data.Body && data.Body.toUpperCase().trim() === "STOP") { 
 				log.info('incoming_message: recv STOP msg, send reply and cancel conversation');
 				return bot_model.cancel_conversation(user, conversation);
 			}
-			if (data.Body.toUpperCase().trim() === "HELP" && !user.active) {
+			if (data.Body && data.Body.toUpperCase().trim() === "HELP" && !user.active) {
 				log.info('incoming_message: recv HELP msg, send carrier-approved reply');
 				var help_msg = l10n('msg_help_default', 'en');
 				return exports.create(config.bot.user_id, conversation.id, {body: language.template(help_msg, null, 'en'), force_send: true});
