@@ -35,6 +35,10 @@ module.exports = {
             return { msg: msg }
         },
         process: function(body, user, step, conversation) {
+            if (body.toLowerCase().indexOf('already') > -1) {
+                return Promise.resolve({switch_chain: 'i_voted'})
+            }
+            
             if (!util.object.get(user, 'settings.zip')) {
                 return Promise.resolve({'next': 'zip'});
             };
