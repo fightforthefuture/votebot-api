@@ -59,7 +59,7 @@ module.exports = {
 
             var msg = '';
             if (user.first_name) {
-                var msg = "Hey {{first_name}},";
+                var msg = "Hey {{first_name}}, it's HelloVote again.";
             }
             msg = msg + ' ' + l10n('msg_election_day_tomorrow', conversation.locale);
 
