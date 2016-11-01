@@ -16,7 +16,7 @@ exports.validate = function(street, city, state, zip)
         
         request(req_url, function(err, res, body) {
             if(err) return reject(err);
-            if(res.statusCode >= 400) return reject(new Error('not_found'));
+            if(res.statusCode >= 400) return reject(new Error('street_address not_found'));
             try
             {
                 var obj = JSON.parse(body) || {};
@@ -44,7 +44,7 @@ exports.validate = function(street, city, state, zip)
                                 return reject(err);
 
                             if(res.statusCode >= 400)
-                                return reject(new Error('not_found'));
+                                return reject(new Error('street_address not_found'));
 
                             var obj = JSON.parse(body) || {};
                             var address_data = null;
@@ -65,7 +65,7 @@ exports.validate = function(street, city, state, zip)
                             if (address_data) {
                                 return resolve(address_data);
                             } else {
-                                return reject(new Error('not_found'));
+                                return reject(new Error('street_address not_found'));
                             }
                         }
                     );
