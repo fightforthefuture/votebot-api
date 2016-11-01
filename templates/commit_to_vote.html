@@ -1,0 +1,58 @@
+<table border="0" cellpadding="10" cellspacing="0" style="border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+  <tr>
+    <td valign="top" style="border-collapse: collapse; background-color: #FFFFFF; padding:10px 10px 40px;">
+      <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+        <tr>
+          <td valign="top" style="border-collapse: collapse;" width="600">
+            <div style="color: #333;font-family: Arial;font-size: 14px;line-height: 150%;text-align: left;">
+
+<p>{{ user.first_name|default('Hey') }},</p>
+
+<p>
+Election day is on {{election_day}} in {{state_name|default('the United States')}}
+</p>
+
+<p>
+{% if polling_place.address %}
+Get ready to vote at {{polling_place.address.locationName}} in {{polling_place.address.city}}.
+{% if polling_place.pollingHours %}
+The polls will be open: {{polling_place.pollingHours}}
+{% endif %}
+{% else %}
+Look your polling place at <a href="https://gttp.votinginfoproject.org">https://gettothepolls.com/</a>
+{% endif %}
+</p>
+
+
+<p>
+You can find ID requirements and other voting information at <a href="https://www.hello.vote/{{state_abbr|default('states')}}/">Hello.Vote/{{state_abbr|default('states')}}</a>
+</p>
+
+<p>
+Oh yeah, want to help others vote too?
+</p>
+
+<p>
+<a style="display:inline-block; padding: 5px 20px; font-size:18px; background: #3b5998; color: #fff; text-decoration: none; font-weight: bold; margin: 0px 10px; border-radius: 3px; " href="https://www.hello.vote/facebook">Share</a>
+<a style="display:inline-block; padding: 5px 15px; font-size:18px; background: #55acee; color: #fff; text-decoration: none; font-weight: bold; margin: 0px 10px; border-radius: 3px; " href="https://www.hello.vote/twitter">Tweet</a>
+</p>
+
+<p>
+Thank you for using HelloVote!
+</p>
+
+<p>
+Sincerely,
+</p>
+
+<p>
+&mdash;HelloVote
+</p>
+
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>

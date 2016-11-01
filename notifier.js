@@ -18,7 +18,12 @@ var QUERY = [
     'AND        created > \'2016-10-10\'',
     'AND        created < \'2016-10-11\'',
     */
-    'AND      created < now() - \'24 hours\'::interval',
+    'AND        created < now() - \'24 hours\'::interval',
+    'AND        (',
+    '           last_notified IS NULL',
+    '           OR',
+    '           last_notified < now() - \'24 hours\'::interval',
+    '           )',
     'ORDER BY   id',
 ];
 
@@ -119,7 +124,10 @@ var executeUserNotifications = function(userStack) {
 
                 log.info('    - Marking user as sent: ', notification.type);
 
-                user_model.update(user.id, {notifications: user.notifications})
+                user_model.update(user.id, {
+                    notifications: user.notifications,
+                    last_notified: db.now()
+                })
                     .then(function(_user) {
 
                         if (result.chain) {

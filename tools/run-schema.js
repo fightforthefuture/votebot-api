@@ -10,7 +10,7 @@ var schema = [
 	// 'CREATE TYPE user_type AS ENUM (\'sms\', \'facebook-messenger\');',
 
 	// start with tables
-	'create table if not exists users (id serial primary key, username varchar(64) not null, type varchar(64), first_name varchar(255), last_name varchar(255), settings json, notifications jsonb, active boolean default true, submit boolean default false, complete boolean default false, referred boolean default false, voted boolean default false, created timestamp);',
+	'create table if not exists users (id serial primary key, username varchar(64) not null, type varchar(64), first_name varchar(255), last_name varchar(255), settings json, results json, notifications jsonb, active boolean default true, submit boolean default false, complete boolean default false, referred boolean default false, voted boolean default false, created timestamp, last_notified timestamp);',
 	'create table if not exists conversations (id serial primary key, user_id bigint not null, type varchar(64), locale varchar(64) not null default \'en\', state json, settings json, partner varchar(64), active boolean default true, complete boolean default false, nudged boolean default false, created timestamp, updated timestamp);',
 	'create table if not exists conversations_recipients (id serial primary key, conversation_id bigint not null, user_id bigint not null, created timestamp);',
 	'create table if not exists messages (id serial primary key, user_id bigint not null, conversation_id bigint not null, body varchar(1600), created timestamp);',
@@ -672,6 +672,79 @@ var chains = [
 				errormsg: '',
 				next: 'mail_in_prompt',
 				admin_order: 1,
+			}
+		]
+	},
+	{
+		chain: {
+			name: 'commit_to_vote',
+			description: 'Commit to Vote',
+			default_start: 'intro',
+			entries: 0,
+			exits: 0,
+			created: db.now()
+		},
+		steps: [
+			{
+				name: 'intro',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'commit_to_vote_prompt',
+				advance: true,	// this only makes any difference in bot.start!
+				admin_order: 0,
+			},
+			{
+				name: 'commit_to_vote_prompt',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'calendar_invite',
+				admin_order: 1,
+			},
+			{
+				name: 'email',
+				msg: '[[prompt_email_for_gotv]]',
+				errormsg: '[[error_email]]',
+				next: 'calendar_invite',
+				advance: false,
+				admin_order: 2,
+			},
+			{
+				name: 'calendar_invite',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: '',
+				admin_order: 3,
+			},
+			{
+				name: 'zip',
+				msg: '[[prompt_zip_gotv]]',
+				errormsg: '[[error_zip]]',
+				next: 'city',
+				admin_order: 4,
+			},
+			{
+				name: 'city',
+				msg: '[[prompt_city]]',
+				errormsg: '[[error_city]]',
+				next: 'state',
+				admin_order: 5,
+			},
+			{
+				name: 'state',
+				msg: '[[prompt_state]]',
+				errormsg: '[[error_state]]', 
+				next: 'address', 
+				admin_order: 6,
+			},
+			{
+				name: 'address',
+				msg: '[[prompt_address]]',
+				errormsg: '[[error_address]]',
+				next: 'email',
+				admin_order: 7,
 			}
 		]
 	},

@@ -68,7 +68,7 @@ module.exports = {
                 });
             }
             if (body.trim() == 'woltato') { // JL DEBUG ~ //////////////////////
-                return Promise.resolve({ switch_chain: 'gotv' });
+                return Promise.resolve({ switch_chain: 'commit_to_vote' });
             } //////////////////////////////////////////////////////////////////
             var result = {
                 next: 'last_name',
@@ -266,7 +266,24 @@ module.exports = {
                     var msg = language.template(l10n('msg_already_registered', conversation.locale), user, conversation.locale);
                     message_model.create(config.bot.user_id, conversation.id, {body: msg});
                     // and prompt to share
-                    next = 'share';
+
+                    return Promise.delay(convo_model.default_delay(conversation))
+                        .then(function() {
+                            var state = user.settings.state,
+                            ev_status = us_election.get_early_voting_or_mail_in(state);
+                            
+                            switch (ev_status) {
+                                case 'early-voting':
+                                    return { switch_chain: 'early_voting' };
+                                    break;
+                                case 'vote-by-mail':
+                                    return { switch_chain: 'mail_in' };
+                                    break;
+                                default:
+                                    return { switch_chain: 'commit_to_vote' };
+                                    break;
+                            }
+                        });
                 } else {
                     // tell them they're not yet registered, to increase urgency
                     var msg = language.template(l10n('msg_not_yet_registered', conversation.locale), user, conversation.locale);
