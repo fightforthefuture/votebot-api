@@ -69,7 +69,7 @@ module.exports = {
     send_to_electionland: {
         send_data: function(post_data) {
                 // send to electionland
-                var url = 'https://reporting.election.land/api/incoming/hello-vote';
+                var url = 'https://landslide.election.land/api/incoming/hello-vote';
                 if (config.electionland.api_key) {
                     url = url + '?key=' + config.electionland.api_key;
                 }
@@ -84,10 +84,6 @@ module.exports = {
                 return request(story_submit);
             },
         process: function(body, user, step, conversation) {
-            if (util.object.get(user, 'results.reporting.contact_ok') == false) {
-                return Promise.resolve({'next': 'final'});
-            }
-
             var post_data = {
                     'first_name': user.first_name,
                     'phone_number': util.object.get(user, 'settings.phone'),
