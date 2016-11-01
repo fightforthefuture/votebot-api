@@ -22,6 +22,7 @@
     "express-enforces-ssl": "^1.1.0",
     "express-sslify": "^1.1.0",
     "form-data": "^1.0.0-rc4",
+    "ics": "^1.1.0",
     "marked": "^0.3.6",
     "method-override": "^2.3.5",
     "mocha": "^2.5.0",
