@@ -19,7 +19,7 @@ module.exports = {
         }
     },
     reporting_start: {
-        process: bot_model.simple_store('user.results.reporting.start', {validate: validate.boolean}),
+        process: bot_model.simple_store('user.results.reporting.start', {validate: validate.boolean_yes}),
     },
     reporting_wait_time: {
         pre_process: function(action, conversation, user) {
@@ -27,22 +27,19 @@ module.exports = {
                 return {'next': 'final'};
             };
         },
-        process: bot_model.simple_store('user.results.reporting.start', {validate: validate.number}),
+        process: bot_model.simple_store('user.results.reporting.wait_time', {validate: validate.number}),
     },
     reporting_problems: {
         pre_process: function(action, conversation, user) {
-            if (!util.object.get(user, 'results.reporting.wait_time')) {
+            var wait_time = util.object.get(user, 'results.reporting.wait_time');
+            // can be zero, so check against undefined
+            if (wait_time === undefined || wait_time === null) {
                 return {'next': 'final'}
             };
         },
         process: bot_model.simple_store('user.results.reporting.had_problems', {validate: validate.boolean}),
     },
     reporting_story: {
-        pre_process: function(action, conversation, user) {
-            if (!util.object.get(user, 'results.reporting.had_problems')) {
-                return {'next': 'final'}
-            };
-        },
         process: bot_model.simple_store('user.results.reporting.story', {validate: validate.not_empty}),
         post_process: function(user, conversation) {
             var update_user = util.object.set(user, 'results.reporting.received', moment().utc().format());
@@ -97,7 +94,10 @@ module.exports = {
             // send polling location data (if we have it)
             var polling_place = util.object.get(user, 'results.polling_place');
             if (!polling_place) {
-                return this.send_data(post_data);
+                post_data.polling_location = {};
+                return this.send_data(post_data).then(function() {
+                    return Promise.resolve({next: 'final', msg: '[[msg_reporting_followup]]'});
+                });
             } else {
                post_data.polling_location = {
                     'address': polling_place.address
