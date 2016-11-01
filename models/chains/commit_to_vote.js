@@ -10,6 +10,7 @@ var validate = require('../../lib/validate');
 var message_model = require('../message');
 var convo_model = require('../conversation');
 var moment = require('moment-timezone');
+var shorten = require('../../lib/shortener');
 
 var bot_model = require('../bot');
 var polling_place = require('../../lib/polling_place');
@@ -56,15 +57,21 @@ module.exports = {
     },
     calendar_invite: {
         process: function(body, user, step, conversation) {
+            var user;
+
             return polling_place.lookup(user.settings.address, user.settings.city, user.settings.state)
             .then(function(_polling_place) {
                 var update_user = util.object.set(user, 'results.polling_place', _polling_place);
                 return user_model.update(user.id, update_user);
-            }).then(function(user) {
-                var gttp_link = "https://gttp.votinginfoproject.org/#";
+            }).then(function(_user) {
+                user = _user;
+                var gttp_link = "https://gttp.votinginfoproject.org/";
                 if (user.settings.address) {
-                    gttp_link += encodeURIComponent(user.settings.address+' '+user.settings.city+' '+user.settings.state);
+                    gttp_link += encodeURIComponent('#' + user.settings.address+' '+user.settings.city+' '+user.settings.state);
                 }
+                return shorten(gttp_link);
+            }).then(function(gttp_link) {
+
                 var _polling_place = util.object.get(user, 'results.polling_place');
                 if (_polling_place && _polling_place.address) {
                     var location = '';
@@ -96,7 +103,7 @@ module.exports = {
                     start: '2016-11-08',    // JL HACK ~ leave out time lol
                     end: '2016-11-09',      // JL HACK ~ leave out time lol
                     title: 'Election Day!',
-                    description: 'Get ready to vote with HelloVote',
+                    description: 'Get ready to vote with HelloVote! Find your poll at '+gttp_link,
                     location: location || '',
                     url: gttp_link,
                     status: 'confirmed',

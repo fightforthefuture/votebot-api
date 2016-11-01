@@ -16,10 +16,14 @@ Election day is on {{election_day}} in {{state_name|default('the United States')
 {% if polling_place.address %}
 Get ready to vote at {{polling_place.address.locationName}} in {{polling_place.address.city}}.
 {% if polling_place.pollingHours %}
-The polls will be open: {{polling_place.pollingHours}}
+The polls will be open: {{polling_place.pollingHours}}.
 {% endif %}
+{% if gttp_link %}
+<a href="{{gttp_link}}">Click here for directions.</a>
+{% endif %}
+
 {% else %}
-Look your polling place at <a href="https://gttp.votinginfoproject.org">https://gettothepolls.com/</a>
+<a href="{% if gttp_link %}{{gttp_link}}{% else %}https://gttp.votinginfoproject.org{% endif %}"><strong>Get directions to your polling place.</strong></a>
 {% endif %}
 </p>
 
