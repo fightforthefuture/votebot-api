@@ -38,6 +38,10 @@ module.exports = {
             if (body.toLowerCase().indexOf('already') > -1) {
                 return Promise.resolve({switch_chain: 'i_voted'})
             }
+
+            if (language.is_no(body)) {
+                return Promise.resolve({switch_chain: 'share'})
+            }
             
             if (!util.object.get(user, 'settings.zip')) {
                 return Promise.resolve({'next': 'zip'});
