@@ -534,7 +534,7 @@ exports.next = function(user_id, conversation, message)
 
 						if(err.end_conversation)
 						{
-							var message = l10n('prompt_ineligible', conversation.locale);
+							var message = l10n('msg_end_conversation', conversation.locale);
 						}
 					}
 					else
