@@ -97,11 +97,8 @@ module.exports = {
 
                 var election_day = moment(config.election.date, 'YYYY-MM-DD');
                 var calendar_attributes = {
-                    // start: election_day.format('YYYY-MM-DD'),
-                    // end: election_day.add(1, 'day').format('YYYY-MM-DD'),
-                    // timeZone: 'America/New_York', // not for the whole US, but close enough for an all-day event
-                    start: '2016-11-08',    // JL HACK ~ leave out time lol
-                    end: '2016-11-09',      // JL HACK ~ leave out time lol
+                    start: election_day.format('YYYY-MM-DD'),
+                    end: election_day.add(1, 'day').format('YYYY-MM-DD'),
                     title: 'Election Day!',
                     description: 'Get ready to vote with HelloVote! Find your poll at '+gttp_link,
                     location: location || '',
