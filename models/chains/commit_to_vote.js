@@ -66,9 +66,9 @@ module.exports = {
             return polling_place.lookup(user.settings.address, user.settings.city, user.settings.state)
             .catch(function(err) {
                 if (err && err.message == 'polling_place not_found') {
-                    return {};
+                    return Promise.resolve({});
                 } else {
-                    throw(err);
+                    return Promise.reject(err);
                 }
             }).then(function(_polling_place) {
                 var update_user = util.object.set(user, 'results.polling_place', _polling_place);
