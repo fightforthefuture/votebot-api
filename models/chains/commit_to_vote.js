@@ -64,7 +64,13 @@ module.exports = {
             var user;
 
             return polling_place.lookup(user.settings.address, user.settings.city, user.settings.state)
-            .then(function(_polling_place) {
+            .catch(function(err) {
+                if (err && err.message == 'polling_place not_found') {
+                    return {};
+                } else {
+                    throw(err);
+                }
+            }).then(function(_polling_place) {
                 var update_user = util.object.set(user, 'results.polling_place', _polling_place);
                 return user_model.update(user.id, update_user);
             }).then(function(_user) {
