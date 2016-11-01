@@ -12,15 +12,21 @@
 Election day is on {{election_day}} in {{state_name|default('the United States')}}
 </p>
 
-{% if polling_place.address %}
 <p>
+{% if polling_place.address %}
 Get ready to vote at {{polling_place.address.locationName}} in {{polling_place.address.city}}.
 {% if polling_place.pollingHours %}
-The polls will be open: {{polling_place.pollingHours}}
-{% else %}
-Look your polling place at <a href="https://gttp.votinginfoproject.org">https://gettothepolls.com/</a>
-</p>
+The polls will be open: {{polling_place.pollingHours}}.
 {% endif %}
+{% if gttp_link %}
+<a href="{{gttp_link}}">Click here for directions.</a>
+{% endif %}
+
+{% else %}
+<a href="{% if gttp_link %}{{gttp_link}}{% else %}https://gttp.votinginfoproject.org{% endif %}"><strong>Get directions to your polling place.</strong></a>
+{% endif %}
+</p>
+
 
 <p>
 You can find ID requirements and other voting information at <a href="https://www.hello.vote/{{state_abbr|default('states')}}/">Hello.Vote/{{state_abbr|default('states')}}</a>

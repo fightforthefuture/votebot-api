@@ -53,8 +53,8 @@ var config = {
         key: process.env.APIXU_KEY,
     },
 
-    timezonedb: {
-        key: process.env.TIMEZONEDB_KEY,
+    electionland: {
+        api_key: process.env.ELECTIONLAND_API_KEY,
     },
 
     google_civic: {
