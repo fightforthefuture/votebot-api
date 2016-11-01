@@ -111,8 +111,10 @@ module.exports = {
                                                  polling_place.address.state,
                                                  polling_place.address.zip)
             .then(function(address_data) {
-                post_data.polling_location.lat = address_data.metadata.latitude;
-                post_data.polling_location.lon = address_data.metadata.longitude;
+                if (address_data) {
+                    post_data.polling_location.lat = address_data.metadata.latitude || '';
+                    post_data.polling_location.lon = address_data.metadata.longitude || '';
+                }
 
                 return that.send_data(post_data)
                 .then(function(response) {
