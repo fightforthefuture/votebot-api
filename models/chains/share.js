@@ -8,10 +8,16 @@ var message_model = require('../message');
 
 module.exports = {
     intro: {
-        process: function() {
+        process: function(body, user, step, conversation) {
             log.info('bot: mail_in: no message is ever sent for this step lol');
+            
+            var next = 'selfie_prompt';
+
+            if (user.voted)
+                next = 'share_prompt';
+
             return Promise.resolve({
-                'next': 'share_prompt',
+                'next': next,
                 'store': {
                     'user.settings.started_share': true
                 }
@@ -64,6 +70,20 @@ module.exports = {
                     'next': 'final_tmp'
                 }
             } 
+            return res;
+        },
+        process: function() {
+            return Promise.resolve({'next': 'final_tmp'})
+        },
+    },
+    selfie_prompt: {
+        name: 'selfie_prompt',
+        pre_process: function(action, conversation, user) {
+            var res = {
+                'next': 'final_tmp',
+                'msg': l10n('msg_voter_selfie', conversation.locale),
+                'delay': convo_model.default_delay(conversation),
+            };     
             return res;
         },
         process: function() {
