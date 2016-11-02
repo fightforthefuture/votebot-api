@@ -918,7 +918,15 @@ var chains = [
 				name: 'phone',
 				msg: '[[prompt_phone]]',
 				errormsg: '[[error_phone]]',
+				next: 'polling_place',
+				admin_order: 5,
+			},
+			{
+				name: 'polling_place',
+				msg: '[[prompt_reporting_polling_place]]',
+				errormsg: '',
 				next: 'send_to_electionland',
+				advance: true,
 				admin_order: 5,
 			},
 			{

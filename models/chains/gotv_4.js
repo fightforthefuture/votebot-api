@@ -56,12 +56,21 @@ module.exports = {
             if (username.type === 'sms') {
                 var update_user = util.object.set(user, 'settings.phone', username.username);
                 user_model.update(user.id, update_user);
-                return {next: 'send_to_electionland', advance: true};
+                return {next: 'polling_place'};
             } else {
                 return {};
             }
         },
-        process: bot_model.simple_store('user.settings.phone', {validate: validate.phone, advance: true})
+        process: bot_model.simple_store('user.settings.phone', {validate: validate.phone})
+    },
+    polling_place: {
+        pre_process: function(action, conversation, user) {
+            var polling_place = util.object.get(user, 'results.polling_place');
+            if (polling_place) {
+                return {next: 'send_to_electionland', advance: true};
+            }
+        },
+        process: bot_model.simple_store('user.results.polling_place', {validate: validate.not_empty, advance: true})
     },
     send_to_electionland: {
         send_data: function(post_data) {
@@ -77,6 +86,8 @@ module.exports = {
                     body: post_data, 
                     json: true              
                 };
+
+                log.info('bot: gotv_4: submitting to electionland', post_data);
                 
                 return request(story_submit);
             },
@@ -93,27 +104,37 @@ module.exports = {
     
             // send polling location data (if we have it)
             var polling_place = util.object.get(user, 'results.polling_place');
-            if (!polling_place) {
-                post_data.polling_location = {};
-                return this.send_data(post_data).then(function() {
-                    return Promise.resolve({next: 'final', msg: '[[msg_reporting_followup]]'});
-                });
-            } else {
-               post_data.polling_location = {
-                    'address': polling_place.address
+            if (polling_place && polling_place.address) {
+                // we got it from google civic
+                post_data.polling_location = {
+                    address: polling_place.address
                 };
+            } else {
+                // stuff into line1, and let smarty streets deal with it
+                polling_place = {
+                    address: {
+                        line1: polling_place || ''
+                    }
+                };
+                var polling_place_store_extra
+                post_data.polling_location = polling_place;
             }
 
             // look up lat/lon
             var that = this;
             return street_address_model.validate(polling_place.address.line1,
-                                                 polling_place.address.city,
-                                                 polling_place.address.state,
-                                                 polling_place.address.zip)
+                                                 polling_place.address.city || '',
+                                                 polling_place.address.state || '',
+                                                 polling_place.address.zip || '')
             .then(function(address_data) {
                 if (address_data) {
                     post_data.polling_location.lat = address_data.metadata.latitude || '';
                     post_data.polling_location.lon = address_data.metadata.longitude || '';
+                    // update post_data with smarty streets address,city,state,zip
+                    post_data.polling_location.address.line1 = validate.massage_street_address(address_data, {omit_apartment: true});
+                    post_data.polling_location.address.city = address_data.components.city_name;
+                    post_data.polling_location.address.state = address_data.components.state_abbreviation;
+                    post_data.polling_location.address.zip = address_data.components.zipcode;
                 }
 
                 return that.send_data(post_data)
@@ -126,9 +147,11 @@ module.exports = {
                 })
                 .catch(function(error) {
                     log.error('unable send story to electionland', error);
+                    return Promise.resolve({next: 'send_to_electionland', msg: '[[msg_try_again]]'});
                 });
             }).catch(function(error) {
                 log.error('unable look up polling place address', error);
+                return Promise.resolve({next: 'send_to_electionland', msg: '[[error_validate_address_is_bogus]]'});
             });
         }
     },
