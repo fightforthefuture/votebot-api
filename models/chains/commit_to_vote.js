@@ -30,8 +30,18 @@ module.exports = {
     },
     commit_to_vote_prompt: {
         pre_process: function(action, conversation, user) {
-            var first_name = util.object.get(user, 'first_name') || 'there',
-                msg = l10n('prompt_commit_to_vote', conversation.locale).replace('{{first_name}}', first_name)
+            var first_name = util.object.get(user, 'first_name') || 'there';
+            if (
+                user.notifications
+                &&
+                user.notifications.sent
+                &&
+                user.notifications.sent.indexOf('commit_to_vote') > -1)
+                var msg = l10n('prompt_commit_to_vote_from_notification', conversation.locale);
+            else
+                var msg = l10n('prompt_commit_to_vote', conversation.locale);
+
+            msg = msg.replace('{{first_name}}', first_name);
             return { msg: msg }
         },
         process: function(body, user, step, conversation) {
