@@ -135,6 +135,12 @@ module.exports = {
 
                     return Promise.delay(convo_model.default_delay(conversation))
                         .then(function() {
+
+                            if (!location)
+                                return Promise.resolve({
+                                    switch_chain: 'share'
+                                });
+
                             var msg = "Your Election Day polling location is: "+location;
                             message_model.create(config.bot.user_id, conversation.id, {body: msg});
 
