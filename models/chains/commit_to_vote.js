@@ -36,7 +36,7 @@ module.exports = {
                 &&
                 user.notifications.sent
                 &&
-                user.notifications.sent.indexOf('commit_to_vote') > -1)
+                user.notifications.sent.indexOf('commit_to_vote') == -1)
                 var msg = l10n('prompt_commit_to_vote_from_notification', conversation.locale);
             else
                 var msg = l10n('prompt_commit_to_vote', conversation.locale);
