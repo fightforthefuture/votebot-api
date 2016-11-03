@@ -7,6 +7,7 @@ var street_address_model = require('../street_address');
 var language = require('../../lib/language');
 var validate = require('../../lib/validate');
 var util = require('../../lib/util');
+var l10n = require('../../lib/l10n');
 
 var moment = require('moment');
 var request = require('request-promise');
@@ -116,7 +117,6 @@ module.exports = {
                         line1: polling_place || ''
                     }
                 };
-                var polling_place_store_extra
                 post_data.polling_location = polling_place;
             }
 
@@ -142,16 +142,20 @@ module.exports = {
                     log.info('electionland response', response);
                     var update_user = util.object.set(user, 'results.reporting.saved', response.saved);
                     return user_model.update(user.id, update_user).then(function() {
-                        return Promise.resolve({next: 'final', msg: '[[msg_reporting_followup]]'});
+                        return {next: 'final', msg: l10n('msg_reporting_followup')};
                     });
                 })
                 .catch(function(error) {
                     log.error('unable send story to electionland', error);
-                    return Promise.resolve({next: 'send_to_electionland', msg: '[[msg_try_again]]'});
+                    return {next: 'send_to_electionland', msg: l10n('msg_try_again')};
                 });
-            }).catch(function(error) {
-                log.error('unable look up polling place address', error);
-                return Promise.resolve({next: 'send_to_electionland', msg: '[[error_validate_address_is_bogus]]'});
+            }).catch(function(err) { return err && err.message == 'street_address not_found'; }, function(err) {
+                log.error('unable look up polling place by address', err);
+                // clear invalid polling place address
+                var update_user = util.object.set(user, 'results.polling_place', undefined);
+                return user_model.update(user.id, update_user).then(function() {
+                    return {next: 'polling_place', msg: l10n('error_validate_address_is_bogus')};
+                });      
             });
         }
     },
