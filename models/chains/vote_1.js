@@ -68,7 +68,7 @@ module.exports = {
                 });
             }
             if (body.trim() == 'woltato') { // JL DEBUG ~ //////////////////////
-                return Promise.resolve({ switch_chain: 'commit_to_vote' });
+                return Promise.resolve({ switch_chain: 'gotv_1' });
             } //////////////////////////////////////////////////////////////////
             var result = {
                 next: 'last_name',
@@ -1256,11 +1256,18 @@ function maybe_switch_chains(user, defaultNext) {
         case 'vote-by-mail':
             return { switch_chain: 'mail_in' };
             break;
+        /*
         case 'none':
         case 'absentee-in-person':
             return { next: defaultNext };
             break;
+        */
         default:
+            var cutoff = moment(config.election.date, 'YYYY-MM-DD');
+
+            if (moment().isAfter(cutoff.subtract(7, "days"), 'day'))
+                return { switch_chain: 'commit_to_vote' };
+
             return { next: defaultNext };
             break;
     }

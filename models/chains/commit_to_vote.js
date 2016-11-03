@@ -95,22 +95,22 @@ module.exports = {
                     var location = '';
 
                     if (_polling_place.address.locationName)
-                        location += _polling_place.address.locationName + ',';
+                        location += _polling_place.address.locationName.trim() + ',';
 
                     if (_polling_place.address.line1)
-                        location += ' ' + _polling_place.address.line1;
+                        location += ' ' + _polling_place.address.line1.trim();
 
                     if (_polling_place.address.line2)
-                        location += ', ' + _polling_place.address.line2;
+                        location += ', ' + _polling_place.address.line2.trim();
 
                     if (_polling_place.address.city)
-                        location += ', ' + _polling_place.address.city; 
+                        location += ', ' + _polling_place.address.city.trim(); 
                     
                     if (_polling_place.address.state)
-                        location += ', ' + _polling_place.address.state;
+                        location += ', ' + _polling_place.address.state.trim();
 
                     if (_polling_place.address.zip)
-                        location += ' ' + _polling_place.address.zip;
+                        location += ' ' + _polling_place.address.zip.trim();
                 };
 
                 var election_day = moment(config.election.date, 'YYYY-MM-DD');
@@ -135,9 +135,16 @@ module.exports = {
 
                     return Promise.delay(convo_model.default_delay(conversation))
                         .then(function() {
-                            return Promise.resolve({
-                                switch_chain: 'share'
-                            });
+                            var msg = "Your Election Day polling location is: "+location;
+                            message_model.create(config.bot.user_id, conversation.id, {body: msg});
+
+                            return Promise.delay(convo_model.default_delay(conversation))
+                                .then(function() {
+
+                                    return Promise.resolve({
+                                        switch_chain: 'share'
+                                    });
+                                });
                         });
                 })
             });
