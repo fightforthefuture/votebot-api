@@ -49,7 +49,7 @@ module.exports = {
     },
     headcount: {
         intro_shortcode: 'count',
-        msg_intro: "(Hi, this is HeadCount and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
+        msg_intro: "Hi, this is HeadCount and HelloVote! I can send you everything you need to go vote, and help you invite friends too! Your answers are private & secure.",
         msg_intro_es: "(Saludos, esto es HelloVote y HeadCount. Puedo revisar si está registrado o ayudarle a registrarse para votar. Sus respuestas seran privadas y seguras. Más información: hellovote.org)"
     },
     hellovotetesting: {
