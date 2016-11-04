@@ -179,6 +179,10 @@ module.exports = {
         intro_shortcode: 'twilio',
         msg_intro: "(Hi, this is Twilio and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
+    upworthy: {
+        intro_shortcode: 'upworthy',
+        msg_intro: "(Hi, this is Upworthy and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
+    },
     wiuvotes: {
         intro_shortcode: 'wiuvotes',
         msg_intro: "(Hi, this is the WIU UGC and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",  
