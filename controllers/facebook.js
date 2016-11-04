@@ -54,7 +54,7 @@ var postback = function(req, res)
 				[
 					{
 						type: 'postback',
-						title: l10n('button_register_to_vote'),
+						title: l10n('button_get_to_the_polls'),
 						payload: 'start'
 					},
 					{

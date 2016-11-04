@@ -29,10 +29,20 @@ var simple_store = bot_model.simple_store;
 
 module.exports = {
     intro: {
-        process: function() { return Promise.resolve({'next': 'first_name'})}
+        process: function() {
+            if (is_day_before_election_day())
+                return Promise.resolve({'switch_chain': 'gotv_1'})    
+
+            return Promise.resolve({'next': 'first_name'})
+        }
     },
     intro_facebook: {
-        process: function() { return Promise.resolve({'next': 'first_name'})}
+        process: function() {
+            if (is_day_before_election_day())
+                return Promise.resolve({'switch_chain': 'gotv_1'})    
+
+            return Promise.resolve({'next': 'first_name'});
+        }
     },
 
     // JL NOTE ~ how sad. //
@@ -47,6 +57,9 @@ module.exports = {
 
             return Promise.delay(convo_model.default_delay(conversation))
                 .then(function() {
+                    if (is_day_before_election_day())
+                        return Promise.resolve({'switch_chain': 'gotv_1'})    
+
                     return Promise.resolve({next: 'first_name'});
                 });
         }
@@ -1271,4 +1284,9 @@ function maybe_switch_chains(user, defaultNext) {
             return { next: defaultNext };
             break;
     }
+}
+
+function is_day_before_election_day() {
+    var electionDay = moment(config.election.date, 'YYYY-MM-DD');
+    return moment().isSame(electionDay.subtract(1, "days"), 'day');
 }

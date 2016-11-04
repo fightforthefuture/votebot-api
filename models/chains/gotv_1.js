@@ -161,7 +161,12 @@ module.exports = {
     },
     schedule_weather: {
         pre_process: function(action, conversation, user) {
-            var weather = util.object.get(user, 'results.weather_forecast');
+            var weather = util.object.get(user, 'results.weather_forecast'),
+                vote_time = util.object.get(user, 'settings.vote_time'),
+                timezone = util.object.get(user, 'settings.timezone');
+
+            var vote_time_local = moment.tz(vote_time, timezone);
+
             if (weather) {
                 switch(weather.simple_text) {
                     case 'sunny':
@@ -169,30 +174,43 @@ module.exports = {
                     case 'mostlysunny':
                         weather.action = 'so bring your shades!';
                         weather.action_emoji = '\u{1F576}';
+                        weather.time_dependent = true;
                         break;
                     case 'fog':
                     case 'haze':
                         weather.action = 'so bring a jacket!';
                         weather.action_emoji = '\u{1F301}'; // not actually a jacket emoji, foggy city
+                        weather.time_dependent = false;
                         break;
                     case 'sleet':
                     case 'snow':
                     case 'flurries':
                         weather.action = 'so wear boots!'; // alt, build a snowman? or bring a sled? bring your sled dogs!
                         weather.action_emoji = '\u{26F8}';
+                        weather.time_dependent = false;
                         break;
                     case 'rain':
                     case 'tstorm':
                         weather.action = 'so bring an umbrella!';
                         weather.action_emoji = '\u{2614}'
+                        weather.time_dependent = false;
                         break;
                     default:
                         weather.action = '';
                         weather.action_emoji = '';
+                        weather.time_dependent = false;
                 }
 
                 var msg = "OK! I'll send you a reminder at {{vote_time_local}} with directions.";
-                var msg2 = "It should be {{weather.adjective}} {{weather.emoji}} {{weather.action}} {{weather.action_emoji}}";
+
+                if (vote_time_local.hour() > 18 && weather.time_dependent) {
+                    log.info('bot: gotv: hour is after 6pm');
+                    var msg2 = null;
+                } else if (vote_time_local.hour() < 9) {
+                    var msg2 = 'That\'s so early, bring some \u{2615}';
+                } else {
+                    var msg2 = "It should be {{weather.adjective}} {{weather.emoji}} {{weather.action}} {{weather.action_emoji}}";
+                }
 
                 var data = {
                     vote_time_local: moment.tz(user.settings.vote_time, 'UTC').tz(user.settings.timezone).format('LT'),
@@ -202,11 +220,12 @@ module.exports = {
 
                 Promise.delay(convo_model.default_delay(conversation))
                     .then(function() {
-                        message_model.create(
-                            config.bot.user_id,
-                            conversation.id,
-                            {body: language.template(msg2, data)}
-                        );
+                        if (msg2)
+                            message_model.create(
+                                config.bot.user_id,
+                                conversation.id,
+                                {body: language.template(msg2, data)}
+                            );
                     });
 
                 return {
@@ -230,8 +249,6 @@ module.exports = {
             }
 
             log.info('bot: gotv: schedule_weather', data);
-
-            
         },
     },
     share_weather: {

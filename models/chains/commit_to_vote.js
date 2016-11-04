@@ -49,25 +49,36 @@ module.exports = {
                 return Promise.resolve({switch_chain: 'i_voted'})
             }
 
+            var result = {};
             if (language.is_no(body)) {
-                return Promise.resolve({switch_chain: 'share'})
+                result.store = {
+                    'user.settings.skip_invite_email': true
+                };
             }
-            
+
             if (!util.object.get(user, 'settings.zip')) {
-                return Promise.resolve({'next': 'zip'});
+                result['next'] = 'zip';
+                return Promise.resolve(result);
             };
             if (!util.object.get(user, 'settings.address')) {
-                return Promise.resolve({'next': 'address'});
+                result['next'] = 'address';
+                return Promise.resolve(result);
             };
 
-            if (!util.object.get(user, 'settings.email')) {
-                return Promise.resolve({next: 'email'});
+            var skip_email = util.object.get(user, 'settings.skip_invite_email');
+            if (
+                !util.object.get(user, 'settings.email')
+                &&
+                !skip_email
+                ) {
+                result['next'] = 'email';
+                return Promise.resolve(result);
             }
 
-            return Promise.resolve({
-                next: 'calendar_invite',
-                advance: true
-            });
+            result['next'] = 'calendar_invite';
+            result['advance'] = true;
+
+            return Promise.resolve(result);
         }
     },
     email: {
@@ -129,28 +140,35 @@ module.exports = {
                     ],
                 };
 
+                var conditionalExitOutOfThisStepLol = function() {
+                    if (!location)
+                        return Promise.resolve({
+                            switch_chain: 'share'
+                        });
+
+                    var msg = "Your Election Day polling location is: "+location;
+                    message_model.create(config.bot.user_id, conversation.id, {body: msg});
+
+                    return Promise.delay(convo_model.default_delay(conversation))
+                        .then(function() {
+
+                            return Promise.resolve({
+                                switch_chain: 'share'
+                            });
+                        });                        
+                }
+
+                var skip_email = util.object.get(user, 'settings.skip_invite_email');
+                if (skip_email)
+                    return conditionalExitOutOfThisStepLol();
+
                 return email.sendCalendarInvite(user, calendar_attributes).then(function() {
                     var msg = l10n('msg_calendar_invite');
                     message_model.create(config.bot.user_id, conversation.id, {body: msg});
 
                     return Promise.delay(convo_model.default_delay(conversation))
                         .then(function() {
-
-                            if (!location)
-                                return Promise.resolve({
-                                    switch_chain: 'share'
-                                });
-
-                            var msg = "Your Election Day polling location is: "+location;
-                            message_model.create(config.bot.user_id, conversation.id, {body: msg});
-
-                            return Promise.delay(convo_model.default_delay(conversation))
-                                .then(function() {
-
-                                    return Promise.resolve({
-                                        switch_chain: 'share'
-                                    });
-                                });
+                            return conditionalExitOutOfThisStepLol();
                         });
                 })
             });
@@ -191,6 +209,26 @@ module.exports = {
     },
     address: {
         process: bot_model.simple_store('user.settings.address', {validate: validate.address}),
+        process: function(body, user, step, conversation) {
+            return validate.address(body, user, conversation.locale)
+                .spread(function(body, extra_store) {
+                    var next = 'email';
+                    var advance = false;
+                    var skip_email = util.object.get(user, 'settings.skip_invite_email');
+                    
+                    if (skip_email) {
+                        next = 'calendar_invite';
+                        advance = true;
+                    }
+
+                    extra_store['user.settings.address'] = body;
+                    return Promise.resolve({
+                        next: next,
+                        advance: advance,
+                        store: extra_store
+                    });
+                })
+        },
         post_process: function(user, conversation) {
 
             if (util.object.get(user, 'settings.address_appears_bogus')) {
