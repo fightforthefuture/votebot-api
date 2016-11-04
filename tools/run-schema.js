@@ -777,6 +777,91 @@ var chains = [
 			}
 		]
 	},
+	{
+		chain: {
+			name: 'gotv_1',
+			description: 'Get out the vote! Schedule a time to go to the polls',
+			default_start: 'intro',
+			entries: 0,
+			exits: 0,
+			created: db.now()
+		},
+		steps: [
+			{
+				name: 'intro',
+				msg: '[[msg_gotv_intro]]',
+				no_msg: true,
+				errormsg: '',
+				next: 'schedule_vote_time',
+				advance: true,	// this only makes any difference in bot.start!
+				admin_order: 0,
+			},
+			{
+				name: 'schedule_vote_time',
+				msg: '',
+				errormsg: '[[error_schedule_time]]',
+				next: 'schedule_weather',
+				admin_order: 1,
+			},
+			{
+				name: 'schedule_weather',
+				msg: '',
+				errormsg: '',
+				next: 'share_weather',
+				admin_order: 2,
+			},
+			{
+				name: 'share_weather',
+				msg: '',
+				errormsg: '',
+				next: 'final',
+				admin_order: 3,
+			},
+			{
+				name: 'first_name',
+				msg: '[[prompt_first_name_friendly]]',
+				errormsg: '[[error_first_name]]',
+				next: 'intro',
+				admin_order: 3,
+			},
+			{
+				name: 'zip',
+				msg: '[[prompt_zip_gotv]]',
+				errormsg: '[[error_zip]]',
+				next: 'city',
+				admin_order: 4,
+			},
+			{
+				name: 'city',
+				msg: '[[prompt_city]]',
+				errormsg: '[[error_city]]',
+				next: 'state',
+				admin_order: 5,
+			},
+			{
+				name: 'state',
+				msg: '[[prompt_state]]',
+				errormsg: '[[error_state]]', 
+				next: 'address', 
+				admin_order: 6,
+			},
+			{
+				name: 'address',
+				msg: '[[prompt_address]]',
+				errormsg: '[[error_address]]',
+				next: 'intro',
+				admin_order: 7,
+			},
+			{
+				name: 'final',
+				msg: '',
+				errormsg: '',
+				next: '(final)',
+				final: true,
+				admin_order: 8,
+			}
+		]
+	},
 ];
 
 

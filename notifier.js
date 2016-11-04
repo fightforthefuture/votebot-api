@@ -14,23 +14,28 @@ var QUERY = [
     'SELECT     *',
     'FROM       users',
     'WHERE      active = true',
+    
     /*
     'AND        created > \'2016-10-12\'',
     'AND        created < \'2016-10-13\'',
     */
     'AND        created < now() - \'24 hours\'::interval',
+
+    /*
     'AND        (',
     '           last_notified IS NULL',
     '           OR',
     '           last_notified < now() - \'24 hours\'::interval',
     '           )',
+    */
+
     'ORDER BY   id',
 ];
 
 var run = function() {
 
     var time = moment(),
-        startTime = moment('16:00:00', 'hh:mm:ss'),
+        startTime = moment('14:00:00', 'hh:mm:ss'),
         endTime = moment('23:59:59', 'hh:mm:ss');
     
     log.notice('CURRENT time is: ', time.toString());
@@ -38,7 +43,7 @@ var run = function() {
     log.info('End time is: ', endTime.toString());
 
     if (!time.isBetween(startTime, endTime)) {
-        log.info(' - Time is not between 9am PST and 8pm EST! Waiting...');
+        log.info(' - Time is not between 7am PST and 8pm EST! Waiting...');
         return setTimeout(run, RUN_DELAY);
     }
  

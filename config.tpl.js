@@ -48,6 +48,10 @@ var config = {
 		advance_delay_fb: 1000
 	},
 
+	apixu: {
+		key: process.env.APIXU_KEY,
+	},
+
 	google_civic: {
 		election_id: 5000,
 		api_key: process.env.GOOGLE_API_KEY,
