@@ -341,6 +341,9 @@ exports.next = function(user_id, conversation, message)
 					log.info('bot: user wants to restart: ', _restart);
 					// step = _restart;									// JL HACK ~
 					return convo_model.switch_chain('vote_1', user);	// JL HACK ~
+				} if (language.is_help(body)) {
+					log.info('bot: user wants help:');
+					return message_model.create(config.bot.user_id, conversation.id, {body: l10n('msg_help', conversation.locale)});
 				} else {
 					log.info('bot: prompt to restart');
 					var restart_msg = l10n('prompt_restart_after_complete', conversation.locale)
