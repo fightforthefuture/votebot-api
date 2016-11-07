@@ -107,6 +107,13 @@ module.exports = {
             return {msg: language.template(msg, user)}
         },
         process: function(body, user, step, conversation) {
+            if (
+                body.toLowerCase().indexOf('already') > -1
+                ||
+                body.toLowerCase().indexOf('voted') > -1
+                ) {
+                return Promise.resolve({switch_chain: 'i_voted'})
+            }
             // look up user local timezone
             log.info('bot: gotv: looking up timezone');
             return timezone_lib.from_zipcode(user.settings.zip).then(function(local_tz_name) {
