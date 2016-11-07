@@ -23,6 +23,21 @@ module.exports = {
     intro: {
         process: function(body, user, step, conversation) {
             log.info('bot: gotv 1: intro');
+            if (
+                (
+                    user.notifications
+                    &&
+                    user.notifications.sent
+                    &&
+                    user.notifications.sent.indexOf('gotv_1') > -1
+                    &&
+                    !util.object.get(user, 'settings.gotv_1_prompted_for_input')
+                )
+            )
+            {
+                return Promise.resolve({next: 'prompt_for_input'});
+            }
+
             var result = {
                 'store': {'user.settings.started_gotv_1': true}
             }
@@ -62,29 +77,43 @@ module.exports = {
             });
         }
     },
+    prompt_for_input: {
+        name: 'prompt_for_input',
+        msg: '',
+        no_msg: true,
+        pre_process: function(action, conversation, user) {
+            var msg = l10n('msg_gotv_1_reintro_from_notification', conversation.locale);
+            msg = msg.replace('{{first_name}}', user.first_name ? user.first_name : 'again');
+            return {
+                msg: msg
+            }
+        },
+        process: function(body, user, step, conversation) {
+            if (
+                body.toLowerCase().indexOf('already') > -1
+                ||
+                body.toLowerCase().indexOf('voted') > -1
+                ) {
+                return Promise.resolve({switch_chain: 'i_voted'})
+            }
+            return Promise.resolve({
+                next: 'intro',
+                store: {
+                    'user.settings.gotv_1_prompted_for_input': true
+                },
+                advance: true
+            })
+        }
+    },
     schedule_vote_time: {
         pre_process: function(action, conversation, user) {
             // TODO, convert election_day offset to human time
             // so we don't assume it's "tomorrow"
 
             var msg = '';
-            if (
-                (
-                    user.notifications
-                    &&
-                    user.notifications.sent
-                    &&
-                    user.notifications.sent.indexOf('gotv_1') > -1
-                )
-                &&
-                user.first_name
-            )
-            {
-                var msg = l10n('msg_gotv_1_reintro', conversation.locale)
-                            .replace('{{first_name}}', user.first_name);
-            }
-
-            msg = msg + ' ' + l10n('msg_election_day_tomorrow', conversation.locale);
+            
+            if (!util.object.get(user, 'settings.gotv_1_prompted_for_input'))
+                msg = msg + l10n('msg_election_day_tomorrow', conversation.locale);
 
             polling_address = util.object.get(user, 'results.polling_place.address');
 

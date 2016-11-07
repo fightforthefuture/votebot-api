@@ -15,11 +15,11 @@ var QUERY = [
     'FROM       users',
     'WHERE      active = true',
     
-    /*
     'AND        created > \'2016-10-12\'',
     'AND        created < \'2016-10-13\'',
-    */
-    'AND        created < now() - \'24 hours\'::interval',
+    
+    
+    // 'AND        created < now() - \'24 hours\'::interval',
 
     /*
     'AND        (',
