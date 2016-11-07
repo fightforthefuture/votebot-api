@@ -16,13 +16,6 @@ module.exports = {
         process: bot_model.simple_store('user.settings.did_you_vote', {validate: validate.boolean, advance: true}),
     },
     vote_reschedule: {
-        pre_process: function(action, conversation, user) {
-            log.info('bot: gotv 2: intro');
-
-            if (!util.object.get(user, 'results.polling_place')) {
-                return Promise.resolve({'switch_chain': 'gotv_1'});
-            };
-        },
         process: function(body, user, step, conversation) {
             // use parse_messy_time to turn human strings into date object
             var parsed_local_time = parse_messy_time(body.trim());

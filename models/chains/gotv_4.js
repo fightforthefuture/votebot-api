@@ -149,14 +149,14 @@ module.exports = {
                     log.error('unable send story to electionland', error);
                     return {next: 'send_to_electionland', msg: l10n('msg_try_again')};
                 });
-            }).catch(function(err) { return err && err.message == 'street_address not_found'; }, function(err) {
+            })/*.catch(function(err) { return err && err.message == 'street_address not_found'; }, function(err) {
                 log.error('unable look up polling place by address', err);
                 // clear invalid polling place address
                 var update_user = util.object.set(user, 'results.polling_place', undefined);
                 return user_model.update(user.id, update_user).then(function() {
                     return {next: 'polling_place', msg: l10n('error_validate_address_is_bogus')};
                 });      
-            });
+            });*/
         }
     },
 }
