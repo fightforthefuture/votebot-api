@@ -40,18 +40,18 @@ var run = function() {
         endTime = moment('23:59:59', 'hh:mm:ss');
     
     log.notice('CURRENT time is: ', time.toString());
-    log.info('Start time is: ', startTime.toString());
-    log.info('End time is: ', endTime.toString());
+    log.notice('Start time is: ', startTime.toString());
+    log.notice('End time is: ', endTime.toString());
 
     if (!time.isBetween(startTime, endTime)) {
-        log.info(' - Time is not between 7am PST and 8pm EST! Waiting...');
+        log.notice(' - Time is not between 7am PST and 8pm EST! Waiting...');
         return setTimeout(run, RUN_DELAY);
     }
  
     db.query(
         QUERY.join('\n'))
         .then(function(users) {
-            log.info('Found users: ', users.length);
+            log.notice('Found users: ', users.length);
             return executeUserNotifications(users);
         });
 };
@@ -65,16 +65,16 @@ var executeUserNotifications = function(userStack) {
     var user = userStack.shift(),
         completed = 0;
 
-    log.info('Processing notifications for user: ', user.id);
+    log.notice('Processing notifications for user: ', user.id);
 
     var processNotification = function(notification) {
 
-        log.info(' - Notification: ', notification.type);
+        log.notice(' - Notification: ', notification.type);
 
         var nextNotification = function() {
             completed++;
             if (completed == notifications.length) {
-                log.info(' - DONE. Running next user...');
+                log.notice(' - DONE. Running next user...');
                 return executeUserNotifications(userStack);
             } else if (completed > notifications.length) {
                 log.error(' - COMPLETE AFTER TIMEOUT. WOW.');
@@ -92,7 +92,7 @@ var executeUserNotifications = function(userStack) {
             &&
             user.notifications.sent.indexOf(notification.type) > -1
         ) {
-            log.info('    - USER TAGGED WITH THIS NOTIFICATION. NEXT!');
+            log.notice('    - USER TAGGED WITH THIS NOTIFICATION. NEXT!');
             return nextNotification();
         }
 
@@ -103,7 +103,7 @@ var executeUserNotifications = function(userStack) {
                 return nextNotification();
             }
             var skipToNextUser = function() {
-                log.info(' - Triggered!!! Skipping to next user...');
+                log.notice(' - Triggered!!! Skipping to next user...');
                 if (failTimeout) clearTimeout(failTimeout);
                 return executeUserNotifications(userStack)
             }
@@ -128,7 +128,7 @@ var executeUserNotifications = function(userStack) {
 
                 user.notifications.sent.push(notification.type);
 
-                log.info('    - Marking user as sent: ', notification.type);
+                log.notice('    - Marking user as sent: ', notification.type);
 
                 user_model.update(user.id, {
                     notifications: user.notifications,
