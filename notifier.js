@@ -30,7 +30,7 @@ var QUERY = [
     '           )',
     */
 
-    'ORDER BY   id'
+    'ORDER BY   id',
     'LIMIT 10000',
 ];
 
