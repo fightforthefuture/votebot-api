@@ -31,7 +31,6 @@ var QUERY = [
     */
 
     'ORDER BY   id',
-    'LIMIT 10000',
 ];
 
 var run = function() {
@@ -63,7 +62,7 @@ var executeUserNotifications = function(userStack) {
         return setTimeout(run, RUN_DELAY);
     }
 
-    var user = userStack.shift(),
+    var user = userStack.pop(),
         completed = 0;
 
     log.notice('Processing notifications for user: ', user.id);
