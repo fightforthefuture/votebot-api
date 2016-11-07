@@ -239,7 +239,11 @@ module.exports = {
 
                 var msg = "OK! I'll send you a reminder at {{vote_time_local}} with directions.";
 
-                if (vote_time_local.hour() > 18 && weather.time_dependent) {
+                if (
+                    (vote_time_local.hour() > 18 && weather.time_dependent)
+                    ||                    
+                    weather.condition == 'unknown'
+                    ) {
                     log.info('bot: gotv: hour is after 6pm');
                     var msg2 = null;
                 } else if (vote_time_local.hour() < 9) {
