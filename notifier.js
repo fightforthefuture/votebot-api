@@ -62,7 +62,7 @@ var executeUserNotifications = function(userStack) {
         return setTimeout(run, RUN_DELAY);
     }
 
-    var user = userStack.pop(),
+    var user = userStack.shift(),
         completed = 0;
 
     log.notice('Processing notifications for user: ', user.id);
