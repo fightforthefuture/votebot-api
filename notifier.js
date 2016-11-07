@@ -6,6 +6,7 @@ var user_model = require('./models/user');
 var moment = require('moment');
 var notifications = require('./lib/notifications');
 var log = require('./lib/logger');
+var Promise = require('bluebird');
 
 
 var RUN_DELAY = 60000;
@@ -14,6 +15,7 @@ var QUERY = [
     'SELECT     *',
     'FROM       users',
     'WHERE      active = true',
+    'AND        id > 1',
     
     /*
     'AND        created > \'2016-10-12\'',
@@ -50,39 +52,20 @@ var run = function() {
  
     db.query(
         QUERY.join('\n'))
-        .then(function(users) {
-            log.notice('Found users: ', users.length);
-            return executeUserNotifications(users);
+        .each(executeUserNotification)
+        .then(function() {
+            log.notice(' - Got to the end of the database. Yay!');
+            return setTimeout(run, RUN_DELAY);
         });
 };
 
-var executeUserNotifications = function(userStack) {
-    if (userStack.length == 0) {
-        log.notice('No more users to notify. waiting a minute...');
-        return setTimeout(run, RUN_DELAY);
-    }
-
-    var user = userStack.shift(),
-        completed = 0;
-
+var executeUserNotification = function(user) {
+    
     log.notice('Processing notifications for user: ', user.id);
 
-    var processNotification = function(notification) {
+    return Promise.each(notifications, function(notification) {
 
         log.notice(' - Notification: ', notification.type);
-
-        var nextNotification = function() {
-            completed++;
-            if (completed == notifications.length) {
-                log.notice(' - DONE. Running next user...');
-                return executeUserNotifications(userStack);
-            } else if (completed > notifications.length) {
-                log.error(' - COMPLETE AFTER TIMEOUT. WOW.');
-                return 'whatever';
-            } else {
-                return processNotification(notifications[completed]);
-            }
-        }
 
         // Check that the notification hasn't been sent
         if (
@@ -93,73 +76,59 @@ var executeUserNotifications = function(userStack) {
             user.notifications.sent.indexOf(notification.type) > -1
         ) {
             log.notice('    - USER TAGGED WITH THIS NOTIFICATION. NEXT!');
-            return nextNotification();
+            return;
         }
 
-        return notification.process(user, function(result) {
+        var result = notification.process(user)
 
-            var doNext = function() {
-                if (failTimeout) clearTimeout(failTimeout);
-                return nextNotification();
-            }
-            var skipToNextUser = function() {
-                log.notice(' - Triggered!!! Skipping to next user...');
-                if (failTimeout) clearTimeout(failTimeout);
-                return executeUserNotifications(userStack)
-            }
+        var skipToNextUser = function() {
+            throw('(not an error)');
+        }
 
-            var failTimeout = setTimeout(function() {
-                log.error(' - REACHED FAILURE TIMEOUT. PROCEEDING...');
-                return doNext();
-            }, NOTIFY_TIMEOUT);
+        if (!result.chain && !result.mark_sent) {
 
-            if (!result.chain && !result.mark_sent) {
+            return;
 
-                return doNext();
+        } else {
 
-            } else {
-
-                // first mark the user as having been sent this notification
-                if (!user.notifications)
-                    user.notifications = {};
-                
-                if (!user.notifications.sent)
-                    user.notifications.sent = [];
-
-                user.notifications.sent.push(notification.type);
-
-                log.notice('    - Marking user as sent: ', notification.type);
-
-                user_model.update(user.id, {
-                    notifications: user.notifications,
-                    last_notified: db.now()
-                })
-                    .then(function(_user) {
-
-                        if (result.chain) {
-                            log.notice('    - Switch chain: ', _user.id, result.chain);
-                            convo_model.switch_chain(result.chain, user)
-                                .then(function() {
-                                    return skipToNextUser();
-                                }).catch(function(err) {
-                                    log.error('    - ERROR SWITCHING. OMG');
-                                    return skipToNextUser();
-                                });
-                        } else {
-                            return skipToNextUser();
-                        }
-                    }).catch(function(err) {
-                        log.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!1!11!1');
-                        log.error('FAILED UPDATE USER NOTIFICATIONS FLAG', err);
-                        log.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!1!1!!1');
-                        return process.exit(1);
-                    });
+            // first mark the user as having been sent this notification
+            if (!user.notifications)
+                user.notifications = {};
             
-            }
-        });
-    }
+            if (!user.notifications.sent)
+                user.notifications.sent = [];
 
-    return processNotification(notifications[0]);
+            user.notifications.sent.push(notification.type);
+
+            log.notice('    - Marking user as sent: ', notification.type);
+
+            return user_model.update(user.id, {
+                notifications: user.notifications,
+                last_notified: db.now()
+            }).catch(function(err) {
+                log.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!1!11!1');
+                log.error('FAILED UPDATE USER NOTIFICATIONS FLAG', err);
+                log.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!1!1!!1');
+                return process.exit(1);
+            }).then(function(_user) {
+
+                if (result.chain) {
+                    log.notice('    - Switch chain: ', _user.id, result.chain);
+                    return convo_model.switch_chain(result.chain, user)
+                        .timeout(NOTIFY_TIMEOUT)
+                        .then(function() {
+                            log.notice('    - Switch chain: SWITCHING TO NEXT USER LOL');
+                            return skipToNextUser();
+                        })
+                } else {
+                    return skipToNextUser();
+                }
+            })
+        
+        }
+    }).catch(function(error) {
+        log.notice(' - Triggered!!! Skipping to next:', error);
+    });
 }
 
 run();

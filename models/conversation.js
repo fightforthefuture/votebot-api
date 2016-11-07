@@ -215,7 +215,7 @@ exports.switch_chain = function(chain, user) {
 			active: true
 		}).then(function(_updated_convo) {
 			log.info('conversation: switched to new chain: ', chain, _updated_convo);
-			bot_model.next(user.id, _updated_convo);
+			return bot_model.next(user.id, _updated_convo);
 		});
 	});
 };
