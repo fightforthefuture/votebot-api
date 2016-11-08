@@ -61,7 +61,11 @@ module.exports = {
                 var gttp_link = "https://gttp.votinginfoproject.org/"+
                     encodeURIComponent('#' + user.settings.address+' '+user.settings.city+' '+user.settings.state);
                 return shorten(gttp_link).then(function(short_link) {
-                    polling_place.link = short_link;
+                    if (polling_place) {
+                        polling_place.link = short_link;
+                    } else {
+                        polling_place = {link: 'http://gettothepolls.com'};
+                    }
                     return Promise.resolve({
                         next: 'schedule_vote_time',
                         store: {
