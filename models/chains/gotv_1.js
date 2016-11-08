@@ -62,7 +62,11 @@ module.exports = {
                 var gttp_link = "https://gttp.votinginfoproject.org/"+
                     encodeURIComponent('#' + user.settings.address+' '+user.settings.city+' '+user.settings.state);
                 return shorten(gttp_link).then(function(short_link) {
-                    polling_place.link = short_link;
+                    if (polling_place) {
+                        polling_place.link = short_link;
+                    } else {
+                        polling_place = {link: 'http://gettothepolls.com'};
+                    }
                     return Promise.resolve({
                         next: 'schedule_vote_time',
                         store: {
@@ -271,8 +275,7 @@ module.exports = {
 
                 var data = {
                     vote_time_local: moment.tz(user.settings.vote_time, 'UTC').tz(user.settings.timezone).format('LT'),
-                    weather: weather,
-                    share_link: 'https://fftf.io/hellovote_gotv'
+                    weather: weather
                 };
 
                 Promise.delay(convo_model.default_delay(conversation))
@@ -294,8 +297,7 @@ module.exports = {
                 var msg = "OK! I'll send you a reminder at {{vote_time_local}} with directions. ";
 
                 var data = {
-                    vote_time_local: moment.tz(user.settings.vote_time, 'UTC').tz(user.settings.timezone).format('LT'),
-                    share_link: 'https://fftf.io/hellovote_gotv'
+                    vote_time_local: moment.tz(user.settings.vote_time, 'UTC').tz(user.settings.timezone).format('LT')
                 };
 
                 return {
