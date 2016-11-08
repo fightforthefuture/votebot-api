@@ -21,7 +21,7 @@ exports.lookup = function(street, city, state)
         
         request(req_url, function(err, res, body) {
             if(err) return reject(err);
-            if(res.statusCode >= 400) return reject(new Error('not_found'));
+            if(res.statusCode >= 400) return reject(new Error('polling_place not_found'));
             try
             {
                 var obj = JSON.parse(body) || {};

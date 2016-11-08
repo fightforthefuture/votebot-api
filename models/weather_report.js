@@ -21,7 +21,7 @@ exports.forecast = function(city, state, days_out)
 
         request(req_url, function(err, res, body) {
             if(err) return reject(err);
-            if(res.statusCode >= 400) return reject(new Error('not_found'));
+            if(res.statusCode >= 400) return reject(new Error('weather_report not_found'));
             try
             {
                 var obj = JSON.parse(body) || {};
