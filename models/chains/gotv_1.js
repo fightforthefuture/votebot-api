@@ -258,8 +258,7 @@ module.exports = {
 
                 var data = {
                     vote_time_local: moment.tz(user.settings.vote_time, 'UTC').tz(user.settings.timezone).format('LT'),
-                    weather: weather,
-                    share_link: 'https://fftf.io/hellovote_gotv'
+                    weather: weather
                 };
 
                 Promise.delay(convo_model.default_delay(conversation))
@@ -281,8 +280,7 @@ module.exports = {
                 var msg = "OK! I'll send you a reminder at {{vote_time_local}} with directions. ";
 
                 var data = {
-                    vote_time_local: moment.tz(user.settings.vote_time, 'UTC').tz(user.settings.timezone).format('LT'),
-                    share_link: 'https://fftf.io/hellovote_gotv'
+                    vote_time_local: moment.tz(user.settings.vote_time, 'UTC').tz(user.settings.timezone).format('LT')
                 };
 
                 return {
