@@ -1289,7 +1289,7 @@ function maybe_switch_chains(user, defaultNext) {
 function is_gotv_time() {
     var electionDay = moment(config.election.date, 'YYYY-MM-DD');
     return 
-        moment().isSame(electionDay.subtract(1, "days"), 'day')
+        moment().isSame(electionDay.clone().subtract(1, "days"), 'day')
         ||
-        moment().isSame(electionDay, 'day');
+        moment().isSame(electionDay.clone(), 'day');
 }
