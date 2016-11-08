@@ -51,6 +51,7 @@ default_steps['share'] = require('./chains/share');
 default_steps['commit_to_vote'] = require('./chains/commit_to_vote');
 default_steps['i_voted'] = require('./chains/i_voted');
 default_steps['gotv_1'] = require('./chains/gotv_1');
+default_steps['gotv_2'] = require('./chains/gotv_2');
 
 function get_chain(type) {
 	var vars = {type: type};
