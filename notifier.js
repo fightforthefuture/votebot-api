@@ -42,7 +42,7 @@ var run = function() {
     log.notice('CURRENT time is (America/New_York): ', time.toString());
     log.notice('... the hour is: ', time.hour());
 
-    if (time.hour() < 10 || time.hour() > 20) {
+    if (time.hour() < 10 || time.hour() > 21) {
         log.notice(' - Time is not between 7am PST and 10pm EST! Waiting...');
         return setTimeout(run, RUN_DELAY);
     }

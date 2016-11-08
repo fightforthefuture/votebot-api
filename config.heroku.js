@@ -53,6 +53,10 @@ var config = {
         key: process.env.APIXU_KEY,
     },
 
+    electionland: {
+        api_key: process.env.ELECTIONLAND_API_KEY,
+    },
+
     google_civic: {
         election_id: 5000,
         api_key: process.env.GOOGLE_API_KEY,

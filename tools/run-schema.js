@@ -862,6 +862,165 @@ var chains = [
 			}
 		]
 	},
+	{
+		chain: {
+			name: 'gotv_2',
+			description: 'Election Day! Polling place reminder',
+			default_start: 'intro',
+			entries: 0,
+			exits: 0,
+			created: db.now()
+		},
+		steps: [
+			{
+				name: 'intro',
+				msg: '[[msg_gotv_intro]]',
+				no_msg: true,
+				errormsg: '',
+				next: 'election_day_hotline',
+				advance: true,	// this only makes any difference in bot.start!
+				admin_order: 0,
+			},
+			{
+				name: 'election_day_hotline',
+				msg: '[[msg_election_day_hotline]]',
+				errormsg: '',
+				next: 'polling_place_directions',
+				admin_order: 1,
+			},
+			{
+				name: 'polling_place_directions',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'final',
+				admin_order: 2,
+			},
+			{
+				name: 'final',
+				msg: '',
+				errormsg: '',
+				next: '(final)',
+				final: true,
+				admin_order: 3,
+			}
+		]
+	},
+	{
+		chain: {
+			name: 'gotv_3',
+			description: 'Election Day! Did you vote?',
+			default_start: 'intro',
+			entries: 0,
+			exits: 0,
+			created: db.now()
+		},
+		steps: [
+			{
+				name: 'intro',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'did_you_vote',
+				advance: true,	// this only makes any difference in bot.start!
+				admin_order: 0,
+			},
+			{
+				name: 'did_you_vote',
+				msg: '[[msg_did_you_vote]]',
+				errormsg: '',
+				next: 'i_voted',
+				admin_order: 1,
+			},
+		]
+	},
+	{
+		chain: {
+			name: 'gotv_4',
+			description: 'Election Day! Wait times and issue reporting',
+			default_start: 'intro',
+			entries: 0,
+			exits: 0,
+			created: db.now()
+		},
+		steps: [
+			{
+				name: 'intro',
+				msg: '[[msg_gotv_intro]]',
+				no_msg: true,
+				errormsg: '',
+				next: 'reporting_start',
+				advance: true,	// this only makes any difference in bot.start!
+				admin_order: 0,
+			},
+			{
+				name: 'reporting_start',
+				msg: '[[prompt_election_day_reporting]]',
+				errormsg: '',
+				next: 'reporting_wait_time',
+				admin_order: 1,
+			},
+			{
+				name: 'reporting_wait_time',
+				msg: '[[prompt_reporting_wait_time]]',
+				errormsg: '',
+				next: 'reporting_problems',
+				admin_order: 2,
+			},
+			{
+				name: 'reporting_problems',
+				msg: '[[prompt_reporting_problems]]',
+				errormsg: '',
+				next: 'reporting_story',
+				admin_order: 3,
+			},
+			{
+				name: 'reporting_story',
+				msg: '[[prompt_reporting_story]]',
+				errormsg: '',
+				next: 'reporting_contact_ok',
+				admin_order: 4,
+			},
+			{
+				name: 'reporting_contact_ok',
+				msg: '[[prompt_reporting_contact_ok]]',
+				errormsg: '',
+				next: 'phone',
+				admin_order: 5,
+			},
+			{
+				name: 'phone',
+				msg: '[[prompt_phone]]',
+				errormsg: '[[error_phone]]',
+				next: 'polling_place',
+				admin_order: 5,
+			},
+			{
+				name: 'polling_place',
+				msg: '[[prompt_reporting_polling_place]]',
+				errormsg: '',
+				next: 'send_to_electionland',
+				advance: true,
+				admin_order: 5,
+			},
+			{
+				name: 'send_to_electionland',
+				msg: '',
+				no_msg: true,
+				errormsg: '',
+				next: 'final',
+				admin_order: 6,
+			},
+			{
+				name: 'final',
+				msg: '[[msg_thanks_for_using]]',
+				errormsg: '',
+				next: '(final)',
+				final: true,
+				admin_order: 7,
+			}
+		]
+	},
 ];
 
 

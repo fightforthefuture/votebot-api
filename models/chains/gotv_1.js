@@ -4,6 +4,7 @@ var log = require('../../lib/logger');
 var language = require('../../lib/language');
 var l10n = require('../../lib/l10n');
 var util = require('../../lib/util');
+var us_election = require('../../lib/us_election');
 var validate = require('../../lib/validate');
 
 var bot_model = require('../bot');
@@ -112,8 +113,12 @@ module.exports = {
 
             var msg = '';
             
-            if (!util.object.get(user, 'settings.gotv_1_prompted_for_input'))
-                msg = msg + l10n('msg_election_day_tomorrow', conversation.locale);
+            if (!util.object.get(user, 'settings.gotv_1_prompted_for_input')) {
+                if (us_election.is_election_day())
+                    msg = msg + l10n('msg_election_day_today', conversation.locale);
+                else 
+                    msg = msg + l10n('msg_election_day_tomorrow', conversation.locale);
+            }
 
             polling_address = util.object.get(user, 'results.polling_place.address');
 
@@ -142,6 +147,12 @@ module.exports = {
                 body.toLowerCase().indexOf('voted') > -1
                 ) {
                 return Promise.resolve({switch_chain: 'i_voted'})
+            } else if (body.toLowerCase().indexOf('woltato') > -1) {
+                return Promise.resolve({switch_chain: 'gotv_2'})
+            } else if (body.toLowerCase().indexOf('protopato') > -1) {
+                return Promise.resolve({switch_chain: 'gotv_4'})
+            } else if (body.toLowerCase().indexOf('now') > -1) {
+                return Promise.resolve({next: 'prompt_for_voted'})
             }
             // look up user local timezone
             log.info('bot: gotv: looking up timezone');
@@ -167,6 +178,9 @@ module.exports = {
                     var update_user = util.object.set(user, 'settings.timezone', local_tz_name);
                     var update_user = util.object.set(update_user, 'settings.vote_time', vote_time_utc.format());
                     var update_user = util.object.set(update_user, 'settings.vote_time_schedule', vote_time_schedule_utc.format());
+
+                    if (us_election.is_election_day())
+                        var update_user = util.object.set(update_user, 'settings.started_gotv_2', true);
                     
                     return user_model.update(user.id, update_user);
                 });
@@ -238,6 +252,9 @@ module.exports = {
                 }
 
                 var msg = "OK! I'll send you a reminder at {{vote_time_local}} with directions.";
+
+                if (us_election.is_election_day())
+                    msg += ' ' + l10n('msg_help_line', conversation.locale);
 
                 if (
                     (vote_time_local.hour() > 18 && weather.time_dependent)
@@ -365,6 +382,14 @@ module.exports = {
                     next: 'first_name',
                     msg: l10n('error_first_name', conversation.locale)
                 });
+            } else if (body.trim().toLowerCase().indexOf('woltato') > -1) {
+                return Promise.resolve({
+                    switch_chain: 'gotv_2'
+                });
+            } else if (body.trim().toLowerCase().indexOf('trolalor') > -1) {
+                return Promise.resolve({
+                    switch_chain: 'gotv_3'
+                });
             } else {
                 return Promise.resolve({
                     next: 'intro',
@@ -374,5 +399,25 @@ module.exports = {
                 });
             }
         },
+    },
+    prompt_for_voted: {
+        name: 'prompt_for_voted',
+        msg: '',
+        no_msg: true,
+        pre_process: function(action, conversation, user) {
+            return {
+                msg: l10n('msg_help_line', conversation.locale) + '\n' + l10n('prompt_for_voted', conversation.locale)
+            }
+        },
+        process: function(body, user, step, conversation) {
+            if (
+                body.toLowerCase().indexOf('already') > -1
+                ||
+                body.toLowerCase().indexOf('voted') > -1
+                ) {
+                return Promise.resolve({switch_chain: 'i_voted'})
+            }
+            return Promise.resolve({switch_chain: 'share'})
+        }
     }
 }

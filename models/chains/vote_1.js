@@ -1287,9 +1287,13 @@ function maybe_switch_chains(user, defaultNext) {
 }
 
 function is_gotv_time() {
-    var electionDay = moment(config.election.date, 'YYYY-MM-DD');
-    return 
-        moment().isSame(electionDay.clone().subtract(1, "days"), 'day')
-        ||
-        moment().isSame(electionDay.clone(), 'day');
+    var electionDay = momentTZ.tz(config.election.date, 'America/New_York');
+    
+    if (momentTZ().tz('America/New_York').isSame(electionDay.clone().subtract(1, "days"), 'day'))
+        return true;
+
+    if (momentTZ().tz('America/New_York').isSame(electionDay.clone(), 'day'))
+        return true;
+
+    return false;
 }
