@@ -24,6 +24,7 @@ module.exports = {
     intro: {
         process: function(body, user, step, conversation) {
             log.info('bot: gotv 1: intro');
+            /*
             if (
                 (
                     user.notifications
@@ -38,6 +39,7 @@ module.exports = {
             {
                 return Promise.resolve({next: 'prompt_for_input'});
             }
+            */
 
             var result = {
                 'store': {'user.settings.started_gotv_1': true}
