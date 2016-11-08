@@ -3,10 +3,10 @@ var db = require('./lib/db');
 var l10n = require('./lib/l10n');
 var convo_model = require('./models/conversation');
 var user_model = require('./models/user');
-var moment = require('moment');
 var notifications = require('./lib/notifications');
 var log = require('./lib/logger');
 var Promise = require('bluebird');
+var moment = require('moment-timezone');
 
 
 var RUN_DELAY = 60000;
@@ -37,16 +37,13 @@ var QUERY = [
 
 var run = function() {
 
-    var time = moment(),
-        startTime = moment('14:00:00', 'hh:mm:ss'),
-        endTime = moment('23:59:59', 'hh:mm:ss');
+    var time = moment().tz('America/New_York');
     
-    log.notice('CURRENT time is: ', time.toString());
-    log.notice('Start time is: ', startTime.toString());
-    log.notice('End time is: ', endTime.toString());
+    log.notice('CURRENT time is (America/New_York): ', time.toString());
+    log.notice('... the hour is: ', time.hour());
 
-    if (!time.isBetween(startTime, endTime)) {
-        log.notice(' - Time is not between 7am PST and 8pm EST! Waiting...');
+    if (time.hour() < 10 || time.hour() > 20) {
+        log.notice(' - Time is not between 7am PST and 10pm EST! Waiting...');
         return setTimeout(run, RUN_DELAY);
     }
  
