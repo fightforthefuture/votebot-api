@@ -1,4 +1,4 @@
-// require('newrelic');
+require('newrelic');
 
 var config = {
 	environment: process.env.APP_ENVIRONMENT,
