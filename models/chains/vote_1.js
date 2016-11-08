@@ -30,7 +30,7 @@ var simple_store = bot_model.simple_store;
 module.exports = {
     intro: {
         process: function() {
-            if (is_day_before_election_day())
+            if (is_gotv_time())
                 return Promise.resolve({'switch_chain': 'gotv_1'})    
 
             return Promise.resolve({'next': 'first_name'})
@@ -38,7 +38,7 @@ module.exports = {
     },
     intro_facebook: {
         process: function() {
-            if (is_day_before_election_day())
+            if (is_gotv_time())
                 return Promise.resolve({'switch_chain': 'gotv_1'})    
 
             return Promise.resolve({'next': 'first_name'});
@@ -57,7 +57,7 @@ module.exports = {
 
             return Promise.delay(convo_model.default_delay(conversation))
                 .then(function() {
-                    if (is_day_before_election_day())
+                    if (is_gotv_time())
                         return Promise.resolve({'switch_chain': 'gotv_1'})    
 
                     return Promise.resolve({next: 'first_name'});
@@ -1286,7 +1286,10 @@ function maybe_switch_chains(user, defaultNext) {
     }
 }
 
-function is_day_before_election_day() {
+function is_gotv_time() {
     var electionDay = moment(config.election.date, 'YYYY-MM-DD');
-    return moment().isSame(electionDay.subtract(1, "days"), 'day');
+    return 
+        moment().isSame(electionDay.subtract(1, "days"), 'day')
+        ||
+        moment().isSame(electionDay, 'day');
 }
