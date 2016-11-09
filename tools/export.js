@@ -34,7 +34,7 @@ pg.connect(connstr, function(err, client, done) {
     };
     client.query(query, {}, function(err, result) {
         var age_or_dob = include_dob ? "date_of_birth" : "age";
-        console.log('"timestamp","first_name","last_name","email","phone","address","address_unit","city","state","zip",'+age_or_dob+',"already_registered","form_submitted","partner"');
+        console.log('"timestamp","first_name","last_name","email","phone","address","address_unit","city","state","zip",'+age_or_dob+',"already_registered","form_submitted","voted","partner"');
         for (var i=0; i<result.rows.length; i++) {
             var row = result.rows[i];
             var line = '';
@@ -55,6 +55,7 @@ pg.connect(connstr, function(err, client, done) {
             }
             line += '"'+escape(row.settings.already_registered)+'",';
             line += '"'+escape(row.submit)+'",';
+            line += '"'+escape(row.voted)+'",';
             line += '"'+escape(partner)+'"';
 
             console.log(line);
