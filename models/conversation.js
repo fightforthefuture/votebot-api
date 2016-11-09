@@ -9,6 +9,7 @@ var bot_model = require('./bot');
 var partners = require('../config.partners');
 var log = require('../lib/logger');
 var config = require('../config');
+var l10n = require('../lib/l10n');
 
 exports.get = function(id)
 {
@@ -94,6 +95,13 @@ exports.create = function(user_id, data)
 				})
 				.tap(function(conversation) {
 					// start bot!
+					if (config.app.disabled)
+						return message_model.create(
+							config.bot.user_id,
+							conversation.id,
+							{ body: l10n('msg_disabled', conversation.locale) }
+						)
+
 					return bot_model.start(
 						data.chain ? data.chain : 'vote_1',
 						users[0].id,

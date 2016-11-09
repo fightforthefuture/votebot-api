@@ -138,6 +138,13 @@ exports.incoming_message = function(data, options)
 
 			if(!user.active && !options.force_active) throw error('user is inactive');
 
+			if (config.app.disabled)
+				return exports.create(
+							config.bot.user_id,
+							conversation.id,
+							{ body: l10n('msg_disabled', conversation.locale) }
+						)
+
 			if(conversation && user.active)
 			{
 				log.info('msg: incoming: continuing existing conversation');
