@@ -9,7 +9,8 @@ var config = {
 		submit_pdf_url: 'http://localhost:5000/pdf',
 		submit_ovr_url: 'http://localhost:5000/ovr',
 		admin_password: process.env.ADMIN_PASSWORD,
-		force_ssl: false
+		force_ssl: false,
+		disabled: true
 	},
 
 	// app-wide logging

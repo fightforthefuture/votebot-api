@@ -10,7 +10,8 @@ var config = {
 		submit_pdf_url: process.env.SUBMIT_PDF_URL,
 		submit_ovr_url: process.env.SUBMIT_OVR_URL,
 		admin_password: process.env.ADMIN_PASSWORD,
-		force_ssl: process.env.FORCE_SSL ? true : false
+		force_ssl: process.env.FORCE_SSL ? true : false,
+        disabled: true
 	},
 
 	// app-wide logging

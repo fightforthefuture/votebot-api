@@ -8,6 +8,7 @@ var auth = require('../lib/auth');
 var log = require('../lib/logger');
 var error = require('../lib/error');
 var config = require('../config');
+var l10n = require('../lib/l10n');
 
 exports.hook = function(app)
 {
@@ -55,6 +56,14 @@ var new_message = function(req, res)
 		return message_model.create(user_id, conversation_id, data)
 	})
 	.then(function(message) {
+
+		if (config.app.disabled)
+			return message_model.create(
+						config.bot.user_id,
+						conversation.id,
+						{ body: l10n('msg_disabled', conversation.locale) }
+					)
+
 		bot_model.next(user_id, conversation, message)
 		resutil.send(res, message);
 	})
