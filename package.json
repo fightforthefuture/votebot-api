@@ -36,6 +36,7 @@
     "nodemailer-smtp-transport": "^2.6.0",
     "pg": "^4.5.5",
     "phone": "^1.0.6",
+    "progress": "^1.1.8",
     "raven": "^0.12.1",
     "request": "^2.73.0",
     "request-promise": "^4.0.2",
