@@ -53,6 +53,7 @@ var purge_user_info = function(user, index, length) {
             'email': user.settings.email,
 
             // useful for our own analysis
+            'already_registered': user.settings.already_registered,
             'mail_letter': user.settings.mail_letter,
             'include_postage': user.settings.include_postage,
 
