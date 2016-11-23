@@ -8,7 +8,7 @@ var user_model = require('../models/user');
 var msgs_model = require('../models/message');
 
 var USERS_ALL = [
-    'SELECT id',
+    'SELECT id, settings',
     'FROM   users'
 ];
 
