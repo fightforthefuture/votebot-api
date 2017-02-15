@@ -99,12 +99,20 @@ exports.broadcast = function(conversation_id, message, force_send)
 				} else {
 					log.info('messages: sending twilio message to ', to_user);
 
-					return twilio.messages.createAsync({
+					var twilioMessage = {
 						to: to_user,
-						from: config.twilio.from_number,
-						messaging_service_sid: config.twilio.messaging_sid,
 						body: message.body
-					}).catch(function(error) {
+					};
+					if (config.twilio.messaging_sid) {
+						// if using a messaging service, twilio picks the from_number
+						twilioMessage.messagingServiceSid = config.twilio.messaging_sid;
+					} else if(config.twilio.from_number) {
+						twilioMessage.from = config.twilio.from_number;
+					} else {
+						log.error('message: specify either messaging_sid or from_number in config.twilio');
+					}
+
+					return twilio.messages.createAsync(twilioMessage).catch(function(error) {
 						log.error('message: failed to send to: '+ to_user, error);
 					});
 				}
