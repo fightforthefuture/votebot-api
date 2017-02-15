@@ -54,8 +54,10 @@ var purge_user_info = function(user, index, length) {
 
             // useful for our own analysis
             'already_registered': user.settings.already_registered,
+            'submit_form_type': user.settings.submit_form_type,
             'mail_letter': user.settings.mail_letter,
             'include_postage': user.settings.include_postage,
+            'confirm_ovr_disclosure': user.settings.confirm_ovr_disclosure,
 
             'started_early_voting': user.settings.started_early_voting,
             'started_mail_in': user.settings.started_mail_in,
@@ -70,6 +72,6 @@ var purge_user_info = function(user, index, length) {
         };
 
         update_user = util.object.set(user, 'settings', cleaned_settings);
-        return user_model.update(user.id, update_user); 
+        return user_model.update(user.id, update_user);
     });
 };
