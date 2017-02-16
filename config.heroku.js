@@ -11,7 +11,7 @@ var config = {
 		submit_ovr_url: process.env.SUBMIT_OVR_URL,
 		admin_password: process.env.ADMIN_PASSWORD,
 		force_ssl: process.env.FORCE_SSL ? true : false,
-        disabled: true
+        disabled: false
 	},
 
 	// app-wide logging
@@ -34,7 +34,7 @@ var config = {
 
 	// parameters for next election
 	election: {
-		date: process.env.NEXT_ELECTION_DATE || '2016-11-08',
+		date: process.env.NEXT_ELECTION_DATE || '2017-11-07',
 	},
 
 	database: {
