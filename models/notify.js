@@ -1,7 +1,7 @@
 var config = require('../config');
 var log = require('../lib/logger');
 var user_model = require('./user');
-if (config.twilio) {
+if (config.twilio && config.twilio.notify_sid) {
 	var twilio = require('twilio')(config.twilio.account_sid, config.twilio.auth_token);
 	var service = twilio.notifications.v1.services(config.twilio.notify_sid);
 }

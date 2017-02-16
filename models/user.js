@@ -56,6 +56,7 @@ exports.parse_username = function(username, options)
 
 exports.use_notify = function(username) {
 	if (!config.twilio) { return false; }
+	if (!config.twilio.notify_sid) { return false; }
 	var type = exports.parse_username(username).type;
 	if (type === 'fb' || type === 'sms') { return true; }
 	return false;
