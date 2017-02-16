@@ -59,7 +59,7 @@ var config = {
     },
 
     google_civic: {
-        election_id: 5000,
+        election_id: 4271,
         api_key: process.env.GOOGLE_API_KEY,
     },
 
