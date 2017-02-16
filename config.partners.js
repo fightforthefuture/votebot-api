@@ -195,7 +195,7 @@ module.exports = {
         intro_shortcode: 'wordpress',
         msg_intro: "(Hi, this is WordPress.com and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",  
     },
-
+/*
     // ads
     florida_ads: {
         intro_shortcode: 'florida',
@@ -306,5 +306,5 @@ module.exports = {
     tristan_walker: {
         intro_shortcode: 'tristan',
         msg_intro: "(Hi, this is Tristan Walker and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",            
-    },
+    },*/
 };
