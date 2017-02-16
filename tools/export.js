@@ -37,6 +37,7 @@ pg.connect(connstr, function(err, client, done) {
         console.log('"timestamp","first_name","last_name","email","phone","address","address_unit","city","state","zip",'+age_or_dob+',"already_registered","form_submitted","voted","partner"');
         for (var i=0; i<result.rows.length; i++) {
             var row = result.rows[i];
+            if (!row.settings) { continue; }
             var line = '';
             line += '"'+escape(moment(row.created), moment.ISO_8601).format('L LT')+'",';
             line += '"'+escape(row.first_name)+'",';
