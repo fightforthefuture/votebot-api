@@ -20,6 +20,10 @@ exports.verify = function(user)
             // which is not helpful. so, just match on year now and filter later
         }
 
+        if(!config.target_smart.api_key) {
+            return resolve([false]);
+        }
+
         var request_options = {
             url: 'https://api.targetsmart.com/voter-registration-check',
             qs: query_data,

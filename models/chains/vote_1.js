@@ -265,6 +265,10 @@ module.exports = {
         process: function(body, user, step, conversation) {
             return existing_registration.verify(user).then(function(registration_status) {
                 var next = 'deadline_check';
+                if(!config.target_smart.api_key) {
+                    // short circuit registration check if we don't have a target smart api key
+                    return {'next': next}
+                }
 
                 if (registration_status && registration_status[0] === true) {
                     // they are already registered
