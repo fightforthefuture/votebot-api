@@ -121,6 +121,10 @@ module.exports = {
         intro_shortcode: 'oneaz',
         msg_intro: "(Hi, this is One Arizona and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
+    ourrev: {
+        intro_shortcode: 'resistca',
+        msg_intro: "(Hi, this is Our Revolution and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
+    },
     pia: {
         intro_shortcode: 'pia',
         msg_intro: "(Hi, this is PrivateInternetAccess and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
