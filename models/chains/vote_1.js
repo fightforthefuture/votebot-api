@@ -320,7 +320,10 @@ module.exports = {
                 deadlines = us_election.get_ovr_deadline(state),
                 today = moment();
 
-            if (deadlines) {
+            log.info('bot: vote_1: deadlines', deadlines);
+            log.info('bot: vote_1: ignore_deadlines', config.election.ignore_deadlines);
+
+            if (deadlines && !config.election.ignore_deadlines) {
 
                 // if the state supports OVR, do one thing
                 if (deadlines['online']) {
@@ -1281,8 +1284,11 @@ function maybe_switch_chains(user, defaultNext) {
         */
         default:
             var cutoff = moment(config.election.date, 'YYYY-MM-DD');
+            var today = moment();
 
-            if (moment().isAfter(cutoff.subtract(7, "days"), 'day'))
+            log.info('bot: vote_1: cutoff', cutoff);
+
+            if (today.isAfter(cutoff.subtract(7, "days"), 'day'))
                 return { switch_chain: 'commit_to_vote' };
 
             return { next: defaultNext };
