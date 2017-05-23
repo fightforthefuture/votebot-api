@@ -35,6 +35,7 @@ var config = {
 	// parameters for next election
 	election: {
 		date: process.env.NEXT_ELECTION_DATE || '2018-11-06',
+		ignore_deadlines: process.env.IGNORE_ELECTION_DEADLINES || false,
 	},
 
 	database: {
@@ -70,6 +71,7 @@ var config = {
 
     target_smart: {
     	api_key: process.env.TARGET_SMART_KEY,
+    	disabled: process.env.TARGET_SMART_DISABLED || false,
     },
 
 	twilio: {
