@@ -711,7 +711,7 @@ module.exports = {
             var state = util.object.get(user, 'settings.state');
             var too_late_for_mailer = us_election.is_too_late_for_mailer(state);
 
-            if (too_late_for_mailer) {
+            if (too_late_for_mailer && !config.election.ignore_deadlines) {
                 var msg = language.template(l10n('msg_ovr_failed_no_fallback', conversation.locale), user, conversation.locale);
                 var next = 'refer_external_ovr';
             } else {
@@ -730,7 +730,7 @@ module.exports = {
             var state = util.object.get(user, 'settings.state');
             var too_late_for_mailer = us_election.is_too_late_for_mailer(state);
 
-            if (too_late_for_mailer) {
+            if (too_late_for_mailer && !config.election.ignore_deadlines) {
                 var update_user = util.object.set(user, 'settings.mail_letter', false);
                 user_model.update(user.id, update_user);
 
