@@ -33,7 +33,8 @@ var config = {
 
 	// parameters for next election
 	election: {
-		date: process.env.NEXT_ELECTION_DATE || '2016-11-08',
+		date: process.env.NEXT_ELECTION_DATE || '2018-11-06',
+		ignore_deadlines: true // for when we don't have google civic updates for the next election
 	},
 
 	database: {

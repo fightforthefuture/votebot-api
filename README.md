@@ -49,7 +49,7 @@ Here are the specific environment variables, and what they do:
 
 * **`SESSION_SECRET`**: A secret string used for session token hashing
 
-* **`NEXT_ELECTION_DATE`**: Date of next election in `mm/dd/yyyy` format
+* **`NEXT_ELECTION_DATE`**: Date of next election in `YYYY-MM-DD` format
 
 * **`TWILIO_ACCOUNT_SID`**: Account string for Twilio
 

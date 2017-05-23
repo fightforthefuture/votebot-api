@@ -34,7 +34,7 @@ var config = {
 
 	// parameters for next election
 	election: {
-		date: process.env.NEXT_ELECTION_DATE || '2017-05-16',
+		date: process.env.NEXT_ELECTION_DATE || '2018-11-06',
 	},
 
 	database: {
