@@ -7,6 +7,10 @@ var util = require('../lib/util');
 exports.verify = function(user)
 {
     return new Promise(function(resolve, reject) {
+        if(!config.target_smart.api_key || config.target_smart.disabled) {
+            return resolve([false]);
+        }
+
         var date_of_birth = moment(util.object.get(user, 'settings.date_of_birth'), 'YYYY-MM-DD');
         var query_data = {
             "first_name": util.object.get(user, 'first_name'),
@@ -18,10 +22,6 @@ exports.verify = function(user)
             "dob": date_of_birth.format("YYYY*") // just send year to TargetSmart
             // they do an exact match on what they have, but their default value for unknowns is 0101
             // which is not helpful. so, just match on year now and filter later
-        }
-
-        if(!config.target_smart.api_key) {
-            return resolve([false]);
         }
 
         var request_options = {
