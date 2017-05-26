@@ -51,6 +51,9 @@ Here are the specific environment variables, and what they do:
 
 * **`NEXT_ELECTION_DATE`**: Date of next election in `YYYY-MM-DD` format
 
+* **`IGNORE_ELECTION_DEADLINES`**: If set to 'true', ignore upcoming deadlines and let users continue.
+	Useful for when we are not near an election and do not have updated data from Google Civic.
+
 * **`TWILIO_ACCOUNT_SID`**: Account string for Twilio
 
 * **`TWILIO_AUTH_TOKEN`**: Auth token for Twilio
@@ -66,6 +69,8 @@ Here are the specific environment variables, and what they do:
 * **`SMARTY_STREETS_ID`**: Account string for SmartyStreets address verification
 
 * **`SMARTY_STREETS_TOKEN`**: Auth token for SmartyStreets address verification
+
+* **`TARGET_SMART_KEY`**: Auth token for TargetSmart VoterFile lookup
 
 * **`VOTEBOT_API_KEY`**: key used to authenticate to votebot-forms
 
