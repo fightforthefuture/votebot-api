@@ -41,7 +41,7 @@ module.exports = {
     },
     generalassembly: {
         intro_shortcode: 'ga',
-        msg_intro: "(Hi, this is General Assembly and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",  
+        msg_intro: "(Hi, this is General Assembly and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     genius: {
         intro_shortcode: 'genius',
@@ -76,6 +76,7 @@ module.exports = {
     krcla: {
         intro_shortcode: 'krcla',
         msg_intro: "(Hi, this is KRC LA and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
+        msg_intro_ko: "안녕하세요, 아까 민족학교의 실무진과 대화하면서 유권자 등록에 관심을 보여주셔서 감사합니다! 저는 민족학교와 HelloVote 를 통해 문자 메세지로 유권자 등록을 할 수 있도록 도와드리는 자동 시스템입니다, 저의 질문에 하나씩 답변을 입력하시면 그것만으로 손쉽게 유권자 등록을 할 수 있습니다",
     },
     lvp: {
         intro_shortcode: 'lvp',
@@ -189,15 +190,15 @@ module.exports = {
     },
     walkerandco: {
         intro_shortcode: 'walker',
-        msg_intro: "(Hi, this is Walker and Company and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",  
+        msg_intro: "(Hi, this is Walker and Company and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     wiuvotes: {
         intro_shortcode: 'wiuvotes',
-        msg_intro: "(Hi, this is the WIU UGC and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",  
+        msg_intro: "(Hi, this is the WIU UGC and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     'wordpress.com': {
         intro_shortcode: 'wordpress',
-        msg_intro: "(Hi, this is WordPress.com and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",  
+        msg_intro: "(Hi, this is WordPress.com and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
 /*
     // ads
@@ -205,35 +206,35 @@ module.exports = {
         intro_shortcode: 'florida',
         msg_intro: "(Hi, this is HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
-    
+
     // celeb partners
     aasif_mandvi: {
         intro_shortcode: 'aasif',
-        msg_intro: "(Hi, this is Aasif Mandvi and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",        
+        msg_intro: "(Hi, this is Aasif Mandvi and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     bj_novak: {
         intro_shortcode: 'bjnovak',
-        msg_intro: "(Hi, this is B.J. Novak and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",        
+        msg_intro: "(Hi, this is B.J. Novak and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     carrie_brownstein: {
         intro_shortcode: 'carrie',
-        msg_intro: "(Hi, this is Carrie Brownstein and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",        
+        msg_intro: "(Hi, this is Carrie Brownstein and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     casey_neistat: {
         intro_shortcode: 'casey',
-        msg_intro: "(Hi, this is Casey Neistat and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",        
+        msg_intro: "(Hi, this is Casey Neistat and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     chrissy_teigen: {
         intro_shortcode: 'chrissy',
-        msg_intro: "(Hi, this is Chrissy Teigen and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",        
+        msg_intro: "(Hi, this is Chrissy Teigen and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     daymond_john: {
         intro_shortcode: 'daymond',
-        msg_intro: "(Hi, this is Daymond John and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Daymond John and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     edward_norton: {
         intro_shortcode: 'norton',
-        msg_intro: "(Hi, this is Edward Norton and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Edward Norton and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     grace_helbig: {
         intro_shortcode: 'grace',
@@ -245,11 +246,11 @@ module.exports = {
     },
     john_legend: {
         intro_shortcode: 'legend',
-        msg_intro: "(Hi, this is John Legend and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is John Legend and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     kristen_bell: {
         intro_shortcode: 'kristen',
-        msg_intro: "(Hi, this is Kristen Bell and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Kristen Bell and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     mindy: {
         intro_shortcode: 'mindy',
@@ -257,47 +258,47 @@ module.exports = {
     },
     rep_castor: {
         intro_shortcode: 'castor',
-        msg_intro: "(Hi, this is Congresswoman Kathy Castor and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Congresswoman Kathy Castor and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     rep_brown: {
         intro_shortcode: 'corrine',
-        msg_intro: "(Hi, this is Congresswoman Corrine Brown and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Congresswoman Corrine Brown and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     rep_deutch: {
         intro_shortcode: 'deutch',
-        msg_intro: "(Hi, this is Congressman Ted Deutch and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Congressman Ted Deutch and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     rep_graham: {
         intro_shortcode: 'graham',
-        msg_intro: "(Hi, this is Congresswoman Gwen Graham and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Congresswoman Gwen Graham and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     rep_grayson: {
         intro_shortcode: 'grayson',
-        msg_intro: "(Hi, this is Congressman Alan Grayson and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Congressman Alan Grayson and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     rep_hastings: {
         intro_shortcode: 'hastings',
-        msg_intro: "(Hi, this is Congressman Alcee Hastings and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Congressman Alcee Hastings and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     rep_frankel: {
         intro_shortcode: 'frankel',
-        msg_intro: "(Hi, this is Congresswoman Lois Frankel and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Congresswoman Lois Frankel and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     rep_wasserman_schultz: {
         intro_shortcode: 'debbie',
-        msg_intro: "(Hi, this is Congresswoman Debbie Wasserman Schultz and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Congresswoman Debbie Wasserman Schultz and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     ryan_leslie: {
         intro_shortcode: 'voteryan',
-        msg_intro: "(Hi, this is Ryan Leslie and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Ryan Leslie and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     sen_bill_nelson: {
         intro_shortcode: 'nelson',
-        msg_intro: "(Hi, this is Senator Bill Nelson and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Senator Bill Nelson and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     scooter_braun: {
         intro_shortcode: 'scooter',
-        msg_intro: "(Hi, this is Scooter Braun and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Scooter Braun and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     sacca: {
         intro_shortcode: 'sacca',
@@ -305,10 +306,10 @@ module.exports = {
     },
     sophia_bush: {
         intro_shortcode: 'sophia',
-        msg_intro: "(Hi, this is Sophia Bush and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",          
+        msg_intro: "(Hi, this is Sophia Bush and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     tristan_walker: {
         intro_shortcode: 'tristan',
-        msg_intro: "(Hi, this is Tristan Walker and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",            
+        msg_intro: "(Hi, this is Tristan Walker and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },*/
 };
