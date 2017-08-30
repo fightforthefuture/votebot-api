@@ -51,7 +51,7 @@ exports.create = function(user_id, data)
 	var usernames = recipients.map(function(r) { return r.username; }),
 		users;
 
-	var locale = 'en';
+	var locale = options.locale || 'en';
 
 	if (options.locale && options.locale == 'es')
 		locale = 'es';
