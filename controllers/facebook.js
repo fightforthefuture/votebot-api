@@ -1,5 +1,6 @@
 var resutil = require('../lib/resutil');
 var convo_model = require('../models/conversation');
+var message_model = require('../models/message');
 var model = require('../models/facebook');
 var log = require('../lib/logger');
 var error = require('../lib/error');
@@ -27,25 +28,40 @@ var postback = function(req, res)
 		!data.entry
 		||
 		!data.entry[0]
-		||
-		!data.entry[0].messaging
-		||
-		!data.entry[0].messaging[0]
 	) {
 		log.error('Unknown Facebook Postback: ', JSON.stringify(req.body));
 		return resutil.error(res, 'Problem starting conversation', req.body);
 	}
 
+	if (
+		!data.entry[0].messaging
+		||
+		!data.entry[0].messaging[0]
+	) {
+		log.error('Empty Facebook Postback: ', JSON.stringify(req.body));
+		// have to acknowledge empty test messages for subscription to start
+		return resutil.send(res, 'ok');
+	}
+
 	var message = data.entry[0].messaging[0],
 	    sender = message.sender.id,
-	    username = 'Messenger:'+sender,
-		data = {
-			type: 'fb',
-			recipients: [{username: username}],
-			options: {start: 'intro_facebook'}
-		};
+	    username = 'Messenger:'+sender;
 
-	switch (message.postback.payload) {
+	// it's a user response message
+	if (message.message) {
+		return message_model.incoming_message({Body: message.message.text, From: username})
+		.then(function() {
+			// acknowledge response
+			return resutil.send(res, 'ok');
+		})
+		.catch(function(err) {
+			log.error('facebook messages: incoming: ', err);
+			return resutil.error(res, 'Problem receiving message', err);
+		}); 
+	}
+
+	// it's a button press
+	if (message.postback) { switch (message.postback.payload) {
 
 		case 'hi':
 			model.buttons(
@@ -88,7 +104,12 @@ var postback = function(req, res)
 			break;
 
 		case 'start':
-			return convo_model.create(user_id, data)
+			var new_convo_data = {
+				type: 'fb',
+				recipients: [{username: username}],
+				options: {start: 'intro_facebook'}
+			};
+			return convo_model.create(user_id, new_convo_data)
 				.then(function(convo) {
 					resutil.send(res, convo);
 				})
@@ -96,7 +117,7 @@ var postback = function(req, res)
 		            resutil.error(res, 'Problem starting conversation', err);
 				});
 			break;
-	}
+	} }
 };
 
 var fakePostbackEndpoint = function(req, res) {
@@ -106,17 +127,3 @@ var fakePostbackEndpoint = function(req, res) {
   	}
 	res.send('Error, wrong validation token');
 };
-
-var facebookMessage = function(res, options) {
-
-	options.uri = 'https://graph.facebook.com/v2.6/me/messages?access_token='+config.facebook.access_token;
-	options.method = 'POST';
-
-	request(options, function (error, response, body) {
-		if (error) {
-			log.error('facebook: postback send error', error);
-			return resutil.error(res, 'Facebook postback error', error);
-		}
-		
-	});
-}
