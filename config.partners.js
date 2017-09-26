@@ -7,6 +7,10 @@ module.exports = {
         intro_shortcode: 'aarw',
         msg_intro: "(Hi, this is AARW and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
+    apia: {
+        intro_shortcode: 'apia',
+        msg_intro: "(Hi, this is APIAVote and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
+    },
     bazta: {
         intro_shortcode: 'bazta',
         msg_intro: "(Hi, this is Bazta Arpaio and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
