@@ -10,6 +10,7 @@ module.exports = {
     apia: {
         intro_shortcode: 'apia',
         msg_intro: "(Hi, this is APIAVote and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
+        msg_campus: "What college campus are you registering from?"
     },
     bazta: {
         intro_shortcode: 'bazta',

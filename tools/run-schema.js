@@ -153,6 +153,13 @@ var chains = [
 				msg: '',	// actual email prompt is sent in pre_process
 				no_msg: true,
 				errormsg: '[[error_email]]',
+				next: 'college_campus',
+				admin_order: 11,
+			},
+			{
+				name: 'college_campus',
+				msg: '',	// partner-specific campus prompt is sent in pre_process
+				// no_msg: true,
 				next: 'check_existing_registration',
 				admin_order: 11,
 			},

@@ -1,5 +1,6 @@
 var Promise = require('bluebird');
 var config = require('../../config');
+var partners = require('../../config.partners');
 var db = require('../../lib/db');
 var email = require('../../lib/email');
 var convo_model = require('../conversation');
@@ -261,6 +262,19 @@ module.exports = {
         },
         process: simple_store('user.settings.email', {validate: validate.email, advance: true})
     },
+
+    college_campus: {
+        pre_process: function(action, conversation, user) {
+            console.log('college_campus pre_process', conversation.partner && partners[conversation.partner]['msg_campus']);
+            if (conversation.partner && partners[conversation.partner]['msg_campus']) {
+                return {msg: partners[conversation.partner]['msg_campus']};
+            } else {
+                return {next: 'check_existing_registration', advance: true};
+            }
+        },
+        process: simple_store('user.settings.college_campus', {validate: validate.accept_anything, advance: true}),
+    },
+
     check_existing_registration: {
         process: function(body, user, step, conversation) {
             return existing_registration.verify(user).then(function(registration_status) {
@@ -399,8 +413,6 @@ module.exports = {
         }
 
     },
-
-
 
     // this is a MAGICAL step. it never actually runs, but instead just
     // points to other steps until it runs out of per-state questions to
