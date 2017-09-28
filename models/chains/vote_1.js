@@ -263,16 +263,15 @@ module.exports = {
         process: simple_store('user.settings.email', {validate: validate.email, advance: true})
     },
 
-    college_campus: {
+    custom_question: {
         pre_process: function(action, conversation, user) {
-            console.log('college_campus pre_process', conversation.partner && partners[conversation.partner]['msg_campus']);
-            if (conversation.partner && partners[conversation.partner]['msg_campus']) {
-                return {msg: partners[conversation.partner]['msg_campus']};
+            if (conversation.partner && partners[conversation.partner]['msg_custom']) {
+                return {msg: partners[conversation.partner]['msg_custom']};
             } else {
                 return {next: 'check_existing_registration', advance: true};
             }
         },
-        process: simple_store('user.settings.college_campus', {validate: validate.accept_anything, advance: true}),
+        process: simple_store('user.settings.custom_question', {validate: validate.accept_anything, advance: true}),
     },
 
     check_existing_registration: {

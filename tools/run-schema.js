@@ -157,8 +157,8 @@ var chains = [
 				admin_order: 11,
 			},
 			{
-				name: 'college_campus',
-				msg: '',	// partner-specific campus prompt is sent in pre_process
+				name: 'custom_question',
+				msg: '',	// partner-specific custom prompt is sent in pre_process
 				// no_msg: true,
 				next: 'check_existing_registration',
 				admin_order: 11,
