@@ -649,10 +649,12 @@ module.exports = {
                 requirements = us_election.get_registration_requirements(user.settings.state),
                 deadline = l10n('frag_soon', conversation.locale);
 
-            if (requirements["Deadlines"]["received-by"]) {
-              deadline = moment(requirements["Deadlines"]["received-by"]).format('MM/DD')
-            } else if (requirements["Deadlines"]["mail-by"]) {
-              deadline = moment(requirements["Deadlines"]["mail-by"]).format('MM/DD')
+            if (!config.election.ignore_deadlines) {
+                if (requirements["Deadlines"]["received-by"]) {
+                  deadline = moment(requirements["Deadlines"]["received-by"]).format('MM/DD')
+                } else if (requirements["Deadlines"]["mail-by"]) {
+                  deadline = moment(requirements["Deadlines"]["mail-by"]).format('MM/DD')
+                }
             }
 
             if (form_type != 'NVRA') {
