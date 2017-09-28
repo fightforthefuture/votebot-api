@@ -8,7 +8,7 @@ module.exports = {
         msg_intro: "(Hi, this is AARW and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     apia: {
-        intro_shortcode: 'apia',
+        intro_shortcode: 'apiavote',
         msg_intro: "(Hi, this is APIAVote and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
         msg_custom: "What college campus are you registering from?"
     },
