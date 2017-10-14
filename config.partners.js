@@ -205,6 +205,11 @@ module.exports = {
         intro_shortcode: 'wordpress',
         msg_intro: "(Hi, this is WordPress.com and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
+
+    bash: {
+        intro_shortcode: 'bash',
+        msg_intro: "(Hi, this is the Metro Group and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
+    },
 /*
     // ads
     florida_ads: {
