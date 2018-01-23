@@ -144,7 +144,7 @@ exports.incoming_message = function(data, options)
 				return exports.create(config.bot.user_id, conversation.id, {body: language.template(help_msg, null, 'en'), force_send: true});
 			}
 
-			if(!user.active && !options.force_active) throw error('user is inactive');
+			if(!user.active && !options.force_active) throw error('user is inactive', {code: 403});
 
 			if (config.app.disabled)
 				return exports.create(
