@@ -7,6 +7,9 @@
     "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "main": "server.js",
+  "engines": {
+    "node": "6.12.x"
+  },
   "private": true,
   "author": "FFTF",
   "license": "No License",
@@ -31,13 +34,14 @@
     "moment-timezone": "^0.5.5",
     "morgan": "^1.7.0",
     "newrelic": "^1.30.3",
+    "node-env-file": "^0.1.8",
     "node-uuid": "^1.4.7",
     "nodemailer": "^2.5.0",
     "nodemailer-smtp-transport": "^2.6.0",
     "pg": "^4.5.5",
     "phone": "^1.0.6",
     "progress": "^1.1.8",
-    "raven": "^0.12.1",
+    "raven": "^2.3.0",
     "request": "^2.73.0",
     "request-promise": "^4.0.2",
     "sha256": "^0.2.0",

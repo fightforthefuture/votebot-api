@@ -31,7 +31,9 @@ app.use(morgan(':remote-addr ":method :url" :status :res[content-length]'));
 app.use(method_override('_method'));
 
 if (config.logging.sentry) {
-	app.use(raven.middleware.express.requestHandler(config.sentry));
+	raven.config(config.sentry).install();
+	app.use(raven.requestHandler());
+	app.use(raven.errorHandler());
 }
 app.use(function(err, req, res, next) {
 	console.error('Express error: ', err.stack);
