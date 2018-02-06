@@ -13,6 +13,7 @@ var l10n = require('../lib/l10n');
 exports.hook = function(app)
 {
 	app.post('/conversations', create);
+	app.post('/conversations/forward', forward);
 	app.post('/conversations/:id/messages', new_message);
 	app.post('/conversations/incoming', incoming);
 	app.get('/conversations/:id/new', poll);
@@ -27,6 +28,31 @@ var create = function(req, res)
 		data.options = {};
 
 	data.options.force_active = true;
+
+	model.create(user_id, data)
+		.then(function(convo) {
+			resutil.send(res, convo);
+		})
+		.catch(function(err) {
+            resutil.error(res, 'Problem starting conversation', err);
+		});
+};
+
+var forward = function(req, res)
+{
+	// special creation method for forwarded users from RapidPro
+	// ignores message body, gets user phone from url ?tel
+
+	var user_id = config.bot.user_id;
+	var data = {
+		type:"sms",
+		recipients: [
+        {username: req.query.tel}
+    ],
+    options: {
+    	force_active: true
+    }
+	};
 
 	model.create(user_id, data)
 		.then(function(convo) {
