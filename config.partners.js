@@ -20,6 +20,10 @@ module.exports = {
         intro_shortcode: 'bernie',
         msg_intro: "(Hi, this is Senator Sanders and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
+    changetheref: {
+        intro_shortcode: 'changetheref',
+        msg_intro: "(Hi, this is Change the Ref and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
+    },
     care2: {
         intro_shortcode: 'care2',
         msg_intro: "(Hi, this is Care2 and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
