@@ -90,7 +90,7 @@ var chains = [
 				errormsg: '',
 				next: 'last_name',
 				admin_order: 2,
-			},	
+			},
 			{
 				name: 'last_name',
 				msg: '[[prompt_last_name]]',
@@ -153,7 +153,7 @@ var chains = [
 				msg: '',	// actual email prompt is sent in pre_process
 				no_msg: true,
 				errormsg: '[[error_email]]',
-				next: 'college_campus',
+				next: 'custom_question',
 				admin_order: 11,
 			},
 			{
@@ -200,7 +200,7 @@ var chains = [
 				msg: '',
 				no_msg: true,
 				errormsg: '',
-				next: '',
+				next: 'confirm_ovr_disclosure',
 				admin_special: true,
 				admin_order: 14,
 			},
@@ -209,7 +209,7 @@ var chains = [
 				msg: '',
 				no_msg: true,
 				errormsg: '',
-				next: '',
+				next: 'submit',
 				admin_special: true,
 				admin_order: 15
 			},
