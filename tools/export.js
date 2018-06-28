@@ -9,6 +9,7 @@ var query = [
     'AND        conversations_recipients.conversation_id = conversations.id',
     'AND        users.id = conversations_recipients.user_id',
     'AND        users.active = TRUE',
+    'AND        users.created >= \'2018-01-01\'',
     'ORDER BY   users.created DESC'
 ];
 
@@ -34,7 +35,7 @@ pg.connect(connstr, function(err, client, done) {
     };
     client.query(query, {}, function(err, result) {
         var age_or_dob = include_dob ? "date_of_birth" : "age";
-        console.log('"timestamp","first_name","last_name","email","phone","address","address_unit","city","state","zip",'+age_or_dob+',"already_registered","form_submitted","voted","partner"');
+        console.log('"timestamp","first_name","last_name","email","phone","address","address_unit","city","state","zip",'+age_or_dob+',"already_registered","form_submitted","mail","online","voted","partner"');
         for (var i=0; i<result.rows.length; i++) {
             var row = result.rows[i];
             if (!row.settings) { continue; }
@@ -56,6 +57,8 @@ pg.connect(connstr, function(err, client, done) {
             }
             line += '"'+escape(row.settings.already_registered)+'",';
             line += '"'+escape(row.submit)+'",';
+            line += '"'+escape(row.settings.mail_letter)+'",';
+            line += '"'+escape(row.settings.confirm_ovr_disclosure)+'",';
             line += '"'+escape(row.voted)+'",';
             line += '"'+escape(partner)+'"';
 

@@ -123,3 +123,11 @@ node server.js
 [4]: https://nodejs.org/en/
 [5]: https://www.npmjs.com/
 [6]: https://www.postgresql.org/
+
+## Data Export
+
+Partners may request access to the contact information of users who started with their keyword or referral link. This includes first and last name, address, email, registration status, and age or date of birth. Use of this data is subject to the HelloVote [privacy policy](https://www.hello.vote/privacy/) and that of the partner organization.
+
+To run a data export, use `node tools/export.js PARTNER $DATABASE_URL` and optionally append `include-dob`.
+
+Other individually sensitive data is deleted after sending it to the registration authority. Aggregate information on user behavior may be retained for analysis, research and product improvements.
