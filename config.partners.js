@@ -203,6 +203,10 @@ module.exports = {
         msg_intro: "(Hi, this is Upworthy and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
     walkerandco: {
+        intro_shortcode: 'vayla',
+        msg_intro: "(Hi, this is VAYLA New Orleans and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
+    },
+    walkerandco: {
         intro_shortcode: 'walker',
         msg_intro: "(Hi, this is Walker and Company and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
     },
