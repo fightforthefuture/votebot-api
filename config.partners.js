@@ -12,6 +12,10 @@ module.exports = {
         msg_intro: "(Hi, this is APIAVote and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
         msg_custom: "What college campus are you registering from?"
     },
+    audrey: {
+        intro_shortcode: 'audrey',
+        msg_intro: "(Hi, this is Audrey for Congress and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
+    },
     bazta: {
         intro_shortcode: 'bazta',
         msg_intro: "(Hi, this is Bazta Arpaio and HelloVote! I can check to see if you\'re registered, and then help you register to vote!)",
