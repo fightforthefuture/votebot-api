@@ -74,6 +74,11 @@ Here are the specific environment variables, and what they do:
 
 * **`VOTEBOT_API_KEY`**: key used to authenticate to votebot-forms
 
+After making changes, make sure your environment variables are loaded:
+
+```sh
+source .env
+```
 
 ### Create the config.js file
 
@@ -82,6 +87,9 @@ references the environment variables you just defined, there's no need for extra
 configuration. It's kind of an anachronism at this point.
 
 ### Populate the database with initial schema
+
+Ensure you have a `votebot` database created, and a user with access to
+that database specified in the .env file above.
 
 To create the database tables and populate them with initial data, run:
 
@@ -94,14 +102,6 @@ This command is safe to run multiple times and will ignore any existing data.
 
 ### Run the server!
 
-Make sure your environment variables are loaded:
-
-```sh
-source .env
-```
-
-Then run the server:
-
 ```sh
 node server.js
 ```
@@ -110,7 +110,7 @@ node server.js
 - start conversation by POSTing ```{
      "type":"web",
     "recipients":[
-        {"username": mobile}
+        {"username": "mobilenumbertosendtestsmsto"}
     ]
 }``` to `/conversations`
 - connect Twilio number with POST to `/conversations/incoming`

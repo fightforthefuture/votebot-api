@@ -160,6 +160,7 @@ var chains = [
 				name: 'custom_question',
 				msg: '',	// partner-specific custom prompt is sent in pre_process
 				// no_msg: true,
+				errormsg: '',
 				next: 'check_existing_registration',
 				admin_order: 11,
 			},
