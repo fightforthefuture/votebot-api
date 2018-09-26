@@ -80,7 +80,7 @@ var postback = function(req, res)
 					},
 					{
 						type: 'web_url',
-						url: 'https://www.hellovote.org',
+						url: 'https://www.hello.vote',
 						title: l10n('button_learn_more')
 					}
 				]

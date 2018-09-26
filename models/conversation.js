@@ -24,7 +24,7 @@ exports.create = function(user_id, data)
 	var partner = null;
 	var valid_data_types = ['sms', 'web', 'fb', 'line', 'skype', 'fwd'];
 	// sms means conversation was initiated by text message
-	// web means conversation was initiated by web call (from hellovote.org, or other client)
+	// web means conversation was initiated by web call (from hello.vote, or other client)
 	// fb means conversation was inititated by facebook messenger
 	// p2p means conversation was initiated by group chat (not yet implemented)
 	// fwd means conversation was initiated by other system and forwarded here

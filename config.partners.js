@@ -63,12 +63,12 @@ module.exports = {
     headcount: {
         intro_shortcode: 'count',
         msg_intro: "Hi, this is HeadCount and HelloVote! I can send you everything you need to go vote, and help you invite friends too! Your answers are private & secure.",
-        msg_intro_es: "(Saludos, esto es HelloVote y HeadCount. Puedo revisar si está registrado o ayudarle a registrarse para votar. Sus respuestas seran privadas y seguras. Más información: hellovote.org)"
+        msg_intro_es: "(Saludos, esto es HelloVote y HeadCount. Puedo revisar si está registrado o ayudarle a registrarse para votar. Sus respuestas seran privadas y seguras.)"
     },
     headcount_glam: {
         intro_shortcode: 'glam',
         msg_intro: "Hi, it's HeadCount, Glam Up the Midterms and HelloVote! I can send everything you and your friends need to vote. Your answers are private & secure.",
-        msg_intro_es: "(Saludos, esto es HelloVote y HeadCount. Puedo revisar si está registrado o ayudarle a registrarse para votar. Sus respuestas seran privadas y seguras. Más información: hellovote.org)"
+        msg_intro_es: "(Saludos, esto es HelloVote y HeadCount. Puedo revisar si está registrado o ayudarle a registrarse para votar. Sus respuestas seran privadas y seguras.)"
     },
     hellovotetesting: {
         intro_shortcode: 'trololo',

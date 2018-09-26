@@ -320,9 +320,9 @@ module.exports = {
 
             if (util.object.get(user, 'results.weather_forecast')) {
                 var fwd_msg = "Hey, it's going to be {{results.weather_forecast.adjective}} on election day in {{settings.state}}. "+
-                "This bot can share voting day weather forecasts and other voting info to help you vote too: http://hellovote.org";
+                "This bot can share voting day weather forecasts and other voting info to help you vote too: http://hello.vote";
             } else {
-                var fwd_msg = "This bot can share voting day weather forecasts and other voting info to help you vote too: http://hellovote.org";   
+                var fwd_msg = "This bot can share voting day weather forecasts and other voting info to help you vote too: http://hello.vote";   
             }
 
             // send our share msg immediately

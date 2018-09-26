@@ -24,11 +24,10 @@ var config = {
 	},
 
 	mail: {
-
 		sparkpost: {
 			api_key: process.env.SPARKPOST_API_KEY
 		},
-		from: 'info@hellovote.org',
+		from: 'info@hello.vote',
 	},
 
 	// parameters for next election

@@ -843,7 +843,7 @@ module.exports = {
                     )
                     var tweet_url = us_election.state_share_urls[state].tweet_url;
                 else
-                    var tweet_url = 'hellovote.org/tweet';
+                    var tweet_url = 'hello.vote/tweet';
 
                 var msg = l10n('msg_share', conversation.locale);
                 msg = msg.replace('{tweet_url}', tweet_url);
